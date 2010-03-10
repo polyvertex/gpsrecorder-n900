@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 // maemo - glib
@@ -29,6 +30,9 @@
 #include <glib.h>
 
 // maemo - location
+//
+// http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html
+// http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
 #include <location/location-gps-device.h>
 #include <location/location-gpsd-control.h>
 #include <location/location-distance-utils.h>
@@ -62,6 +66,8 @@ typedef unsigned char bool_t;  // *** NEVER USE THIS TYPE IN STORED STRUCTURES *
 //---------------------------------------------------------------------------
 // Constants
 //---------------------------------------------------------------------------
+#define APP_NAME  "gpsrecord"
+
 // program parameters
 static struct option OPTIONS[] =
 {
@@ -79,13 +85,16 @@ static const LocationGPSDControlInterval GPSFIXES_INTERVAL = LOCATION_INTERVAL_5
 // number of gps fixes to get before actually writing them to the output file
 #define GPSFIXES_BUFCOUNT  5
 
+// default directory for output files
+#define OUTPUTFILE_DEFAULT_DIRECTORY  "/home/user/MyDocs"
+
 
 //---------------------------------------------------------------------------
 // Local Variables
 //---------------------------------------------------------------------------
 // parameters
 static bool_t g_b_alwaysyes = false;
-static char*  g_psz_outfile = NULL;
+static char   g_sz_outfile[128] = { 0 };
 
 // maemo - location lib
 LocationGPSDevice*   g_p_gps_device = NULL;
@@ -117,7 +126,7 @@ static void _usage(const char* psz_argv0)
 {
   printf(
     "\n"
-    "gpsrecord\n"
+    APP_NAME "\n"
     "  Compiled on " __DATE__ " at " __TIME__ "\n"
     "\n"
     "Usage :\n"
@@ -139,6 +148,55 @@ static void _usage(const char* psz_argv0)
   );
 }
 
+
+
+
+//---------------------------------------------------------------------------
+// _file_exists
+//---------------------------------------------------------------------------
+static bool_t _file_exists(const char* psz_file)
+{
+  struct stat s_stats;
+  return stat(psz_file, &s_stats) == 0;
+}
+
+//---------------------------------------------------------------------------
+// _file_isdir
+//---------------------------------------------------------------------------
+static bool_t _file_isdir(const char* psz_file)
+{
+  struct stat s_stats;
+
+  if ((stat(psz_file, &s_stats) == 0) && S_ISDIR(s_stats.st_mode))
+    return true;
+
+  return false;
+}
+
+
+
+
+//---------------------------------------------------------------------------
+// _time_str
+//---------------------------------------------------------------------------
+static const char* _time_str(bool_t b_filename, time_t i_time_opt)
+{
+  static char sz_time[24]; // YYYY-MM-DD hh:mm:ss
+
+  time_t t = (i_time_opt > 0) ? i_time_opt : time(NULL);
+  struct tm* ptm = localtime(&t);
+
+  if (b_filename)
+    sprintf((char*)&sz_time, "%04d%02d%02d-%02d%02d%02d", 1900+ptm->tm_year, 1+ptm->tm_mon, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+  else
+    sprintf((char*)&sz_time, "%04d-%02d-%02d %02d:%02d:%02d", 1900+ptm->tm_year, 1+ptm->tm_mon, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+
+  return (char*)&sz_time;
+}
+
+
+
+
 //---------------------------------------------------------------------------
 // _param_parse
 //---------------------------------------------------------------------------
@@ -148,13 +206,6 @@ static void _param_parse(int i_argc, const char** ppsz_argv)
   char   sz_shortopts[64] = "";
   uint_t ui_len;
   char   c;
-
-  // print help when called without parameters
-  if (i_argc < 2)
-  {
-    _usage((i_argc >= 1) ? ppsz_argv[0] : "?");
-    exit(1);
-  }
 
   // prepare the shortopts list to call getopt()
   for (i_optidx=0, ui_len=0 ; i_optidx<OPTIONS_COUNT ; ++i_optidx)
@@ -197,7 +248,9 @@ static void _param_parse(int i_argc, const char** ppsz_argv)
 
       // output
       case 'o' :
-        g_psz_outfile = optarg;
+        if (strlen(optarg) > sizeof(g_sz_outfile) - 1)
+          err(1, "Output file path is too long !");
+        strcpy((char*)&g_sz_outfile, optarg);
         break;
 
       // yes
@@ -217,15 +270,35 @@ static void _param_parse(int i_argc, const char** ppsz_argv)
 //---------------------------------------------------------------------------
 static void _param_validate(void)
 {
-  struct stat s_stats;
-
   // output file
-  if (!g_psz_outfile)
-    err(1, "Missing output file !");
-  if (stat(g_psz_outfile, &s_stats) == 0)
+  if (g_sz_outfile[0])
   {
-    if (!g_b_alwaysyes)
-      err(1, "Output file \"%s\" already exists !", g_psz_outfile);
+    if (!g_b_alwaysyes && _file_exists((char*)&g_sz_outfile))
+      err(1, "Output file \"%s\" already exists !", (char*)&g_sz_outfile);
+  }
+  else
+  {
+    int i_tries = 3;
+
+    while (i_tries-- > 0)
+    {
+      strcpy((char*)&g_sz_outfile, OUTPUTFILE_DEFAULT_DIRECTORY);
+      if (!_file_isdir((char*)&g_sz_outfile))
+        err(1, "Default directory \"" OUTPUTFILE_DEFAULT_DIRECTORY "\" not found !");
+
+      strcat((char*)&g_sz_outfile, "/" APP_NAME "-");
+      strcat((char*)&g_sz_outfile, _time_str(true, 0));
+      strcat((char*)&g_sz_outfile, ".csv");
+
+      if (!_file_exists((char*)&g_sz_outfile))
+        break;
+
+      g_sz_outfile[0] = '\0';
+      sleep(1);
+    }
+
+    if (!g_sz_outfile[0])
+      err(1, "Could not build path for output file !");
   }
 }
 
@@ -246,7 +319,7 @@ static void _gpsfix_flushall(void)
 
   if (g_i_gpsfixes <= 0)
     return;
-  printf("Flushing %d GPS fixes.\n", g_i_gpsfixes);
+  printf("%s : Flushing %d GPS fixes.\n", _time_str(false, 0), g_i_gpsfixes);
 
   // prepare output buffer
   sz_buffer[0] = '\0';
@@ -343,8 +416,6 @@ static void _gpsfix_flushall(void)
 //---------------------------------------------------------------------------
 static void _gpsfix_push(LocationGPSDeviceStatus e_status, LocationGPSDevice* ps_gps_device)
 {
-  // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
-
   // flush now if needed
   if (g_i_gpsfixes >= GPSFIXES_BUFCOUNT) // this should never happen here...
     _gpsfix_flushall();
@@ -371,10 +442,18 @@ static void _gpsfix_push(LocationGPSDeviceStatus e_status, LocationGPSDevice* ps
 //---------------------------------------------------------------------------
 // _gpsfix_push_log
 //---------------------------------------------------------------------------
-static void _gpsfix_push_log(const char* psz_line)
+static void _gpsfix_push_log(bool_t b_flush_gpsfixes, const char* psz_format, ...)
 {
-  printf(psz_line);
-  _gpsfix_flushall();
+  va_list arglist;
+
+  printf("%s : ", _time_str(false, 0));
+
+  va_start(arglist, psz_format);
+  vprintf(psz_format, arglist);
+  va_end(arglist);
+
+  if (b_flush_gpsfixes)
+    _gpsfix_flushall();
 }
 
 
@@ -387,7 +466,7 @@ static void _locationcb_gpsd_running(LocationGPSDControl* p_gpsd_control, gpoint
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log("# GPSD started.\n");
+  _gpsfix_push_log(true, "GPSD started.\n");
 }
 
 //---------------------------------------------------------------------------
@@ -398,7 +477,7 @@ static void _locationcb_gpsd_stopped(LocationGPSDControl* p_gpsd_control, gpoint
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log("# GPSD STOPPED !\n");
+  _gpsfix_push_log(true, "GPSD STOPPED !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -409,7 +488,7 @@ static void _locationcb_gpsd_error(LocationGPSDControl* p_gpsd_control, gpointer
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log("# GPSD ERROR !\n");
+  _gpsfix_push_log(true, "GPSD ERROR !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -420,7 +499,7 @@ static void _locationcb_connected(LocationGPSDevice* p_gps_device, gpointer p_us
   p_gps_device = p_gps_device;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log("# GPS device connected.\n");
+  _gpsfix_push_log(true, "GPS device connected.\n");
 }
 
 //---------------------------------------------------------------------------
@@ -431,7 +510,7 @@ static void _locationcb_disconnected(LocationGPSDevice* p_gps_device, gpointer p
   p_gps_device = p_gps_device;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log("# GPS device DISCONNECTED !\n");
+  _gpsfix_push_log(true, "GPS device DISCONNECTED !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -447,7 +526,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
 
     if (!g_b_hasfix && (p_gps_device->fix->eph < 9000))
     {
-      _gpsfix_push_log("# Got GPS Fix.\n");
+      _gpsfix_push_log(true, "Got GPS Fix.\n");
       g_b_hasfix = true;
       b_flushall = true;
     }
@@ -460,7 +539,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
   {
     if (g_b_hasfix)
     {
-      _gpsfix_push_log("# LOST GPS Fix !\n");
+      _gpsfix_push_log(true, "LOST GPS Fix !\n");
       g_b_hasfix = false;
     }
   }
@@ -474,9 +553,8 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
 //---------------------------------------------------------------------------
 static void _sighandler_quit(int i_signal)
 {
-  sprintf((char*)&g_sz_line, "# SIGNAL %d CAUGHT !\n", i_signal);
-  _gpsfix_push_log((char*)&g_sz_line);
-
+  printf("\n");
+  _gpsfix_push_log(true, "SIGNAL %d CAUGHT !\n", i_signal);
   g_main_loop_quit(g_p_gmainloop);
 }
 
@@ -501,14 +579,15 @@ int main(int i_argc, const char** ppsz_argv)
 
   // create output file
   {
-    printf("Creating output file.\n");
+    printf("Creating output file \"%s\".\n", (char*)&g_sz_outfile);
 
-    g_i_fdout = open(g_psz_outfile, O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+    g_i_fdout = open((char*)&g_sz_outfile, O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
     if (g_i_fdout < 0)
       perror("Failed to create output file !");
 
-    strcpy((char*)&g_sz_line,
-      "# http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html\n"
+    snprintf((char*)&g_sz_line, sizeof(g_sz_line),
+      "# Log started on %s\n"
+      "#\n"
       "# fields :\n"
       "#   0x01 altitude set\n"
       "#   0x02 speed set\n"
@@ -516,14 +595,16 @@ int main(int i_argc, const char** ppsz_argv)
       "#   0x08 climb set\n"
       "#   0x10 latlong set\n"
       "#   0x20 time set\n"
-      "# fix;devstatus;satview;satuse;mode;fields;time;ept;latitude;longitude;eph;altitude;epv;track;epd;speed;eps;climb;epc\n");
+      "#\n"
+      "# fix;devstatus;satview;satuse;mode;fields;time;ept;latitude;longitude;eph;altitude;epv;track;epd;speed;eps;climb;epc\n"
+      "#\n"
+      , _time_str(false, 0));
     write(g_i_fdout, &g_sz_line, strlen((char*)&g_sz_line));
-    printf((char*)&g_sz_line);
   }
 
   // init location lib and connect gps
   {
-    printf("Init location lib.\n");
+    _gpsfix_push_log(false, "Connect GPS.\n");
 
     g_p_gps_device   = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
     g_p_gpsd_control = location_gpsd_control_get_default();
@@ -538,7 +619,6 @@ int main(int i_argc, const char** ppsz_argv)
 	  aui_sighl_gpsdcontrol[1] = g_signal_connect(G_OBJECT(g_p_gpsd_control), "gpsd_stopped", G_CALLBACK(_locationcb_gpsd_stopped), NULL);
 	  aui_sighl_gpsdcontrol[2] = g_signal_connect(G_OBJECT(g_p_gpsd_control), "error",        G_CALLBACK(_locationcb_gpsd_error), NULL);
 
-    printf("Connect GPS.\n");
     location_gps_device_reset_last_known(g_p_gps_device);
     location_gpsd_control_start(g_p_gpsd_control); // if (g_p_gpsd_control->can_control)
   }
@@ -547,7 +627,7 @@ int main(int i_argc, const char** ppsz_argv)
   signal(SIGINT, _sighandler_quit);
 
   // main loop
-  printf("Entering main loop.\n");
+  _gpsfix_push_log(false, "Entering main loop.\n");
   g_p_gmainloop = g_main_loop_new(NULL, FALSE);
   g_main_loop_run(g_p_gmainloop);
 
@@ -572,10 +652,7 @@ int main(int i_argc, const char** ppsz_argv)
 
   // flush remaining gps fixes to output file
   if (g_i_gpsfixes > 0)
-  {
-    printf("Flushing remaining lines.\n");
     _gpsfix_flushall();
-  }
 
   // close output file
   close(g_i_fdout);
