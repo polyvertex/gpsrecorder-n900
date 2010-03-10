@@ -36,7 +36,7 @@
 
 
 //---------------------------------------------------------------------------
-// Types
+// Base Types
 //---------------------------------------------------------------------------
 #ifndef NULL
 #define NULL  0
@@ -49,9 +49,9 @@
   typedef unsigned long long uint64_t;  // must always be 64bits wide
 #endif
 
-typedef unsigned int   uint_t;
-typedef unsigned char  uchar_t;
-typedef unsigned char  bool_t;  // *** NEVER USE THIS TYPE IN STORED STRUCTURES ***
+typedef unsigned int  uint_t;
+typedef unsigned char uchar_t;
+typedef unsigned char bool_t;  // *** NEVER USE THIS TYPE IN STORED STRUCTURES ***
 
 #ifndef false
 #define false  0
@@ -62,6 +62,7 @@ typedef unsigned char  bool_t;  // *** NEVER USE THIS TYPE IN STORED STRUCTURES 
 //---------------------------------------------------------------------------
 // Constants
 //---------------------------------------------------------------------------
+// program parameters
 static struct option OPTIONS[] =
 {
   { "help",   required_argument, NULL, 'h' },
@@ -70,6 +71,13 @@ static struct option OPTIONS[] =
   { 0, 0, 0, 0 },
 };
 static const int OPTIONS_COUNT = sizeof(OPTIONS) / sizeof(OPTIONS[0]);
+
+// gps fixes desired frequency
+// http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html#LocationGPSDControlInterval
+static const LocationGPSDControlInterval GPSFIXES_INTERVAL = LOCATION_INTERVAL_5S;
+
+// number of gps fixes to get before actually writing them to the output file
+#define GPSFIXES_BUFCOUNT  5
 
 
 //---------------------------------------------------------------------------
@@ -83,11 +91,22 @@ static char*  g_psz_outfile = NULL;
 LocationGPSDevice*   g_p_gps_device = NULL;
 LocationGPSDControl* g_p_gpsd_control = NULL;
 
-/// runtime
+// runtime
 int        g_i_fdout = -1;
 char       g_sz_line[1024];
 bool_t     g_b_hasfix = false;
 GMainLoop* g_p_gmainloop = NULL;
+
+// gps fixes buffer
+static struct GpsFixLine_
+{
+  LocationGPSDeviceStatus status;
+  int                     satellites_in_view;
+  int                     satellites_in_use;
+  LocationGPSDeviceFix    fix;
+}
+g_as_gpsfixes[GPSFIXES_BUFCOUNT];
+int g_i_gpsfixes = 0;
 
 
 
@@ -102,7 +121,7 @@ static void _usage(const char* psz_argv0)
     "  Compiled on " __DATE__ " at " __TIME__ "\n"
     "\n"
     "Usage :\n"
-    "  %s {-o} [options]\n"
+    "  %s [options]\n"
     "\n"
     "Parameters :\n"
     "  -h,--help\n"
@@ -210,91 +229,31 @@ static void _param_validate(void)
   }
 }
 
+
+
+
 //---------------------------------------------------------------------------
-// _location_write
+// _gpsfix_flushall
 //---------------------------------------------------------------------------
-static void _location_write(const char* psz_line)
+static void _gpsfix_flushall(void)
 {
-  printf(psz_line);
-  write(g_i_fdout, psz_line, strlen(psz_line));
-}
+  char  sz_buffer[256 * GPSFIXES_BUFCOUNT]; // 256 bytes per line should be enough
+  int   i_bufpos;
+  char* psz_buffer;
+  char  sz_status[8];
+  char  sz_mode[8];
+  int   i;
 
-//---------------------------------------------------------------------------
-// _locationcb_gpsd_running
-//---------------------------------------------------------------------------
-static void _locationcb_gpsd_running(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
-{
-  p_gpsd_control = p_gpsd_control;
-  p_userdata = p_userdata;
+  if (g_i_gpsfixes <= 0)
+    return;
+  printf("Flushing %d GPS fixes.\n", g_i_gpsfixes);
 
-  _location_write("# GPSD started.\n");
-}
-
-//---------------------------------------------------------------------------
-// _locationcb_gpsd_stopped
-//---------------------------------------------------------------------------
-static void _locationcb_gpsd_stopped(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
-{
-  p_gpsd_control = p_gpsd_control;
-  p_userdata = p_userdata;
-
-  _location_write("# GPSD STOPPED !\n");
-}
-
-//---------------------------------------------------------------------------
-// _locationcb_gpsd_error
-//---------------------------------------------------------------------------
-static void _locationcb_gpsd_error(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
-{
-  p_gpsd_control = p_gpsd_control;
-  p_userdata = p_userdata;
-
-  _location_write("# GPSD ERROR !\n");
-}
-
-//---------------------------------------------------------------------------
-// _locationcb_connected
-//---------------------------------------------------------------------------
-static void _locationcb_connected(LocationGPSDevice* p_gps_device, gpointer p_userdata)
-{
-  p_gps_device = p_gps_device;
-  p_userdata = p_userdata;
-
-  _location_write("# GPS device connected.\n");
-}
-
-//---------------------------------------------------------------------------
-// _locationcb_disconnected
-//---------------------------------------------------------------------------
-static void _locationcb_disconnected(LocationGPSDevice* p_gps_device, gpointer p_userdata)
-{
-  p_gps_device = p_gps_device;
-  p_userdata = p_userdata;
-
-  _location_write("# GPS device DISCONNECTED !\n");
-}
-
-//---------------------------------------------------------------------------
-// _locationcb_changed
-//---------------------------------------------------------------------------
-static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_userdata)
-{
-  // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
-
-  p_userdata = p_userdata;
-
-  if (p_gps_device->fix->fields & LOCATION_GPS_DEVICE_LATLONG_SET)
+  // prepare output buffer
+  sz_buffer[0] = '\0';
+  psz_buffer   = (char*)&sz_buffer;
+  for (i = 0; i < g_i_gpsfixes; ++i)
   {
-    char sz_status[8];
-    char sz_mode[8];
-
-    if (!g_b_hasfix && (p_gps_device->fix->eph < 9000))
-    {
-      _location_write("# Got GPS Fix.\n");
-      g_b_hasfix = true;
-    }
-
-    switch (p_gps_device->status)
+    switch (g_as_gpsfixes[i].status)
     {
       case LOCATION_GPS_DEVICE_STATUS_NO_FIX :
         strcpy((char*)&sz_status, "nx");
@@ -310,7 +269,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
         break;
     }
 
-    switch (p_gps_device->fix->mode)
+    switch (g_as_gpsfixes[i].fix.mode)
     {
       case LOCATION_GPS_DEVICE_MODE_NOT_SEEN :
         strcpy((char*)&sz_mode, "ns");
@@ -329,39 +288,186 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
         break;
     }
 
-    sprintf((char*)&g_sz_line,
+    i_bufpos = sprintf(psz_buffer,
       "fix;%s;%d;%d;%s;0x%02X;%f;%f;%f;%f;%f;%f;%f;%f;%f;%f;%f;%f;%f\n"
       , (char*)&sz_status
-      , p_gps_device->satellites_in_view
-      , p_gps_device->satellites_in_use
+      , g_as_gpsfixes[i].satellites_in_view
+      , g_as_gpsfixes[i].satellites_in_use
       , (char*)&sz_mode
-      , p_gps_device->fix->fields    // uint32
-      , p_gps_device->fix->time      // double
-      , p_gps_device->fix->ept       // double
-      , p_gps_device->fix->latitude  // double
-      , p_gps_device->fix->longitude // double
-      , p_gps_device->fix->eph       // double
-      , p_gps_device->fix->altitude  // double
-      , p_gps_device->fix->epv       // double
-      , p_gps_device->fix->track     // double
-      , p_gps_device->fix->epd       // double
-      , p_gps_device->fix->speed     // double
-      , p_gps_device->fix->eps       // double
-      , p_gps_device->fix->climb     // double
-      , p_gps_device->fix->epc       // double
+      , g_as_gpsfixes[i].fix.fields    // uint32
+      , g_as_gpsfixes[i].fix.time      // double
+      , g_as_gpsfixes[i].fix.ept       // double
+      , g_as_gpsfixes[i].fix.latitude  // double
+      , g_as_gpsfixes[i].fix.longitude // double
+      , g_as_gpsfixes[i].fix.eph       // double
+      , g_as_gpsfixes[i].fix.altitude  // double
+      , g_as_gpsfixes[i].fix.epv       // double
+      , g_as_gpsfixes[i].fix.track     // double
+      , g_as_gpsfixes[i].fix.epd       // double
+      , g_as_gpsfixes[i].fix.speed     // double
+      , g_as_gpsfixes[i].fix.eps       // double
+      , g_as_gpsfixes[i].fix.climb     // double
+      , g_as_gpsfixes[i].fix.epc       // double
     );
+    if (i_bufpos > 0)
+      psz_buffer += i_bufpos;
+  }
 
-    _location_write((char*)&g_sz_line);
+  // reset counter
+  g_i_gpsfixes = 0;
+
+  // write buffer to output file
+  psz_buffer = (char*)&sz_buffer;
+  i_bufpos   = strlen((char*)&sz_buffer); // bytes to write
+  while (i_bufpos > 0)
+  {
+    i = write(g_i_fdout, psz_buffer, i_bufpos);
+    if (i < 0)
+    {
+      perror("Error while writing to output file !");
+    }
+    else if (i == 0)
+    {
+      usleep(10 * 1000);
+    }
+    else if (i > 0)
+    {
+      psz_buffer += i;
+      i_bufpos   -= i;
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// _gpsfix_push
+//---------------------------------------------------------------------------
+static void _gpsfix_push(LocationGPSDeviceStatus e_status, LocationGPSDevice* ps_gps_device)
+{
+  // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
+
+  // flush now if needed
+  if (g_i_gpsfixes >= GPSFIXES_BUFCOUNT) // this should never happen here...
+    _gpsfix_flushall();
+
+  // push gps fix data into our buffer
+  {
+    memset(&g_as_gpsfixes[g_i_gpsfixes], 0, sizeof(g_as_gpsfixes[0]));
+
+    g_as_gpsfixes[g_i_gpsfixes].status             = e_status;
+    g_as_gpsfixes[g_i_gpsfixes].satellites_in_view = ps_gps_device->satellites_in_view;
+    g_as_gpsfixes[g_i_gpsfixes].satellites_in_use  = ps_gps_device->satellites_in_use;
+
+    memcpy(&g_as_gpsfixes[g_i_gpsfixes].fix, ps_gps_device->fix, sizeof(g_as_gpsfixes[g_i_gpsfixes].fix));
+  }
+
+  // next
+  ++g_i_gpsfixes;
+
+  // flush now if needed
+  if (g_i_gpsfixes >= GPSFIXES_BUFCOUNT)
+    _gpsfix_flushall();
+}
+
+//---------------------------------------------------------------------------
+// _gpsfix_push_log
+//---------------------------------------------------------------------------
+static void _gpsfix_push_log(const char* psz_line)
+{
+  printf(psz_line);
+  _gpsfix_flushall();
+}
+
+
+
+//---------------------------------------------------------------------------
+// _locationcb_gpsd_running
+//---------------------------------------------------------------------------
+static void _locationcb_gpsd_running(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
+{
+  p_gpsd_control = p_gpsd_control;
+  p_userdata = p_userdata;
+
+  _gpsfix_push_log("# GPSD started.\n");
+}
+
+//---------------------------------------------------------------------------
+// _locationcb_gpsd_stopped
+//---------------------------------------------------------------------------
+static void _locationcb_gpsd_stopped(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
+{
+  p_gpsd_control = p_gpsd_control;
+  p_userdata = p_userdata;
+
+  _gpsfix_push_log("# GPSD STOPPED !\n");
+}
+
+//---------------------------------------------------------------------------
+// _locationcb_gpsd_error
+//---------------------------------------------------------------------------
+static void _locationcb_gpsd_error(LocationGPSDControl* p_gpsd_control, gpointer p_userdata)
+{
+  p_gpsd_control = p_gpsd_control;
+  p_userdata = p_userdata;
+
+  _gpsfix_push_log("# GPSD ERROR !\n");
+}
+
+//---------------------------------------------------------------------------
+// _locationcb_connected
+//---------------------------------------------------------------------------
+static void _locationcb_connected(LocationGPSDevice* p_gps_device, gpointer p_userdata)
+{
+  p_gps_device = p_gps_device;
+  p_userdata = p_userdata;
+
+  _gpsfix_push_log("# GPS device connected.\n");
+}
+
+//---------------------------------------------------------------------------
+// _locationcb_disconnected
+//---------------------------------------------------------------------------
+static void _locationcb_disconnected(LocationGPSDevice* p_gps_device, gpointer p_userdata)
+{
+  p_gps_device = p_gps_device;
+  p_userdata = p_userdata;
+
+  _gpsfix_push_log("# GPS device DISCONNECTED !\n");
+}
+
+//---------------------------------------------------------------------------
+// _locationcb_changed
+//---------------------------------------------------------------------------
+static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_userdata)
+{
+  p_userdata = p_userdata;
+
+  if (p_gps_device->fix->fields & LOCATION_GPS_DEVICE_LATLONG_SET)
+  {
+    bool_t b_flushall = false;
+
+    if (!g_b_hasfix && (p_gps_device->fix->eph < 9000))
+    {
+      _gpsfix_push_log("# Got GPS Fix.\n");
+      g_b_hasfix = true;
+      b_flushall = true;
+    }
+
+    _gpsfix_push(p_gps_device->status, p_gps_device);
+    if (b_flushall)
+      _gpsfix_flushall();
   }
   else
   {
     if (g_b_hasfix)
     {
-      _location_write("# LOST GPS Fix !\n");
+      _gpsfix_push_log("# LOST GPS Fix !\n");
       g_b_hasfix = false;
     }
   }
 }
+
+
+
 
 //---------------------------------------------------------------------------
 // _sighandler_quit
@@ -369,10 +475,13 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
 static void _sighandler_quit(int i_signal)
 {
   sprintf((char*)&g_sz_line, "# SIGNAL %d CAUGHT !\n", i_signal);
-  _location_write((char*)&g_sz_line);
+  _gpsfix_push_log((char*)&g_sz_line);
 
   g_main_loop_quit(g_p_gmainloop);
 }
+
+
+
 
 //---------------------------------------------------------------------------
 // m a i n
@@ -392,7 +501,7 @@ int main(int i_argc, const char** ppsz_argv)
 
   // create output file
   {
-    printf("Creating output file...\n");
+    printf("Creating output file.\n");
 
     g_i_fdout = open(g_psz_outfile, O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
     if (g_i_fdout < 0)
@@ -414,12 +523,12 @@ int main(int i_argc, const char** ppsz_argv)
 
   // init location lib and connect gps
   {
-    printf("Init location lib...\n");
+    printf("Init location lib.\n");
 
     g_p_gps_device   = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
     g_p_gpsd_control = location_gpsd_control_get_default();
 
-    g_object_set(G_OBJECT(g_p_gpsd_control), "preferred-interval", LOCATION_INTERVAL_5S, NULL);
+    g_object_set(G_OBJECT(g_p_gpsd_control), "preferred-interval", GPSFIXES_INTERVAL, NULL);
 
 	  aui_sighl_gpsdevice[0] = g_signal_connect(G_OBJECT(g_p_gps_device), "changed",      G_CALLBACK(_locationcb_changed), NULL);
 	  aui_sighl_gpsdevice[1] = g_signal_connect(G_OBJECT(g_p_gps_device), "connected",    G_CALLBACK(_locationcb_connected), NULL);
@@ -429,7 +538,7 @@ int main(int i_argc, const char** ppsz_argv)
 	  aui_sighl_gpsdcontrol[1] = g_signal_connect(G_OBJECT(g_p_gpsd_control), "gpsd_stopped", G_CALLBACK(_locationcb_gpsd_stopped), NULL);
 	  aui_sighl_gpsdcontrol[2] = g_signal_connect(G_OBJECT(g_p_gpsd_control), "error",        G_CALLBACK(_locationcb_gpsd_error), NULL);
 
-    printf("Connect GPS...\n");
+    printf("Connect GPS.\n");
     location_gps_device_reset_last_known(g_p_gps_device);
     location_gpsd_control_start(g_p_gpsd_control); // if (g_p_gpsd_control->can_control)
   }
@@ -438,7 +547,7 @@ int main(int i_argc, const char** ppsz_argv)
   signal(SIGINT, _sighandler_quit);
 
   // main loop
-  printf("Entering main loop...\n");
+  printf("Entering main loop.\n");
   g_p_gmainloop = g_main_loop_new(NULL, FALSE);
   g_main_loop_run(g_p_gmainloop);
 
@@ -459,6 +568,13 @@ int main(int i_argc, const char** ppsz_argv)
 
     g_object_unref(g_p_gpsd_control);
     g_object_unref(g_p_gps_device);
+  }
+
+  // flush remaining gps fixes to output file
+  if (g_i_gpsfixes > 0)
+  {
+    printf("Flushing remaining lines.\n");
+    _gpsfix_flushall();
   }
 
   // close output file
