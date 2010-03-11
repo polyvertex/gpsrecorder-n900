@@ -442,18 +442,20 @@ static void _gpsfix_push(LocationGPSDeviceStatus e_status, LocationGPSDevice* ps
 //---------------------------------------------------------------------------
 // _gpsfix_push_log
 //---------------------------------------------------------------------------
-static void _gpsfix_push_log(bool_t b_flush_gpsfixes, const char* psz_format, ...)
+static void _gpsfix_push_log(const char* psz_format, ...)
 {
   va_list arglist;
 
-  printf("%s : ", _time_str(false, 0));
+  _gpsfix_flushall();
+
+  snprintf((char*)&g_sz_line, sizeof(g_sz_line), "# %s : ", _time_str(false, 0));
 
   va_start(arglist, psz_format);
-  vprintf(psz_format, arglist);
+  vsnprintf((char*)&g_sz_line[strlen((char*)&g_sz_line)], sizeof(g_sz_line), psz_format, arglist);
   va_end(arglist);
 
-  if (b_flush_gpsfixes)
-    _gpsfix_flushall();
+  printf((char*)&g_sz_line);
+  write(g_i_fdout, (char*)&g_sz_line, strlen((char*)&g_sz_line));
 }
 
 
@@ -466,7 +468,7 @@ static void _locationcb_gpsd_running(LocationGPSDControl* p_gpsd_control, gpoint
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log(true, "GPSD started.\n");
+  _gpsfix_push_log("GPSD started.\n");
 }
 
 //---------------------------------------------------------------------------
@@ -477,7 +479,7 @@ static void _locationcb_gpsd_stopped(LocationGPSDControl* p_gpsd_control, gpoint
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log(true, "GPSD STOPPED !\n");
+  _gpsfix_push_log("GPSD STOPPED !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -488,7 +490,7 @@ static void _locationcb_gpsd_error(LocationGPSDControl* p_gpsd_control, gpointer
   p_gpsd_control = p_gpsd_control;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log(true, "GPSD ERROR !\n");
+  _gpsfix_push_log("GPSD ERROR !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -499,7 +501,7 @@ static void _locationcb_connected(LocationGPSDevice* p_gps_device, gpointer p_us
   p_gps_device = p_gps_device;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log(true, "GPS device connected.\n");
+  _gpsfix_push_log("GPS device connected.\n");
 }
 
 //---------------------------------------------------------------------------
@@ -510,7 +512,7 @@ static void _locationcb_disconnected(LocationGPSDevice* p_gps_device, gpointer p
   p_gps_device = p_gps_device;
   p_userdata = p_userdata;
 
-  _gpsfix_push_log(true, "GPS device DISCONNECTED !\n");
+  _gpsfix_push_log("GPS device DISCONNECTED !\n");
 }
 
 //---------------------------------------------------------------------------
@@ -526,7 +528,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
 
     if (!g_b_hasfix && (p_gps_device->fix->eph < 9000))
     {
-      _gpsfix_push_log(true, "Got GPS Fix.\n");
+      _gpsfix_push_log("Got GPS Fix.\n");
       g_b_hasfix = true;
       b_flushall = true;
     }
@@ -539,7 +541,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
   {
     if (g_b_hasfix)
     {
-      _gpsfix_push_log(true, "LOST GPS Fix !\n");
+      _gpsfix_push_log("LOST GPS Fix !\n");
       g_b_hasfix = false;
     }
   }
@@ -554,7 +556,7 @@ static void _locationcb_changed(LocationGPSDevice* p_gps_device, gpointer p_user
 static void _sighandler_quit(int i_signal)
 {
   printf("\n");
-  _gpsfix_push_log(true, "SIGNAL %d CAUGHT !\n", i_signal);
+  _gpsfix_push_log("SIGNAL %d CAUGHT !\n", i_signal);
   g_main_loop_quit(g_p_gmainloop);
 }
 
@@ -604,7 +606,7 @@ int main(int i_argc, const char** ppsz_argv)
 
   // init location lib and connect gps
   {
-    _gpsfix_push_log(false, "Connect GPS.\n");
+    _gpsfix_push_log("Connect GPS.\n");
 
     g_p_gps_device   = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
     g_p_gpsd_control = location_gpsd_control_get_default();
@@ -627,7 +629,7 @@ int main(int i_argc, const char** ppsz_argv)
   signal(SIGINT, _sighandler_quit);
 
   // main loop
-  _gpsfix_push_log(false, "Entering main loop.\n");
+  _gpsfix_push_log("Entering main loop.\n");
   g_p_gmainloop = g_main_loop_new(NULL, FALSE);
   g_main_loop_run(g_p_gmainloop);
 

@@ -104,26 +104,23 @@ sub convert_csv2kml($$)
       next;
     }
 
-    my $fixfields = { };
-    for (my $i = 0; $i < scalar(@linevalues); ++$i)
-    {
-      $fixfields->{$fixkeys[$i]} = $linevalues[$i];
-    }
+    my %fixfields;
+    @fixfields{@fixkeys} = @linevalues;
 
     next unless
-      $fixfields->{devstatus} eq 'fx' or # fixed
-      $fixfields->{devstatus} eq 'dx';   # dgps fixed (deprecated)
+      $fixfields{devstatus} eq 'fx' or # fixed
+      $fixfields{devstatus} eq 'dx';   # dgps fixed (deprecated)
 
     next unless
-      $fixfields->{mode} eq '2d' or
-      $fixfields->{mode} eq '3d';
+      $fixfields{mode} eq '2d' or
+      $fixfields{mode} eq '3d';
 
-    $fixfields->{fields} = hex $fixfields->{fields}
-      if $fixfields->{fields} =~ /^0x[A-Fa-f0-9]+\z/;
+    $fixfields{fields} = hex $fixfields{fields}
+      if $fixfields{fields} =~ /^0x[A-Fa-f0-9]+\z/;
 
-    next unless (int($fixfields->{fields}) & (1 << 4)) != 0; # is latlong set ?
+    next unless (int($fixfields{fields}) & (1 << 4)) != 0; # is latlong set ?
 
-    push(@lines, $fixfields);
+    push(@lines, \%fixfields);
   }
   close FH;
 
