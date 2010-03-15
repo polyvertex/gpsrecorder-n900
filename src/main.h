@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __MAIN_H__
-#define __MAIN_H__
+#ifndef __GPSRECORD_MAIN_H__
+#define __GPSRECORD_MAIN_H__
 
 
 //---------------------------------------------------------------------------
@@ -34,16 +34,24 @@
 //
 // INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
 // LIBS        += -lglib-2.0 -llocation
+extern "C" {
 #include <glib.h>
+}
 
 // maemo - location
 //
+// http://wiki.maemo.org/Documentation/Maemo_5_Developer_Guide/Using_Connectivity_Components/Using_Location_API
 // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html
 // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
+extern "C" {
 #include <location/location-gps-device.h>
 #include <location/location-gpsd-control.h>
 #include <location/location-distance-utils.h>
 #include <location/location-misc.h>
+}
+
+// maemo - qt
+#include <QObject>
 
 
 //---------------------------------------------------------------------------
@@ -65,6 +73,12 @@ typedef unsigned char uchar_t;
 
 
 //---------------------------------------------------------------------------
+// Macros
+//---------------------------------------------------------------------------
+#define UNUSED_PARAM(a)  { (void)a; }
+
+
+//---------------------------------------------------------------------------
 // Constants
 //---------------------------------------------------------------------------
 // branding
@@ -81,4 +95,4 @@ typedef unsigned char uchar_t;
 #include "Location.h"
 
 
-#endif // #ifndef __MAIN_H__
+#endif // #ifndef __GPSRECORD_MAIN_H__

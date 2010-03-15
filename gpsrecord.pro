@@ -1,7 +1,7 @@
 TARGET      = gpsrecord
 
-HEADERS     += main.h Location.h Util.h
-SOURCES     += main.cpp Location.cpp Util.cpp
+HEADERS     += src/main.h src/Location.h src/Util.h
+SOURCES     += src/main.cpp src/Location.cpp src/Util.cpp
 FORMS       +=
 LEXSOURCES  += #LEXS#
 YACCSOURCES += #YACCS#
