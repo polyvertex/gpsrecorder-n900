@@ -1,7 +1,7 @@
 TARGET      = gpsrecord
 
-HEADERS     +=
-SOURCES     += gpsrecord.c
+HEADERS     += main.h Location.h Util.h
+SOURCES     += main.cpp Location.cpp Util.cpp
 FORMS       +=
 LEXSOURCES  += #LEXS#
 YACCSOURCES += #YACCS#
@@ -19,12 +19,24 @@ DESTDIR     = build
 TEMPLATE    = app
 DEPENDPATH  +=
 VPATH       += src uis
-CONFIG      -= qt
+CONFIG      -=
 CONFIG      += debug
-#QTMODULES#
+QT=core gui
 
 INSTALLS    += target
 target.path  = /usr/bin/
+
+INSTALLS    += desktop
+desktop.path  = /usr/share/applications/hildon
+desktop.files  = data/gpsrecord.desktop
+
+INSTALLS    += service
+service.path  = /usr/share/dbus-1/services
+service.files  = data/gpsrecord.service
+
+INSTALLS    += icon64
+icon64.path  = /usr/share/icons/hicolor/64x64/apps
+icon64.files  = data/64x64/gpsrecord.png
 
 #
 # Targets for debian source and binary package creation

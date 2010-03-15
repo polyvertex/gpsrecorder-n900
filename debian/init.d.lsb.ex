@@ -63,10 +63,10 @@ DIETIME=10              # Time to wait for the server to die, in seconds
                         # started (on start or restart) the script will
                         # stall to try to determine if it is running
                         # If it is not set and the server takes time
-                        # to setup a pid file the log message might 
+                        # to setup a pid file the log message might
                         # be a false positive (says it did not start
                         # when it actually did)
-                        
+
 LOGFILE=$LOGDIR/$NAME.log  # Server logfile
 #DAEMONUSER=gpsrecord   # Users to run the daemons as. If this value
                         # is set start-stop-daemon will chuid the server
@@ -195,7 +195,7 @@ case "$1" in
             # NOTE: Some servers might die some time after they start,
             # this code will detect this issue if STARTTIME is set
             # to a reasonable value
-            [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time 
+            [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time
             if  running ;  then
                 # It's ok, the server started and is running
                 log_end_msg 0
