@@ -115,10 +115,14 @@ sub convert_csv2kml($$)
       $fixfields{mode} eq '2d' or
       $fixfields{mode} eq '3d';
 
+    next unless
+      $fixfields{satuse} > 0;
+
     $fixfields{fields} = hex $fixfields{fields}
       if $fixfields{fields} =~ /^0x[A-Fa-f0-9]+\z/;
 
     next unless (int($fixfields{fields}) & (1 << 4)) != 0; # is latlong set ?
+    next unless (int($fixfields{fields}) & (1 << 5)) != 0; # is time set ?
 
     push(@lines, \%fixfields);
   }
