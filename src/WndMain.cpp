@@ -1,30 +1,26 @@
 //***************************************************************************
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-03-14 18:43:32
+// Created On : 2010-03-25 14:53:26
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_UTIL_H__
-#define __GPSRECORD_UTIL_H__
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// Util
+// WndMain
 //---------------------------------------------------------------------------
-class Util
+WndMain::WndMain (QMainWindow* pParent/*=0*/)
+: QMainWindow(pParent)
 {
-public :
+}
 
-  // file system
-  static bool fileExists (const char* pszFile);
-  static bool fileIsDir  (const char* pszFile);
-
-  // time
-  static const char* timeString (bool bForFilename, time_t nTime=0);
-};
-
-
-#endif // #ifndef __GPSRECORD_UTIL_H__
+//---------------------------------------------------------------------------
+// ~WndMain
+//---------------------------------------------------------------------------
+WndMain::~WndMain (void)
+{
+}

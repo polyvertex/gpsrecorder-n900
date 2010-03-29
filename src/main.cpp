@@ -7,13 +7,19 @@
 //
 //***************************************************************************
 
-#include "main.h"
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
 // m a i n
 //---------------------------------------------------------------------------
-int main(int nArgc, const char** ppszArgv)
+int main (int nArgc, char** ppszArgv)
 {
-	return 0;
+  QCoreApplication::setOrganizationName("polyvertex");
+  QCoreApplication::setOrganizationDomain("polyvertex.net");
+  QCoreApplication::setApplicationName("gpsrecord");
+  QCoreApplication::setApplicationVersion("0.0.1");
+
+  App app(nArgc, ppszArgv);
+  return app.exec();
 }

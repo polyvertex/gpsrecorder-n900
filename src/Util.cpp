@@ -7,22 +7,22 @@
 //
 //***************************************************************************
 
-#include "main.h"
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// FileExists
+// fileExists
 //---------------------------------------------------------------------------
-bool Util::FileExists (const char* pszFile)
+bool Util::fileExists (const char* pszFile)
 {
   struct stat sStats;
   return stat(pszFile, &sStats) == 0;
 }
 
 //---------------------------------------------------------------------------
-// FileIsDir
+// fileIsDir
 //---------------------------------------------------------------------------
-bool Util::FileIsDir (const char* pszFile)
+bool Util::fileIsDir (const char* pszFile)
 {
   struct stat sStats;
 
@@ -35,9 +35,9 @@ bool Util::FileIsDir (const char* pszFile)
 
 
 //---------------------------------------------------------------------------
-// TimeString
+// timeString
 //---------------------------------------------------------------------------
-const char* Util::TimeString (bool bForFilename, time_t nTime/*=0*/)
+const char* Util::timeString (bool bForFilename, time_t nTime/*=0*/)
 {
   static char szTime[24]; // YYYY-MM-DD hh:mm:ss
 

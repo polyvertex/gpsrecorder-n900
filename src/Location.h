@@ -10,7 +10,7 @@
 #ifndef __GPSRECORD_LOCATION_H__
 #define __GPSRECORD_LOCATION_H__
 
-#include "main.h"
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
@@ -38,14 +38,14 @@ public :
 
 private :
   // callbacks from gps device
-  static void Location_OnDevConnected    (LocationGPSDevice* pGpsDevice, gpointer pUserData);
-  static void Location_OnDevDisconnected (LocationGPSDevice* pGpsDevice, gpointer pUserData);
-  static void Location_OnDevChanged      (LocationGPSDevice* pGpsDevice, gpointer pUserData);
+  static void locationOnDevConnected    (LocationGPSDevice* pGpsDevice, gpointer pUserData);
+  static void locationOnDevDisconnected (LocationGPSDevice* pGpsDevice, gpointer pUserData);
+  static void locationOnDevChanged      (LocationGPSDevice* pGpsDevice, gpointer pUserData);
 
   // callbacks from gpsd
-  static void Location_OnGpsdRunning      (LocationGPSDControl* pGpsdControl, gpointer pUserData);
-  static void Location_OnGpsdStopped      (LocationGPSDControl* pGpsdControl, gpointer pUserData);
-  static void Location_OnGpsdErrorVerbose (LocationGPSDControl* pGpsdControl, LocationGPSDControlError eError, gpointer pUserData);
+  static void locationOnGpsdRunning      (LocationGPSDControl* pGpsdControl, gpointer pUserData);
+  static void locationOnGpsdStopped      (LocationGPSDControl* pGpsdControl, gpointer pUserData);
+  static void locationOnGpsdErrorVerbose (LocationGPSDControl* pGpsdControl, LocationGPSDControlError eError, gpointer pUserData);
 
 
 private :

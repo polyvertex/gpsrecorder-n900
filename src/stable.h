@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_MAIN_H__
-#define __GPSRECORD_MAIN_H__
+#ifndef __GPSRECORD_STABLE_H__
+#define __GPSRECORD_STABLE_H__
 
 
 //---------------------------------------------------------------------------
@@ -52,40 +52,8 @@ extern "C" {
 
 // maemo - qt
 #include <QObject>
-
-
-//---------------------------------------------------------------------------
-// Base Types
-//---------------------------------------------------------------------------
-#ifndef NULL
-#define NULL  0
-#endif
-
-#if !defined(_STDINT_H) && !defined(__BIT_TYPES_DEFINED__)
-  typedef unsigned char      uint8_t;   // must always be 8bits wide
-  typedef unsigned short     uint16_t;  // must always be 16bits wide
-  typedef unsigned int       uint32_t;  // must always be 32bits wide
-  typedef unsigned long long uint64_t;  // must always be 64bits wide
-#endif
-
-typedef unsigned int  uint_t;
-typedef unsigned char uchar_t;
-
-
-//---------------------------------------------------------------------------
-// Macros
-//---------------------------------------------------------------------------
-#define UNUSED_PARAM(a)  { (void)a; }
-
-
-//---------------------------------------------------------------------------
-// Constants
-//---------------------------------------------------------------------------
-// branding
-#define APP_NAME  "gpsrecord"
-
-// default directory for output files
-#define APP_DEFAULT_OUTPUT_DIRECTORY  "/home/user/MyDocs"
+#include <QSettings>
+#include <QtGui>
 
 
 //---------------------------------------------------------------------------
@@ -93,6 +61,9 @@ typedef unsigned char uchar_t;
 //---------------------------------------------------------------------------
 #include "Util.h"
 #include "Location.h"
+#include "WndMain.h"
+
+#include "App.h"
 
 
-#endif // #ifndef __GPSRECORD_MAIN_H__
+#endif // #ifndef __GPSRECORD_STABLE_H__

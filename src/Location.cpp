@@ -7,7 +7,7 @@
 //
 //***************************************************************************
 
-#include "main.h"
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
@@ -24,13 +24,13 @@ Location::Location (QObject* pParent/*=0*/)
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", LOCATION_INTERVAL_5S, NULL);
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-method",   LOCATION_METHOD_GNSS | LOCATION_METHOD_AGNSS, NULL);
 
-    m_auiSigHdlGpsDevice[0] = g_signal_connect(G_OBJECT(m_pGpsDevice), "connected",    G_CALLBACK(Location::Location_OnDevConnected), NULL);
-    m_auiSigHdlGpsDevice[1] = g_signal_connect(G_OBJECT(m_pGpsDevice), "disconnected", G_CALLBACK(Location::Location_OnDevDisconnected), NULL);
-    m_auiSigHdlGpsDevice[2] = g_signal_connect(G_OBJECT(m_pGpsDevice), "changed",      G_CALLBACK(Location::Location_OnDevChanged), NULL);
+    m_auiSigHdlGpsDevice[0] = g_signal_connect(G_OBJECT(m_pGpsDevice), "connected",    G_CALLBACK(Location::locationOnDevConnected), this);
+    m_auiSigHdlGpsDevice[1] = g_signal_connect(G_OBJECT(m_pGpsDevice), "disconnected", G_CALLBACK(Location::locationOnDevDisconnected), this);
+    m_auiSigHdlGpsDevice[2] = g_signal_connect(G_OBJECT(m_pGpsDevice), "changed",      G_CALLBACK(Location::locationOnDevChanged), this);
 
-	  m_auiSigHdlGpsdControl[0] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_running",  G_CALLBACK(Location::Location_OnGpsdRunning), NULL);
-	  m_auiSigHdlGpsdControl[1] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_stopped",  G_CALLBACK(Location::Location_OnGpsdStopped), NULL);
-	  m_auiSigHdlGpsdControl[2] = g_signal_connect(G_OBJECT(m_pGpsdControl), "error-verbose", G_CALLBACK(Location::Location_OnGpsdErrorVerbose), NULL);
+	  m_auiSigHdlGpsdControl[0] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_running",  G_CALLBACK(Location::locationOnGpsdRunning), this);
+	  m_auiSigHdlGpsdControl[1] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_stopped",  G_CALLBACK(Location::locationOnGpsdStopped), this);
+	  m_auiSigHdlGpsdControl[2] = g_signal_connect(G_OBJECT(m_pGpsdControl), "error-verbose", G_CALLBACK(Location::locationOnGpsdErrorVerbose), this);
 
     location_gps_device_reset_last_known(m_pGpsDevice);
     location_gpsd_control_start(m_pGpsdControl); // if (m_pGpsdControl->can_control)
@@ -63,26 +63,40 @@ Location::~Location (void)
 
 
 //---------------------------------------------------------------------------
-// Location_OnDevConnected
+// locationOnDevConnected
 //---------------------------------------------------------------------------
-void Location::Location_OnDevConnected (LocationGPSDevice* /*pGpsDevice*/, gpointer /*pUserData*/)
+void Location::locationOnDevConnected (LocationGPSDevice* pGpsDevice, gpointer pUserData)
 {
-  g_debug("GPS device connected.");
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pGpsDevice);
+  Q_UNUSED(pThis);
+
+  qDebug("GPS device connected.");
 }
 
 //---------------------------------------------------------------------------
-// Location_OnDevDisconnected
+// locationOnDevDisconnected
 //---------------------------------------------------------------------------
-void Location::Location_OnDevDisconnected (LocationGPSDevice* /*pGpsDevice*/, gpointer /*pUserData*/)
+void Location::locationOnDevDisconnected (LocationGPSDevice* pGpsDevice, gpointer pUserData)
 {
-  g_debug("GPS device DISCONNECTED !");
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pGpsDevice);
+  Q_UNUSED(pThis);
+
+  qDebug("GPS device DISCONNECTED !");
 }
 
 //---------------------------------------------------------------------------
-// Location_OnDevChanged
+// locationOnDevChanged
 //---------------------------------------------------------------------------
-void Location::Location_OnDevChanged (LocationGPSDevice* pGpsDevice, gpointer /*pUserData*/)
+void Location::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointer pUserData)
 {
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pThis);
+
   if (!pGpsDevice)
     return;
 
@@ -101,50 +115,65 @@ void Location::Location_OnDevChanged (LocationGPSDevice* pGpsDevice, gpointer /*
 
 
 //---------------------------------------------------------------------------
-// Location_OnGpsdRunning
+// locationOnGpsdRunning
 //---------------------------------------------------------------------------
-void Location::Location_OnGpsdRunning (LocationGPSDControl* /*pGpsdControl*/, gpointer /*pUserData*/)
+void Location::locationOnGpsdRunning (LocationGPSDControl* pGpsdControl, gpointer pUserData)
 {
-  g_debug("GPSD running.");
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pGpsdControl);
+  Q_UNUSED(pThis);
+
+  qDebug("GPSD running.");
 }
 
 //---------------------------------------------------------------------------
-// Location_OnGpsdStopped
+// locationOnGpsdStopped
 //---------------------------------------------------------------------------
-void Location::Location_OnGpsdStopped (LocationGPSDControl* /*pGpsdControl*/, gpointer /*pUserData*/)
+void Location::locationOnGpsdStopped (LocationGPSDControl* pGpsdControl, gpointer pUserData)
 {
-  g_debug("GPSD STOPPED !");
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pGpsdControl);
+  Q_UNUSED(pThis);
+
+  qDebug("GPSD STOPPED !");
 }
 
 //---------------------------------------------------------------------------
-// Location_OnGpsdErrorVerbose
+// locationOnGpsdErrorVerbose
 //---------------------------------------------------------------------------
-void Location::Location_OnGpsdErrorVerbose (LocationGPSDControl* /*pGpsdControl*/, LocationGPSDControlError eError, gpointer /*pUserData*/)
+void Location::locationOnGpsdErrorVerbose (LocationGPSDControl* pGpsdControl, LocationGPSDControlError eError, gpointer pUserData)
 {
+  Location* pThis = reinterpret_cast<Location*>(pUserData);
+
+  Q_UNUSED(pGpsdControl);
+  Q_UNUSED(pThis);
+
   switch (eError)
   {
     case LOCATION_ERROR_USER_REJECTED_DIALOG :
-      g_debug("User rejected location enabling dialog.");
+      qDebug("User rejected location enabling dialog.");
       break;
 
     case LOCATION_ERROR_USER_REJECTED_SETTINGS :
-      g_debug("User changed settings which disabled locationing.");
+      qDebug("User changed settings which disabled locationing.");
       break;
 
     case LOCATION_ERROR_BT_GPS_NOT_AVAILABLE :
-      g_debug("Problems using BT GPS.");
+      qDebug("Problems using BT GPS.");
       break;
 
     case LOCATION_ERROR_METHOD_NOT_ALLOWED_IN_OFFLINE_MODE :
-      g_debug("Method unavailable in offline mode.");
+      qDebug("Method unavailable in offline mode.");
       break;
 
     case LOCATION_ERROR_SYSTEM :
-      g_debug("System error ! SIM card is missing ?");
+      qDebug("System error ! SIM card is missing ?");
       break;
 
     default :
-      g_debug("Unknown GPSD error %d !", eError);
+      qDebug("Unknown GPSD error %d !", eError);
       break;
   }
 }
