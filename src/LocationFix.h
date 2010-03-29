@@ -26,10 +26,10 @@ typedef unsigned int       fxuint32;
 // multipliers used to convert LocationGPSDeviceFix -> Fix
 enum
 {
-  FIX_MULTIPLIER_LATLONG = 1000000,
-  FIX_MULTIPLIER_TRACK   = 100,
-  FIX_MULTIPLIER_SPEED   = 1000, // km/h -> m/h
-  FIX_MULTIPLIER_CLIMB   = 100,  // m/s -> cm/s
+  LOCFIX_MULTIPLIER_LATLONG = 1000000,
+  LOCFIX_MULTIPLIER_TRACK   = 100,
+  LOCFIX_MULTIPLIER_SPEED   = 1000, // km/h -> m/h
+  LOCFIX_MULTIPLIER_CLIMB   = 100,  // m/s -> cm/s
 };
 
 // fix mode
@@ -61,7 +61,7 @@ enum
 };
 
 // GSM cell info
-struct FixCellInfoGsm
+struct LocationFixCellInfoGsm
 {
   fxuint8  bSetup;
   fxuint16 uiMCC;    // Mobile Country Code
@@ -71,7 +71,7 @@ struct FixCellInfoGsm
 };
 
 // WCDMA cell info
-struct FixCellInfoWcdma
+struct LocationFixCellInfoWcdma
 {
   fxuint8  bSetup;
   fxuint16 uiMCC;  // Mobile Country Code
@@ -80,7 +80,7 @@ struct FixCellInfoWcdma
 };
 
 // satellite info
-struct FixSat
+struct LocationFixSat
 {
   fxuint8 bInUse;
   fxint32 iPRN;            // id
@@ -90,12 +90,12 @@ struct FixSat
 };
 
 // the location fix itself
-struct Fix
+struct LocationFix
 {
-  void     clear             (void);
-  void     clearTrailingZone (void);
-  fxuint32 storageSize       (void);
-  FixSat*  getSat            (fxuint8 uiSatIndex);
+  void             clear             (void);
+  void             clearTrailingZone (void);
+  fxuint32         storageSize       (void);
+  LocationFixSat*  getSat            (fxuint8 uiSatIndex);
 
 
   // total size of this Fix, including trailing satellites structures
@@ -106,21 +106,21 @@ struct Fix
   fxuint16 wFixFields;
   fxuint32 uiTime;
   fxuint32 uiTimeEP;   // estimated time uncertainty
-  fxint32  iLat;       // latitude ; quint32(lat * FIX_MULTIPLIER_LATLONG)
-  fxint32  iLong;      // longitude ; quint32(long * FIX_MULTIPLIER_LATLONG)
+  fxint32  iLat;       // latitude ; quint32(lat * LOCFIX_MULTIPLIER_LATLONG)
+  fxint32  iLong;      // longitude ; quint32(long * LOCFIX_MULTIPLIER_LATLONG)
   fxuint32 uiHorizEP;  // horizontal position uncertainty (cm) ; quint32(eph)
   fxint32  iAlt;       // altitude (m) ; qint32(altm)
   fxuint32 uiAltEP;    // vertical position uncertainty (m) ; quint32(epv)
-  fxuint16 uiTrack;    // heading in [0;359] degrees * FIX_MULTIPLIER_TRACK ; quint16(track * FIX_MULTIPLIER_TRACK)
-  fxuint16 uiTrackEP;  // track uncertainty in degrees * FIX_MULTIPLIER_TRACK ; quint16(epd * FIX_MULTIPLIER_TRACK)
-  fxuint32 uiSpeed;    // speed in m/h ; quint32(speed * FIX_MULTIPLIER_SPEED)
-  fxuint32 uiSpeedEP;  // speed uncertainty in m/h ; quint32(eps *  FIX_MULTIPLIER_SPEED)
-  fxint16  iClimb;     // rate of climb in [+-]cm/s ; qint16(climb * FIX_MULTIPLIER_CLIMB)
-  fxuint16 uiClimbEP;  // climb uncertainty in cm/s ; quint16(epc * FIX_MULTIPLIER_CLIMB)
+  fxuint16 uiTrack;    // heading in [0;359] degrees * LOCFIX_MULTIPLIER_TRACK ; quint16(track * LOCFIX_MULTIPLIER_TRACK)
+  fxuint16 uiTrackEP;  // track uncertainty in degrees * LOCFIX_MULTIPLIER_TRACK ; quint16(epd * LOCFIX_MULTIPLIER_TRACK)
+  fxuint32 uiSpeed;    // speed in m/h ; quint32(speed * LOCFIX_MULTIPLIER_SPEED)
+  fxuint32 uiSpeedEP;  // speed uncertainty in m/h ; quint32(eps *  LOCFIX_MULTIPLIER_SPEED)
+  fxint16  iClimb;     // rate of climb in [+-]cm/s ; qint16(climb * LOCFIX_MULTIPLIER_CLIMB)
+  fxuint16 uiClimbEP;  // climb uncertainty in cm/s ; quint16(epc * LOCFIX_MULTIPLIER_CLIMB)
 
   // cell info
-  FixCellInfoGsm   sGSM;
-  FixCellInfoWcdma sWCDMA;
+  LocationFixCellInfoGsm   sGSM;
+  LocationFixCellInfoWcdma sWCDMA;
 
   // satellites count
   fxuint8 cSatCount;

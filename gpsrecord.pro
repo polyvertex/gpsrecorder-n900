@@ -1,6 +1,6 @@
 TARGET = gpsrecord
 
-CONFIG += silent precompile_header release
+CONFIG += precompile_header release
 CONFIG(debug, debug|release) {
   TARGET = $$join(TARGET,,,d)
   message(This is a DEBUG build !)
@@ -20,6 +20,7 @@ PRECOMPILED_HEADER = src/stable.h
 
 HEADERS += \
   src/App.h \
+  src/Location.h \
   src/LocationFix.h \
   src/LocationMaemo.h \
   src/Util.h \
@@ -27,6 +28,7 @@ HEADERS += \
 SOURCES += \
   src/main.cpp \
   src/App.cpp \
+  src/Location.cpp \
   src/LocationFix.cpp \
   src/LocationMaemo.cpp \
   src/Util.cpp \

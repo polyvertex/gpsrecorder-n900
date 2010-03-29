@@ -22,6 +22,7 @@
 #include <err.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <pwd.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -76,10 +77,17 @@ extern "C" {
 
 
 //---------------------------------------------------------------------------
+// Raw Types
+//---------------------------------------------------------------------------
+//class Location;
+
+
+//---------------------------------------------------------------------------
 // Local Headers
 //---------------------------------------------------------------------------
 #include "Util.h"
 #include "LocationFix.h"
+#include "Location.h"
 #include "LocationMaemo.h"
 #include "WndMain.h"
 

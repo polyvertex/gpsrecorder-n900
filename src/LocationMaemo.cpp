@@ -43,18 +43,17 @@ inline static double _abs (double d)
 //---------------------------------------------------------------------------
 // LocationMaemo
 //---------------------------------------------------------------------------
-LocationMaemo::LocationMaemo (QObject* pParent/*=0*/)
-: QObject(pParent)
+LocationMaemo::LocationMaemo (void)
+: Location(0)
 {
-  m_pFix      = 0;
-  m_uiFixTime = 0;
+  m_eGpsdControlInterval = LOCATION_INTERVAL_5S;
 
   // init location lib
   {
     m_pGpsDevice   = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
     m_pGpsdControl = location_gpsd_control_get_default();
 
-    g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", LOCATION_INTERVAL_1S, NULL);
+    g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", m_eGpsdControlInterval, NULL);
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-method",   LOCATION_METHOD_AGNSS, NULL);
 
     m_auiSigHdlGpsDevice[0] = g_signal_connect(G_OBJECT(m_pGpsDevice), "connected",    G_CALLBACK(LocationMaemo::locationOnDevConnected), this);
@@ -65,6 +64,9 @@ LocationMaemo::LocationMaemo (QObject* pParent/*=0*/)
 	  m_auiSigHdlGpsdControl[1] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_stopped",  G_CALLBACK(LocationMaemo::locationOnGpsdStopped), this);
 	  m_auiSigHdlGpsdControl[2] = g_signal_connect(G_OBJECT(m_pGpsdControl), "error-verbose", G_CALLBACK(LocationMaemo::locationOnGpsdErrorVerbose), this);
   }
+
+  // use default fix step value from Location constructor
+  this->setFixStep(m_uiFixTime);
 }
 
 //---------------------------------------------------------------------------
@@ -74,7 +76,7 @@ LocationMaemo::~LocationMaemo (void)
 {
   // uninit location lib
   {
-    location_gpsd_control_stop(m_pGpsdControl); // if (m_pGpsdControl->can_control)
+    location_gpsd_control_stop(m_pGpsdControl);
 
     g_signal_handler_disconnect(m_pGpsDevice, m_auiSigHdlGpsDevice[0]);
     g_signal_handler_disconnect(m_pGpsDevice, m_auiSigHdlGpsDevice[1]);
@@ -93,37 +95,84 @@ LocationMaemo::~LocationMaemo (void)
 
 
 //---------------------------------------------------------------------------
+// setFixStep
+//---------------------------------------------------------------------------
+bool LocationMaemo::setFixStep (uint uiNewFixStepSeconds)
+{
+  bool bWasStarted = this->isStarted();
+  LocationGPSDControlInterval eGpsdNewInterval;
+
+  switch (uiNewFixStepSeconds)
+  {
+    case 1 :
+      eGpsdNewInterval = LOCATION_INTERVAL_1S;
+      break;
+    case 2 :
+      eGpsdNewInterval = LOCATION_INTERVAL_2S;
+      break;
+    case 5 :
+      eGpsdNewInterval = LOCATION_INTERVAL_5S;
+      break;
+    case 10 :
+      eGpsdNewInterval = LOCATION_INTERVAL_10S;
+      break;
+    case 20 :
+      eGpsdNewInterval = LOCATION_INTERVAL_20S;
+      break;
+    case 30 :
+      eGpsdNewInterval = LOCATION_INTERVAL_30S;
+      break;
+    case 60 :
+      eGpsdNewInterval = LOCATION_INTERVAL_60S;
+      break;
+    case 120 :
+      eGpsdNewInterval = LOCATION_INTERVAL_120S;
+      break;
+    default :
+      qCritical("Unsupported fix step interval (%u seconds) !", uiNewFixStepSeconds);
+      return false;
+  }
+
+  if (eGpsdNewInterval == m_eGpsdControlInterval)
+  {
+    m_uiFixStep = uiNewFixStepSeconds;
+    return true;
+  }
+
+  if (this->isStarted())
+    this->stop();
+
+  g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", eGpsdNewInterval, NULL);
+  m_eGpsdControlInterval = eGpsdNewInterval;
+  m_uiFixStep = uiNewFixStepSeconds;
+
+  if (bWasStarted)
+    this->start();
+
+  return true;
+}
+
+//---------------------------------------------------------------------------
+// resetLastFix
+//---------------------------------------------------------------------------
+void LocationMaemo::resetLastFix (void)
+{
+  //if (!this->isStarted())
+    location_gps_device_reset_last_known(m_pGpsDevice);
+
+  Location::resetLastFix();
+}
+
+//---------------------------------------------------------------------------
 // start
 //---------------------------------------------------------------------------
 void LocationMaemo::start (void)
 {
-  if (m_eState == STATE_STOPPED)
-  {
-    location_gps_device_reset_last_known(m_pGpsDevice);
-    if (m_pFix)
-      m_pFix->clear();
-    m_uiFixTime = 0;
+  if (m_bStarted)
+    return;
 
-    location_gpsd_control_start(m_pGpsdControl);
-    m_eState = STATE_STARTED;
-  }
-  else if (m_eState == STATE_PAUSED)
-  {
-    m_eState = STATE_STARTED;
-  }
-  else
-  {
-    Q_ASSERT(m_eState == STATE_STARTED);
-  }
-}
-
-//---------------------------------------------------------------------------
-// pause
-//---------------------------------------------------------------------------
-void LocationMaemo::pause (void)
-{
-  if (m_eState == STATE_STARTED)
-    m_eState = STATE_PAUSED;
+  location_gpsd_control_start(m_pGpsdControl);
+  m_bStarted = true;
 }
 
 //---------------------------------------------------------------------------
@@ -131,11 +180,11 @@ void LocationMaemo::pause (void)
 //---------------------------------------------------------------------------
 void LocationMaemo::stop (void)
 {
-  if (m_eState == STATE_STARTED || m_eState == STATE_PAUSED)
-  {
-    location_gpsd_control_stop(m_pGpsdControl); // if (m_pGpsdControl->can_control)
-    m_eState = STATE_STOPPED;
-  }
+  if (!m_bStarted)
+    return;
+
+  location_gpsd_control_stop(m_pGpsdControl);
+  m_bStarted = false;
 }
 
 
@@ -169,20 +218,24 @@ quint8 LocationMaemo::fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode)
 quint32 LocationMaemo::fixNeededSize (const LocationGPSDevice& gpsdev)
 {
   quint32 uiSatsCount = (gpsdev.satellites->len > 0xFF) ? 0xFF : gpsdev.satellites->len;
-  return sizeof(Fix) + uiSatsCount * sizeof(FixSat);
+  return sizeof(LocationFix) + uiSatsCount * sizeof(LocationFixSat);
 }
 
 //---------------------------------------------------------------------------
 // fixSetup
 //---------------------------------------------------------------------------
-Fix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, Fix* pOutFix/*=0*/)
+LocationFix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, LocationFix* pOutFix/*=0*/)
 {
-  quint32 dwDesiredSize = LocationMaemo::fixNeededSize(gpsdev);
+  quint32 dwDesiredSize;
+
+  if (!gpsdev.fix)
+    return pOutFix;
+  dwDesiredSize = LocationMaemo::fixNeededSize(gpsdev);
 
   // allocate enough memory to store this fix
   if (!pOutFix)
   {
-    pOutFix = (Fix*)malloc(dwDesiredSize);
+    pOutFix = (LocationFix*)malloc(dwDesiredSize);
     Q_CHECK_PTR(pOutFix);
     memset(pOutFix, 0, dwDesiredSize);
 
@@ -192,7 +245,7 @@ Fix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, Fix* pOutFix/*=0*
   {
     quint32 dwOldSize = pOutFix->uiSize;
 
-    pOutFix = (Fix*)realloc(pOutFix, dwDesiredSize);
+    pOutFix = (LocationFix*)realloc(pOutFix, dwDesiredSize);
     Q_CHECK_PTR(pOutFix);
     pOutFix->uiSize = dwDesiredSize;
 
@@ -209,17 +262,17 @@ Fix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, Fix* pOutFix/*=0*
     pOutFix->wFixFields = quint16(devfix.fields);
     pOutFix->uiTime     = quint32(_abs(devfix.time));
     pOutFix->uiTimeEP   = quint32(_abs(devfix.ept));
-    pOutFix->iLat       = qint32(devfix.latitude * (double)FIX_MULTIPLIER_LATLONG);
-    pOutFix->iLong      = qint32(devfix.longitude * (double)FIX_MULTIPLIER_LATLONG);
+    pOutFix->iLat       = qint32(devfix.latitude * (double)LOCFIX_MULTIPLIER_LATLONG);
+    pOutFix->iLong      = qint32(devfix.longitude * (double)LOCFIX_MULTIPLIER_LATLONG);
     pOutFix->uiHorizEP  = quint32(_abs(devfix.eph));
     pOutFix->iAlt       = qint32(devfix.altitude);
     pOutFix->uiAltEP    = quint32(_abs(devfix.epv));
-    pOutFix->uiTrack    = quint16(_abs(devfix.track) * (double)FIX_MULTIPLIER_TRACK);
-    pOutFix->uiTrackEP  = quint16(_abs(devfix.epd) * (double)FIX_MULTIPLIER_TRACK);
-    pOutFix->uiSpeed    = quint32(_abs(devfix.speed) * (double)FIX_MULTIPLIER_SPEED);
-    pOutFix->uiSpeedEP  = quint32(_abs(devfix.eps) *  (double)FIX_MULTIPLIER_SPEED);
-    pOutFix->iClimb     = qint16(devfix.climb * (double)FIX_MULTIPLIER_CLIMB);
-    pOutFix->uiClimbEP  = quint16(_abs(devfix.epc) * (double)FIX_MULTIPLIER_CLIMB);
+    pOutFix->uiTrack    = quint16(_abs(devfix.track) * (double)LOCFIX_MULTIPLIER_TRACK);
+    pOutFix->uiTrackEP  = quint16(_abs(devfix.epd) * (double)LOCFIX_MULTIPLIER_TRACK);
+    pOutFix->uiSpeed    = quint32(_abs(devfix.speed) * (double)LOCFIX_MULTIPLIER_SPEED);
+    pOutFix->uiSpeedEP  = quint32(_abs(devfix.eps) *  (double)LOCFIX_MULTIPLIER_SPEED);
+    pOutFix->iClimb     = qint16(devfix.climb * (double)LOCFIX_MULTIPLIER_CLIMB);
+    pOutFix->uiClimbEP  = quint16(_abs(devfix.epc) * (double)LOCFIX_MULTIPLIER_CLIMB);
 
     // cell info - gsm
     if ((gpsdev.cell_info->flags & LOCATION_CELL_INFO_GSM_CELL_INFO_SET) != 0)
@@ -256,7 +309,7 @@ Fix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, Fix* pOutFix/*=0*
     // satellites
     for (quint8 cIdx = 0; cIdx < pOutFix->cSatCount; ++cIdx)
     {
-      FixSat* pOutFixSat = pOutFix->getSat(cIdx);
+      LocationFixSat* pOutFixSat = pOutFix->getSat(cIdx);
 
       if (!pOutFixSat)
       {
@@ -317,19 +370,15 @@ void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointe
 {
   LocationMaemo* pThis = reinterpret_cast<LocationMaemo*>(pUserData);
 
-  Q_UNUSED(pThis);
-
-  if (!pGpsDevice)
-    return;
-
-  if (pGpsDevice->fix)
+  if (pGpsDevice && pGpsDevice->fix)
   {
-    // TODO
-  }
+    pThis->m_uiFixTime = time(0);
+    pThis->m_pFix      = LocationMaemo::fixSetup(*pGpsDevice, pThis->m_pFix);
 
-  if (pGpsDevice->cell_info)
-  {
-    // TODO
+    if (pThis->m_pFix)
+      emit pThis->sigGotLocationFix(pThis, pThis->m_pFix);
+    else
+      pThis->m_uiFixTime = 0;
   }
 }
 

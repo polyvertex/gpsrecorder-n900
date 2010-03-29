@@ -21,39 +21,25 @@
 // * http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html
 // * http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
 //---------------------------------------------------------------------------
-class LocationMaemo : public QObject
+class LocationMaemo : public Location
 {
-  Q_OBJECT
-
 public :
-  enum State
-  {
-    STATE_STOPPED,
-    STATE_PAUSED,
-    STATE_STARTED,
-  };
-
-
-public :
-  LocationMaemo (QObject* pParent=0);
+  LocationMaemo (void);
   virtual ~LocationMaemo (void);
 
-  bool setFixStep (uint uiStepSeconds);
+  bool setFixStep (uint uiNewFixStepSeconds);
+
+  void resetLastFix (void);
 
   void start (void);
-  void pause (void);
   void stop  (void);
-
-  bool  isStarted (void) const;
-  bool  isPaused  (void) const;
-  State getState  (void) const;
 
 
 private :
   // fix utils
-  static quint8  fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode);
-  static quint32 fixNeededSize     (const LocationGPSDevice& gpsdev);
-  static Fix*    fixSetup          (const LocationGPSDevice& gpsdev, Fix* pOutFix=0);
+  static quint8       fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode);
+  static quint32      fixNeededSize     (const LocationGPSDevice& gpsdev);
+  static LocationFix* fixSetup          (const LocationGPSDevice& gpsdev, LocationFix* pOutFix=0);
 
   // callbacks from gps device
   static void locationOnDevConnected    (LocationGPSDevice* pGpsDevice, gpointer pUserData);
@@ -67,19 +53,12 @@ private :
 
 
 private :
-  // context
+  LocationGPSDControlInterval m_eGpsdControlInterval;
+
   LocationGPSDevice*   m_pGpsDevice;
   LocationGPSDControl* m_pGpsdControl;
   guint                m_auiSigHdlGpsDevice[3];
   guint                m_auiSigHdlGpsdControl[3];
-
-  // state
-  uint  m_uiFixStep; // seconds
-  State m_eState;
-
-  // last fix
-  Fix*   m_pFix;
-  time_t m_uiFixTime;
 };
 
 

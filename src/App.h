@@ -24,14 +24,24 @@ public :
   App (int& nArgc, char** ppszArgv);
   virtual ~App (void);
 
-  QSettings*     getSettings (void) { return &m_Settings; }
-  LocationMaemo* getLocation (void) { return &m_Location; }
+  static void           setOutputDir (const QString& strOutputDir);
+  static const QString& outputDir    (void);
+
+  static App* instance (void) { return static_cast<App*>(QCoreApplication::instance()); }
+
+  QSettings* settings (void) { return &m_Settings; }
+  Location*  location (void) { return m_pLocation; }
+  WndMain*   wndMain  (void) { return m_pWndMain; }
 
 
 private :
-  QSettings     m_Settings;
-  LocationMaemo m_Location;
-  WndMain       m_WndMain;
+  static QString ms_strOutputDir;
+
+
+private :
+  QSettings m_Settings;
+  Location* m_pLocation;
+  WndMain*  m_pWndMain;
 };
 
 

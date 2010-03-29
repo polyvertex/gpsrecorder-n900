@@ -33,12 +33,21 @@ bool Util::fileIsDir (const char* pszFile)
   return fi.isDir();
 }
 
+//---------------------------------------------------------------------------
+// filePermissions
+//---------------------------------------------------------------------------
+QFile::Permissions Util::filePermissions (const char* pszFile)
+{
+  QFileInfo fi(pszFile);
+  return fi.permissions();
+}
+
 
 
 //---------------------------------------------------------------------------
 // timeString
 //---------------------------------------------------------------------------
-const char* Util::timeString (bool bForFilename, time_t nTime/*=0*/)
+const char* Util::timeString (bool bForFilename/*=false*/, time_t nTime/*=0*/)
 {
   /*
   static char szTime[24]; // YYYY-MM-DD hh:mm:ss
@@ -63,7 +72,7 @@ const char* Util::timeString (bool bForFilename, time_t nTime/*=0*/)
     dt.setTime_t(nTime);
   strFormat = bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss";
 
-  strcpy((char*)&szDateTime, dt.toString(strFormat).toAscii().constData());
+  strcpy((char*)&szDateTime, qPrintable(dt.toString(strFormat)));
 
   return (char*)&szDateTime;
 }

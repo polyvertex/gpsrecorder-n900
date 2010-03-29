@@ -11,6 +11,12 @@
 
 
 //---------------------------------------------------------------------------
+// Static Members
+//---------------------------------------------------------------------------
+QString App::ms_strOutputDir;
+
+
+//---------------------------------------------------------------------------
 // App
 //---------------------------------------------------------------------------
 App::App (int& nArgc, char** ppszArgv)
@@ -20,8 +26,13 @@ App::App (int& nArgc, char** ppszArgv)
   Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
+  // create location driver
+  m_pLocation = Location::createDevice();
+
   // show up main window
-  m_WndMain.show();
+  m_pWndMain = new WndMain();
+  Q_CHECK_PTR(m_pWndMain);
+  m_pWndMain->show();
 }
 
 //---------------------------------------------------------------------------
@@ -29,4 +40,28 @@ App::App (int& nArgc, char** ppszArgv)
 //---------------------------------------------------------------------------
 App::~App (void)
 {
+  if (m_pWndMain)
+    delete m_pWndMain;
+
+  if (m_pLocation)
+    delete m_pLocation;
+}
+
+
+
+
+//---------------------------------------------------------------------------
+// setOutputDir
+//---------------------------------------------------------------------------
+void App::setOutputDir (const QString& strOutputDir)
+{
+  ms_strOutputDir = strOutputDir;
+}
+
+//---------------------------------------------------------------------------
+// outputDir
+//---------------------------------------------------------------------------
+const QString& App::outputDir (void)
+{
+  return ms_strOutputDir;
 }

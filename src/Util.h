@@ -19,11 +19,12 @@ class Util
 public :
 
   // file system
-  static bool fileExists (const char* pszFile);
-  static bool fileIsDir  (const char* pszFile);
+  static bool               fileExists      (const char* pszFile);
+  static bool               fileIsDir       (const char* pszFile);
+  static QFile::Permissions filePermissions (const char* pszFile);
 
   // time
-  static const char* timeString (bool bForFilename, time_t nTime=0);
+  static const char* timeString (bool bForFilename=false, time_t nTime=0);
 };
 
 
