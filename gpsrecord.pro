@@ -1,6 +1,21 @@
 TARGET = gpsrecord
 
-# [JCL] use precompiled header feature
+CONFIG += silent precompile_header release
+CONFIG(debug, debug|release) {
+  TARGET = $$join(TARGET,,,d)
+  message(This is a DEBUG build !)
+}
+
+# http://qt.nokia.com/doc/4.5/qmake-variable-reference.html#qt
+QT = core gui
+
+INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
+LIBS        += -lglib-2.0 -llocation
+DEFINES     +=
+
+QMAKE_CFLAGS   += -Werror
+QMAKE_CXXFLAGS += -Werror
+
 PRECOMPILED_HEADER = src/stable.h
 
 HEADERS     += src/App.h src/Location.h src/Util.h src/WndMain.h
@@ -8,14 +23,6 @@ SOURCES     += src/main.cpp src/App.cpp src/Location.cpp src/Util.cpp src/WndMai
 FORMS       +=
 LEXSOURCES  += #LEXS#
 YACCSOURCES += #YACCS#
-
-INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
-LIBS        += -lglib-2.0 -llocation
-DEFINES     +=
-
-# [JCL] stop compiling on warnings
-QMAKE_CFLAGS   += -Werror
-QMAKE_CXXFLAGS += -Werror
 
 # All generated files goes same directory
 OBJECTS_DIR = build
@@ -26,10 +33,6 @@ DESTDIR     = build
 TEMPLATE    = app
 DEPENDPATH +=
 VPATH      += src uis
-CONFIG     -=
-CONFIG     += debug silent precompile_header
-
-QT = core gui
 
 INSTALLS    += target
 target.path  = /usr/bin/
