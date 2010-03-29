@@ -57,10 +57,30 @@ extern "C" {
 
 
 //---------------------------------------------------------------------------
+// Macros
+//---------------------------------------------------------------------------
+// use this to make your code uncompilable until you remove it
+#define TODO  const char TODO[-1] = "This is a TODO !"
+
+// static assert macro (i.e.: compile-time assert)
+#define MY_STATIC_ASSERT(test)  typedef char MY_CAT(_static_assert_,__LINE__)[(test) * 2 - 1]
+
+// util macros
+#define MY_VERBATIM(x)   x
+#define MY_STRINGIZE(x)  MY_STRINGIZE__SUB(x)
+#define MY_CAT(a,b)      MY_CAT__SUB(a,b)
+
+// util macros subs (do not use directly)
+#define MY_STRINGIZE__SUB(x)  #x
+#define MY_CAT__SUB(a,b)      a##b
+
+
+//---------------------------------------------------------------------------
 // Local Headers
 //---------------------------------------------------------------------------
 #include "Util.h"
-#include "Location.h"
+#include "LocationFix.h"
+#include "LocationMaemo.h"
 #include "WndMain.h"
 
 #include "App.h"

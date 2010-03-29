@@ -24,14 +24,14 @@ public :
   App (int& nArgc, char** ppszArgv);
   virtual ~App (void);
 
-  QSettings* getSettings (void) { return &m_Settings; }
-  Location*  getLocation (void) { return &m_Location; }
+  QSettings*     getSettings (void) { return &m_Settings; }
+  LocationMaemo* getLocation (void) { return &m_Location; }
 
 
 private :
-  QSettings m_Settings;
-  Location  m_Location;
-  WndMain   m_WndMain;
+  QSettings     m_Settings;
+  LocationMaemo m_Location;
+  WndMain       m_WndMain;
 };
 
 

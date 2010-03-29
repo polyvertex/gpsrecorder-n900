@@ -7,36 +7,54 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_LOCATION_H__
-#define __GPSRECORD_LOCATION_H__
+#ifndef __GPSRECORD_LOCATIONMAEMO_H__
+#define __GPSRECORD_LOCATIONMAEMO_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// Location
+// LocationMaemo
 //
 // Nokia's liblocation references :
 // * http://wiki.maemo.org/Documentation/Maemo_5_Developer_Guide/Using_Connectivity_Components/Using_Location_API
 // * http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html
 // * http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
 //---------------------------------------------------------------------------
-class Location : public QObject
+class LocationMaemo : public QObject
 {
   Q_OBJECT
 
 public :
-  /*struct Fix
+  enum State
   {
-  };*/
+    STATE_STOPPED,
+    STATE_PAUSED,
+    STATE_STARTED,
+  };
 
 
 public :
-  Location (QObject* pParent=0);
-  virtual ~Location (void);
+  LocationMaemo (QObject* pParent=0);
+  virtual ~LocationMaemo (void);
+
+  bool setFixStep (uint uiStepSeconds);
+
+  void start (void);
+  void pause (void);
+  void stop  (void);
+
+  bool  isStarted (void) const;
+  bool  isPaused  (void) const;
+  State getState  (void) const;
 
 
 private :
+  // fix utils
+  static quint8  fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode);
+  static quint32 fixNeededSize     (const LocationGPSDevice& gpsdev);
+  static Fix*    fixSetup          (const LocationGPSDevice& gpsdev, Fix* pOutFix=0);
+
   // callbacks from gps device
   static void locationOnDevConnected    (LocationGPSDevice* pGpsDevice, gpointer pUserData);
   static void locationOnDevDisconnected (LocationGPSDevice* pGpsDevice, gpointer pUserData);
@@ -55,8 +73,14 @@ private :
   guint                m_auiSigHdlGpsDevice[3];
   guint                m_auiSigHdlGpsdControl[3];
 
-  // fix history
+  // state
+  uint  m_uiFixStep; // seconds
+  State m_eState;
+
+  // last fix
+  Fix*   m_pFix;
+  time_t m_uiFixTime;
 };
 
 
-#endif // #ifndef __GPSRECORD_LOCATION_H__
+#endif // #ifndef __GPSRECORD_LOCATIONMAEMO_H__

@@ -15,8 +15,10 @@
 //---------------------------------------------------------------------------
 bool Util::fileExists (const char* pszFile)
 {
-  struct stat sStats;
-  return stat(pszFile, &sStats) == 0;
+  //struct stat sStats;
+  //return stat(pszFile, &sStats) == 0;
+
+  return QFile::exists(pszFile);
 }
 
 //---------------------------------------------------------------------------
@@ -24,12 +26,11 @@ bool Util::fileExists (const char* pszFile)
 //---------------------------------------------------------------------------
 bool Util::fileIsDir (const char* pszFile)
 {
-  struct stat sStats;
+  //struct stat sStats;
+  //return (stat(pszFile, &sStats) == 0) && S_ISDIR(sStats.st_mode);
 
-  if ((stat(pszFile, &sStats) == 0) && S_ISDIR(sStats.st_mode))
-    return true;
-
-  return false;
+  QFileInfo fi(pszFile);
+  return fi.isDir();
 }
 
 
@@ -39,6 +40,7 @@ bool Util::fileIsDir (const char* pszFile)
 //---------------------------------------------------------------------------
 const char* Util::timeString (bool bForFilename, time_t nTime/*=0*/)
 {
+  /*
   static char szTime[24]; // YYYY-MM-DD hh:mm:ss
 
   time_t t = (nTime > 0) ? nTime : time(NULL);
@@ -50,4 +52,18 @@ const char* Util::timeString (bool bForFilename, time_t nTime/*=0*/)
     sprintf((char*)&szTime, "%04d-%02d-%02d %02d:%02d:%02d", 1900+ptm->tm_year, 1+ptm->tm_mon, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
 
   return (char*)&szTime;
+  */
+
+  static char szDateTime[32];
+
+  QDateTime dt;
+  QString strFormat;
+
+  if (nTime > 0)
+    dt.setTime_t(nTime);
+  strFormat = bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss";
+
+  strcpy((char*)&szDateTime, dt.toString(strFormat).toAscii().constData());
+
+  return (char*)&szDateTime;
 }

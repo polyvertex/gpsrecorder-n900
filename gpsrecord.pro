@@ -13,13 +13,25 @@ INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
 LIBS        += -lglib-2.0 -llocation
 DEFINES     +=
 
-QMAKE_CFLAGS   += -Werror
-QMAKE_CXXFLAGS += -Werror
+QMAKE_CFLAGS   += -fno-strict-aliasing -Werror
+QMAKE_CXXFLAGS += -fno-strict-aliasing -Werror
 
 PRECOMPILED_HEADER = src/stable.h
 
-HEADERS     += src/App.h src/Location.h src/Util.h src/WndMain.h
-SOURCES     += src/main.cpp src/App.cpp src/Location.cpp src/Util.cpp src/WndMain.cpp
+HEADERS += \
+  src/App.h \
+  src/LocationFix.h \
+  src/LocationMaemo.h \
+  src/Util.h \
+  src/WndMain.h
+SOURCES += \
+  src/main.cpp \
+  src/App.cpp \
+  src/LocationFix.cpp \
+  src/LocationMaemo.cpp \
+  src/Util.cpp \
+  src/WndMain.cpp
+
 FORMS       +=
 LEXSOURCES  += #LEXS#
 YACCSOURCES += #YACCS#
