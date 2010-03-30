@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_APP_H__
-#define __GPSRECORD_APP_H__
+#ifndef __APP_H__
+#define __APP_H__
 
 #include "stable.h"
 
@@ -24,8 +24,10 @@ public :
   App (int& nArgc, char** ppszArgv);
   virtual ~App (void);
 
-  static void           setOutputDir (const QString& strOutputDir);
-  static const QString& outputDir    (void);
+  static void           setApplicationLabel (const QString& strLabel);
+  static const QString& applicationLabel    (void);
+  static void           setOutputDir        (const QString& strOutputDir);
+  static const QString& outputDir           (void);
 
   static App* instance (void) { return static_cast<App*>(QCoreApplication::instance()); }
 
@@ -35,6 +37,7 @@ public :
 
 
 private :
+  static QString ms_strApplicationLabel;
   static QString ms_strOutputDir;
 
 
@@ -45,4 +48,4 @@ private :
 };
 
 
-#endif // #ifndef __GPSRECORD_APP_H__
+#endif // #ifndef __APP_H__

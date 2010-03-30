@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_LOCATIONFIX_H__
-#define __GPSRECORD_LOCATIONFIX_H__
+#ifndef __LOCATIONFIX_H__
+#define __LOCATIONFIX_H__
 
 
 // base types
@@ -131,4 +131,4 @@ struct LocationFix
 };
 
 
-#endif // #ifndef __GPSRECORD_LOCATIONFIX_H__
+#endif // #ifndef __LOCATIONFIX_H__

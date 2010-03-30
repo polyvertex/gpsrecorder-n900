@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for gpsrecord
+# postinst script for gpsrecorder
 #
 # see: dh_installdeb(1)
 

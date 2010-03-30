@@ -12,22 +12,22 @@
 #
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/gpsrecord
-NAME=gpsrecord
-DESC=gpsrecord
+DAEMON=/usr/sbin/gpsrecorder
+NAME=gpsrecorder
+DESC=gpsrecorder
 
 test -x $DAEMON || exit 0
 
-LOGDIR=/var/log/gpsrecord
+LOGDIR=/var/log/gpsrecorder
 PIDFILE=/var/run/$NAME.pid
 DODTIME=1                   # Time to wait for the server to die, in seconds
                             # If this value is set too low you might not
                             # let some servers to die gracefully and
                             # 'restart' will not work
 
-# Include gpsrecord defaults if available
-if [ -f /etc/default/gpsrecord ] ; then
-	. /etc/default/gpsrecord
+# Include gpsrecorder defaults if available
+if [ -f /etc/default/gpsrecorder ] ; then
+	. /etc/default/gpsrecorder
 fi
 
 set -e

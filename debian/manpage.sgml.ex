@@ -26,8 +26,8 @@ manpage.1: manpage.sgml
   <!ENTITY dhsection   "<manvolnum>SECTION</manvolnum>">
   <!ENTITY dhemail     "<email>root@unknown</email>">
   <!ENTITY dhusername  "root">
-  <!ENTITY dhucpackage "<refentrytitle>GPSRECORD</refentrytitle>">
-  <!ENTITY dhpackage   "gpsrecord">
+  <!ENTITY dhucpackage "<refentrytitle>GPSRECORDER</refentrytitle>">
+  <!ENTITY dhpackage   "gpsrecorder">
 
   <!ENTITY debian      "<productname>Debian</productname>">
   <!ENTITY gnu         "<acronym>GNU</acronym>">

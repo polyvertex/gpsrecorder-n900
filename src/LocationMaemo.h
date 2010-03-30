@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_LOCATIONMAEMO_H__
-#define __GPSRECORD_LOCATIONMAEMO_H__
+#ifndef __LOCATIONMAEMO_H__
+#define __LOCATIONMAEMO_H__
 
 #include "stable.h"
 
@@ -62,4 +62,4 @@ private :
 };
 
 
-#endif // #ifndef __GPSRECORD_LOCATIONMAEMO_H__
+#endif // #ifndef __LOCATIONMAEMO_H__

@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_UTIL_H__
-#define __GPSRECORD_UTIL_H__
+#ifndef __UTIL_H__
+#define __UTIL_H__
 
 
 //---------------------------------------------------------------------------
@@ -28,4 +28,4 @@ public :
 };
 
 
-#endif // #ifndef __GPSRECORD_UTIL_H__
+#endif // #ifndef __UTIL_H__

@@ -8,16 +8,16 @@ version=3
 
 # Uncomment to examine a Webpage
 # <Webpage URL> <string match>
-#http://www.example.com/downloads.php gpsrecord-(.*)\.tar\.gz
+#http://www.example.com/downloads.php gpsrecorder-(.*)\.tar\.gz
 
 # Uncomment to examine a Webserver directory
-#http://www.example.com/pub/gpsrecord-(.*)\.tar\.gz
+#http://www.example.com/pub/gpsrecorder-(.*)\.tar\.gz
 
 # Uncommment to examine a FTP server
-#ftp://ftp.example.com/pub/gpsrecord-(.*)\.tar\.gz debian uupdate
+#ftp://ftp.example.com/pub/gpsrecorder-(.*)\.tar\.gz debian uupdate
 
 # Uncomment to find new files on sourceforge, for devscripts >= 2.9
-# http://sf.net/gpsrecord/gpsrecord-(.*)\.tar\.gz
+# http://sf.net/gpsrecorder/gpsrecorder-(.*)\.tar\.gz
 
 # Uncomment to find new files on GooglePages
-# http://example.googlepages.com/foo.html gpsrecord-(.*)\.tar\.gz
+# http://example.googlepages.com/foo.html gpsrecorder-(.*)\.tar\.gz

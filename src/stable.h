@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_STABLE_H__
-#define __GPSRECORD_STABLE_H__
+#ifndef __GPSRECORDER_STABLE_H__
+#define __GPSRECORDER_STABLE_H__
 
 
 //---------------------------------------------------------------------------
@@ -94,4 +94,4 @@ extern "C" {
 #include "App.h"
 
 
-#endif // #ifndef __GPSRECORD_STABLE_H__
+#endif // #ifndef __GPSRECORDER_STABLE_H__

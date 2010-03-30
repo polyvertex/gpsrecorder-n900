@@ -1,4 +1,4 @@
-Source: gpsrecord
+Source: gpsrecorder
 Section: user/Other
 Priority: extra
 Maintainer: root <root@unknown>
@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.3
 Homepage: <insert the upstream URL, if relevant>
 
-Package: gpsrecord
+Package: gpsrecorder
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: <insert up to 60 chars description>
@@ -16,7 +16,7 @@ Description: <insert up to 60 chars description>
 # next to the package name. To perform this encoding use following mad
 # command: $ mad base64 <48x48 icon file name>
 # For example following XB-Maemo-Icon-26 field content is an output
-# from command: $ mad base64 gpsrecord/src/data/48x48/gpsrecord.png
+# from command: $ mad base64 gpsrecorder/src/data/48x48/gpsrecorder.png
 XB-Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A
  /wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oBGQ0SFuv48p0AAAAZdEVYdENv

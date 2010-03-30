@@ -1,4 +1,4 @@
 #
-# Regular cron jobs for the gpsrecord package
+# Regular cron jobs for the gpsrecorder package
 #
-0 4	* * *	root	[ -x /usr/bin/gpsrecord_maintenance ] && /usr/bin/gpsrecord_maintenance
+0 4	* * *	root	[ -x /usr/bin/gpsrecorder_maintenance ] && /usr/bin/gpsrecorder_maintenance

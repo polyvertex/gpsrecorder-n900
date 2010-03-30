@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_LOCATION_H__
-#define __GPSRECORD_LOCATION_H__
+#ifndef __LOCATION_H__
+#define __LOCATION_H__
 
 #include "stable.h"
 
@@ -54,4 +54,4 @@ protected :
 };
 
 
-#endif // #ifndef __GPSRECORD_LOCATION_H__
+#endif // #ifndef __LOCATION_H__

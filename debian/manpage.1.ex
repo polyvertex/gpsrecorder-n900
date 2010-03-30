@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH GPSRECORD SECTION "March 14, 2010"
+.TH GPSRECORDER SECTION "March 14, 2010"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -16,16 +16,16 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-gpsrecord \- program to do something
+gpsrecorder \- program to do something
 .SH SYNOPSIS
-.B gpsrecord
+.B gpsrecorder
 .RI [ options ] " files" ...
 .br
 .B bar
 .RI [ options ] " files" ...
 .SH DESCRIPTION
 This manual page documents briefly the
-.B gpsrecord
+.B gpsrecorder
 and
 .B bar
 commands.
@@ -33,7 +33,7 @@ commands.
 .\" TeX users may be more comfortable with the \fB<whatever>\fP and
 .\" \fI<whatever>\fP escape sequences to invode bold face and italics,
 .\" respectively.
-\fBgpsrecord\fP is a program that...
+\fBgpsrecorder\fP is a program that...
 .SH OPTIONS
 These programs follow the usual GNU command line syntax, with long
 options starting with two dashes (`-').
@@ -53,7 +53,7 @@ The programs are documented fully by
 .IR "The Rise and Fall of a Fooish Bar" ,
 available via the Info system.
 .SH AUTHOR
-gpsrecord was written by <upstream author>.
+gpsrecorder was written by <upstream author>.
 .PP
 This manual page was written by root <root@unknown>,
 for the Debian project (but may be used by others).

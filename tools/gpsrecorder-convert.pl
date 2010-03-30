@@ -134,7 +134,7 @@ sub convert_csv2kml($$)
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
     "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n".
     "<Folder>\n".
-    "  <name>GpsRecord Tracks</name>\n".
+    "  <name>GpsRecorder Tracks</name>\n".
     "  <visibility>1</visibility>\n".
     "  <open>1</open>\n".
     "  <Placemark>\n".

@@ -1,5 +1,5 @@
 #!/bin/sh
-# preinst script for gpsrecord
+# preinst script for gpsrecorder
 #
 # see: dh_installdeb(1)
 

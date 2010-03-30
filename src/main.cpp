@@ -147,7 +147,8 @@ int main (int nArgc, char** ppszArgv)
 
   QCoreApplication::setOrganizationName("polyvertex");
   QCoreApplication::setOrganizationDomain("polyvertex.net");
-  QCoreApplication::setApplicationName("gpsrecord");
+  QCoreApplication::setApplicationName("gpsrecorder");
+  App::setApplicationLabel("GPS Recorder");
   QCoreApplication::setApplicationVersion("0.0.1");
 
   qInstallMsgHandler(_logHandler);

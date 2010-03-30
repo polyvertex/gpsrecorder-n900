@@ -1,2 +1,2 @@
-?package(gpsrecord):needs="X11|text|vc|wm" section="Applications/see-menu-manual"\
-  title="gpsrecord" command="/usr/bin/gpsrecord"
+?package(gpsrecorder):needs="X11|text|vc|wm" section="Applications/see-menu-manual"\
+  title="gpsrecorder" command="/usr/bin/gpsrecorder"

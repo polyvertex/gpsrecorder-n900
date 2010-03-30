@@ -1,4 +1,4 @@
-TARGET = gpsrecord
+TARGET = gpsrecorder
 
 CONFIG += precompile_header release
 CONFIG(debug, debug|release) {
@@ -53,15 +53,15 @@ target.path  = /usr/bin/
 
 INSTALLS      += desktop
 desktop.path   = /usr/share/applications/hildon
-desktop.files  = data/gpsrecord.desktop
+desktop.files  = data/gpsrecorder.desktop
 
 INSTALLS      += service
 service.path   = /usr/share/dbus-1/services
-service.files  = data/gpsrecord.service
+service.files  = data/gpsrecorder.service
 
 INSTALLS     += icon64
 icon64.path   = /usr/share/icons/hicolor/64x64/apps
-icon64.files  = data/64x64/gpsrecord.png
+icon64.files  = data/64x64/gpsrecorder.png
 
 #
 # Targets for debian source and binary package creation

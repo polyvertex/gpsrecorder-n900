@@ -7,8 +7,8 @@
 //
 //***************************************************************************
 
-#ifndef __GPSRECORD_WNDMAIN_H__
-#define __GPSRECORD_WNDMAIN_H__
+#ifndef __WNDMAIN_H__
+#define __WNDMAIN_H__
 
 #include "stable.h"
 
@@ -29,4 +29,4 @@ private :
 };
 
 
-#endif // #ifndef __GPSRECORD_WNDMAIN_H__
+#endif // #ifndef __WNDMAIN_H__
