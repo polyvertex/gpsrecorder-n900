@@ -82,24 +82,32 @@ struct LocationFixCellInfoWcdma
 // satellite info
 struct LocationFixSat
 {
-  fxuint8 bInUse;
+  fxuint8 bInUse;          // is this satellite usedb to calculate this fix ?
   fxint32 iPRN;            // id
-  fxint32 iElevation;
-  fxint32 iAzimuth;
-  fxint32 iSignalStrength; // signal/noise ratio
+  fxint32 iElevation;      // elevation in [0;90] degrees
+  fxint32 iAzimuth;        // azimuth in [0;359] degrees
+  fxint32 iSignalStrength; // signal to noise ratio in [0;99] dBHz
 };
 
 // the location fix itself
 struct LocationFix
 {
   void             clear             (void);
+  void             updateStorageSize (void);
   void             clearTrailingZone (void);
-  fxuint32         storageSize       (void);
+  const char*      getStorageZone    (void);
   LocationFixSat*  getSat            (fxuint8 uiSatIndex);
 
 
   // total size of this Fix, including trailing satellites structures
-  fxuint32 uiSize; // CAUTION : must remain the first member !
+  // * CAUTION : it must always remain the first member in this structure !
+  fxuint32 uiMemorySize;
+
+  // the actual size of this fix needed to store it
+  // * CAUTION : it must always remain the second member in this structure !
+  // * this value is always <= uiMemorySize
+  // * it can be null if fix was not initialized
+  fxuint32 uiStorageSize;
 
   // gps fix info
   fxuint8  cFixMode;
@@ -123,12 +131,13 @@ struct LocationFix
   LocationFixCellInfoWcdma sWCDMA;
 
   // satellites count
-  fxuint8 cSatCount;
-  fxuint8 cSatView;
-  fxuint8 cSatUse;
+  fxuint8 cSatCount; // number of satellites structures appended to this fix (FIXME : same as cSatView ???)
+  fxuint8 cSatView;  // number of satellites the gps device can see
+  fxuint8 cSatUse;   // number of satellites used to calculate this fix
 
   // ... satellites (cSatCount * FixSat)
-};
+}
+__attribute__((packed));
 
 
 #endif // #ifndef __LOCATIONFIX_H__

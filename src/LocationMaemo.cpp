@@ -239,17 +239,17 @@ LocationFix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, LocationF
     Q_CHECK_PTR(pOutFix);
     memset(pOutFix, 0, dwDesiredSize);
 
-    pOutFix->uiSize = dwDesiredSize;
+    pOutFix->uiMemorySize = dwDesiredSize;
   }
-  else if (pOutFix && pOutFix->uiSize < dwDesiredSize)
+  else if (pOutFix && dwDesiredSize > pOutFix->uiMemorySize)
   {
-    quint32 dwOldSize = pOutFix->uiSize;
+    quint32 dwOldSize = pOutFix->uiMemorySize;
 
     pOutFix = (LocationFix*)realloc(pOutFix, dwDesiredSize);
     Q_CHECK_PTR(pOutFix);
-    pOutFix->uiSize = dwDesiredSize;
+    pOutFix->uiMemorySize = dwDesiredSize;
 
-    // zeroize added trailing zone
+    // zeroize trailing zone
     memset((char*)pOutFix + dwOldSize, 0, dwDesiredSize - dwOldSize);
   }
 
@@ -313,7 +313,7 @@ LocationFix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, LocationF
 
       if (!pOutFixSat)
       {
-        // we should never here !
+        // we should never get here !
         pOutFix->cSatCount = cIdx;
         break;
       }
@@ -326,6 +326,9 @@ LocationFix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, LocationF
       pOutFixSat->iAzimuth        = pDevSat->azimuth;
       pOutFixSat->iSignalStrength = pDevSat->signal_strength;
     }
+
+    // update the storage size value
+    pOutFix->updateStorageSize();
 
     // zeroize trailing memory zone
     pOutFix->clearTrailingZone();

@@ -10,14 +10,32 @@
 #include "LocationFix.h"
 
 
+
 //---------------------------------------------------------------------------
 // clear
 //---------------------------------------------------------------------------
 void LocationFix::clear (void)
 {
-  fxuint32 uiSizeBak = uiSize;
-  memset(&(this->uiSize), 0, sizeof(LocationFix));
-  uiSize = uiSizeBak;
+  fxuint32 uiSizeBak = uiMemorySize;
+  memset(&(this->uiMemorySize), 0, sizeof(LocationFix));
+  uiMemorySize = uiSizeBak;
+}
+
+//---------------------------------------------------------------------------
+// updateStorageSize
+//---------------------------------------------------------------------------
+void LocationFix::updateStorageSize (void)
+{
+  fxuint32 uiNewStorageSize =
+    sizeof(LocationFix) +
+    (cSatCount * sizeof(LocationFixSat)) -
+    sizeof(uiMemorySize);
+
+  Q_ASSERT(uiNewStorageSize <= uiMemorySize);
+  if (uiNewStorageSize <= uiMemorySize)
+    uiStorageSize = uiNewStorageSize;
+  else
+    uiStorageSize = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -27,18 +45,16 @@ void LocationFix::clearTrailingZone (void)
 {
   fxuint32 uiTrailingOffset = sizeof(LocationFix) + cSatCount * sizeof(LocationFixSat);
 
-  if (uiTrailingOffset < uiSize)
-    memset((char*)(&(this->uiSize)) + uiTrailingOffset, 0, uiSize - uiTrailingOffset);
+  if (uiTrailingOffset < uiMemorySize)
+    memset((char*)(&(this->uiMemorySize)) + uiTrailingOffset, 0, uiMemorySize - uiTrailingOffset);
 }
 
 //---------------------------------------------------------------------------
-// storageSize
+// getStorageZone
 //---------------------------------------------------------------------------
-fxuint32 LocationFix::storageSize (void)
+const char* LocationFix::getStorageZone (void)
 {
-  fxuint32 uiStorageSize = sizeof(LocationFix) + (cSatCount * sizeof(LocationFixSat));
-  Q_ASSERT(uiStorageSize <= uiSize);
-  return (uiStorageSize <= uiSize) ? uiStorageSize : 0;
+  return (char*)this->uiStorageSize;
 }
 
 //---------------------------------------------------------------------------
@@ -50,5 +66,5 @@ LocationFixSat* LocationFix::getSat (fxuint8 cIndex)
   if (cIndex >= cSatCount)
     return 0;
 
-  return (LocationFixSat*)( ((char*)(&(this->uiSize)) + sizeof(LocationFix)) + (cIndex * sizeof(LocationFixSat)) );
+  return (LocationFixSat*)( ((char*)(&(this->uiMemorySize)) + sizeof(LocationFix)) + (cIndex * sizeof(LocationFixSat)) );
 }
