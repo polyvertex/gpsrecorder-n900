@@ -21,7 +21,6 @@ Location::Location (QObject* pParent)
   m_bStarted  = false;
 
   // last fix
-  m_pFix      = 0;
   m_uiFixTime = 0;
 }
 
@@ -30,8 +29,6 @@ Location::Location (QObject* pParent)
 //---------------------------------------------------------------------------
 Location::~Location (void)
 {
-  if (m_pFix)
-    free(m_pFix);
 }
 
 
@@ -77,8 +74,5 @@ const QVector<uint>& Location::allowedFixSteps (void)
 //---------------------------------------------------------------------------
 void Location::resetLastFix (void)
 {
-  if (m_pFix)
-    m_pFix->clear();
-
   m_uiFixTime = 0;
 }

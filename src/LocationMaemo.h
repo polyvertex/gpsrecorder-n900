@@ -37,9 +37,8 @@ public :
 
 private :
   // fix utils
-  static quint8       fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode);
-  static quint32      fixNeededSize     (const LocationGPSDevice& gpsdev);
-  static LocationFix* fixSetup          (const LocationGPSDevice& gpsdev, LocationFix* pOutFix=0);
+  static quint8 fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode);
+  static void   fixSetup          (LocationFixContainer& fixCont, const LocationGPSDevice& gpsdev);
 
   // callbacks from gps device
   static void locationOnDevConnected    (LocationGPSDevice* pGpsDevice, gpointer pUserData);

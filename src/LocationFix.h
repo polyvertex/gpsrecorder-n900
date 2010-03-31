@@ -60,6 +60,8 @@ enum
     FIXFIELD_TIME,
 };
 
+
+
 // GSM cell info
 struct LocationFixCellInfoGsm
 {
@@ -89,26 +91,11 @@ struct LocationFixSat
   fxint32 iSignalStrength; // signal to noise ratio in [0;99] dBHz
 };
 
+
+
 // the location fix itself
 struct LocationFix
 {
-  void             clear             (void);
-  void             updateStorageSize (void);
-  void             clearTrailingZone (void);
-  const char*      getStorageZone    (void);
-  LocationFixSat*  getSat            (fxuint8 uiSatIndex);
-
-
-  // total size of this Fix, including trailing satellites structures
-  // * CAUTION : it must always remain the first member in this structure !
-  fxuint32 uiMemorySize;
-
-  // the actual size of this fix needed to store it
-  // * CAUTION : it must always remain the second member in this structure !
-  // * this value is always <= uiMemorySize
-  // * it can be null if fix was not initialized
-  fxuint32 uiStorageSize;
-
   // gps fix info
   fxuint8  cFixMode;
   fxuint16 wFixFields;
@@ -136,8 +123,39 @@ struct LocationFix
   fxuint8 cSatUse;   // number of satellites used to calculate this fix
 
   // ... satellites (cSatCount * FixSat)
+  LocationFixSat pFixSat[0];
 }
 __attribute__((packed));
+
+
+
+// a convenient container for one LocationFix structure
+class LocationFixContainer
+{
+public :
+  LocationFixContainer (void);
+  ~LocationFixContainer (void); // implicit reset()
+
+  LocationFix* prepare (fxuint8 cSatCount);
+  void         setFix  (const LocationFix& fix); // implicit prepare()
+  void         setFix  (const LocationFixContainer& fixCont); // implicit prepare()
+  void         reset   (void);
+
+  LocationFix*       getFix     (void)       { return m_pFix; }
+  const LocationFix* getFix     (void) const { return m_pFix; }
+  bool               hasFix     (void) const { return m_uiFixSize > 0; }
+  uint               getFixSize (void) const { return m_uiFixSize; }
+
+  static uint computeFixSize (fxuint8 cSatCount);
+
+private :
+  void allocate (fxuint32 uiNewSize);
+
+private :
+  fxuint32     m_uiBufferSize;
+  LocationFix* m_pFix;
+  fxuint32     m_uiFixSize;
+};
 
 
 #endif // #ifndef __LOCATIONFIX_H__

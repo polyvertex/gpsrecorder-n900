@@ -66,7 +66,7 @@ LocationMaemo::LocationMaemo (void)
   }
 
   // use default fix step value from Location constructor
-  this->setFixStep(m_uiFixTime);
+  this->setFixStep(m_uiFixStep);
 }
 
 //---------------------------------------------------------------------------
@@ -213,128 +213,91 @@ quint8 LocationMaemo::fixConvertFixMode (LocationGPSDeviceMode eGpsDevMode)
 }
 
 //---------------------------------------------------------------------------
-// fixNeededSize
-//---------------------------------------------------------------------------
-quint32 LocationMaemo::fixNeededSize (const LocationGPSDevice& gpsdev)
-{
-  quint32 uiSatsCount = (gpsdev.satellites->len > 0xFF) ? 0xFF : gpsdev.satellites->len;
-  return sizeof(LocationFix) + uiSatsCount * sizeof(LocationFixSat);
-}
-
-//---------------------------------------------------------------------------
 // fixSetup
 //---------------------------------------------------------------------------
-LocationFix* LocationMaemo::fixSetup (const LocationGPSDevice& gpsdev, LocationFix* pOutFix/*=0*/)
+void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDevice& gpsdev)
 {
-  quint32 dwDesiredSize;
+  LocationFix* pFix = 0;
 
+  // ensure we  really got a fix
+  Q_ASSERT(gpsdev.fix);
   if (!gpsdev.fix)
-    return pOutFix;
-  dwDesiredSize = LocationMaemo::fixNeededSize(gpsdev);
+    qFatal("fixSetup() got null fix !");
 
-  // allocate enough memory to store this fix
-  if (!pOutFix)
-  {
-    pOutFix = (LocationFix*)malloc(dwDesiredSize);
-    Q_CHECK_PTR(pOutFix);
-    memset(pOutFix, 0, dwDesiredSize);
+  // be sure we can safely cast the satellites count
+  Q_ASSERT(gpsdev.satellites->len <= 0xFF);
+  if (gpsdev.satellites->len > 0xFF)
+    qFatal("Got LocationGPSDevice fix with %d satellites !", gpsdev.satellites->len);
 
-    pOutFix->uiMemorySize = dwDesiredSize;
-  }
-  else if (pOutFix && dwDesiredSize > pOutFix->uiMemorySize)
-  {
-    quint32 dwOldSize = pOutFix->uiMemorySize;
-
-    pOutFix = (LocationFix*)realloc(pOutFix, dwDesiredSize);
-    Q_CHECK_PTR(pOutFix);
-    pOutFix->uiMemorySize = dwDesiredSize;
-
-    // zeroize trailing zone
-    memset((char*)pOutFix + dwOldSize, 0, dwDesiredSize - dwOldSize);
-  }
+  // prepare destination buffer of this fix
+  pFix = fixCont.prepare((quint8)gpsdev.satellites->len);
 
   // convert fix
   {
     const LocationGPSDeviceFix& devfix = *gpsdev.fix;
 
     // gps fix info
-    pOutFix->cFixMode   = LocationMaemo::fixConvertFixMode(devfix.mode);
-    pOutFix->wFixFields = quint16(devfix.fields);
-    pOutFix->uiTime     = quint32(_abs(devfix.time));
-    pOutFix->uiTimeEP   = quint32(_abs(devfix.ept));
-    pOutFix->iLat       = qint32(devfix.latitude * (double)LOCFIX_MULTIPLIER_LATLONG);
-    pOutFix->iLong      = qint32(devfix.longitude * (double)LOCFIX_MULTIPLIER_LATLONG);
-    pOutFix->uiHorizEP  = quint32(_abs(devfix.eph));
-    pOutFix->iAlt       = qint32(devfix.altitude);
-    pOutFix->uiAltEP    = quint32(_abs(devfix.epv));
-    pOutFix->uiTrack    = quint16(_abs(devfix.track) * (double)LOCFIX_MULTIPLIER_TRACK);
-    pOutFix->uiTrackEP  = quint16(_abs(devfix.epd) * (double)LOCFIX_MULTIPLIER_TRACK);
-    pOutFix->uiSpeed    = quint32(_abs(devfix.speed) * (double)LOCFIX_MULTIPLIER_SPEED);
-    pOutFix->uiSpeedEP  = quint32(_abs(devfix.eps) *  (double)LOCFIX_MULTIPLIER_SPEED);
-    pOutFix->iClimb     = qint16(devfix.climb * (double)LOCFIX_MULTIPLIER_CLIMB);
-    pOutFix->uiClimbEP  = quint16(_abs(devfix.epc) * (double)LOCFIX_MULTIPLIER_CLIMB);
+    pFix->cFixMode   = LocationMaemo::fixConvertFixMode(devfix.mode);
+    pFix->wFixFields = quint16(devfix.fields);
+    pFix->uiTime     = quint32(_abs(devfix.time));
+    pFix->uiTimeEP   = quint32(_abs(devfix.ept));
+    pFix->iLat       = qint32(devfix.latitude * (double)LOCFIX_MULTIPLIER_LATLONG);
+    pFix->iLong      = qint32(devfix.longitude * (double)LOCFIX_MULTIPLIER_LATLONG);
+    pFix->uiHorizEP  = quint32(_abs(devfix.eph));
+    pFix->iAlt       = qint32(devfix.altitude);
+    pFix->uiAltEP    = quint32(_abs(devfix.epv));
+    pFix->uiTrack    = quint16(_abs(devfix.track) * (double)LOCFIX_MULTIPLIER_TRACK);
+    pFix->uiTrackEP  = quint16(_abs(devfix.epd) * (double)LOCFIX_MULTIPLIER_TRACK);
+    pFix->uiSpeed    = quint32(_abs(devfix.speed) * (double)LOCFIX_MULTIPLIER_SPEED);
+    pFix->uiSpeedEP  = quint32(_abs(devfix.eps) *  (double)LOCFIX_MULTIPLIER_SPEED);
+    pFix->iClimb     = qint16(devfix.climb * (double)LOCFIX_MULTIPLIER_CLIMB);
+    pFix->uiClimbEP  = quint16(_abs(devfix.epc) * (double)LOCFIX_MULTIPLIER_CLIMB);
 
     // cell info - gsm
     if ((gpsdev.cell_info->flags & LOCATION_CELL_INFO_GSM_CELL_INFO_SET) != 0)
     {
-      pOutFix->sGSM.bSetup   = 1;
-      pOutFix->sGSM.uiMCC    = gpsdev.cell_info->gsm_cell_info.mcc;
-      pOutFix->sGSM.uiMNC    = gpsdev.cell_info->gsm_cell_info.mnc;
-      pOutFix->sGSM.uiLAC    = gpsdev.cell_info->gsm_cell_info.lac;
-      pOutFix->sGSM.uiCellId = gpsdev.cell_info->gsm_cell_info.cell_id;
+      pFix->sGSM.bSetup   = 1;
+      pFix->sGSM.uiMCC    = gpsdev.cell_info->gsm_cell_info.mcc;
+      pFix->sGSM.uiMNC    = gpsdev.cell_info->gsm_cell_info.mnc;
+      pFix->sGSM.uiLAC    = gpsdev.cell_info->gsm_cell_info.lac;
+      pFix->sGSM.uiCellId = gpsdev.cell_info->gsm_cell_info.cell_id;
     }
     else
     {
-      memset(&pOutFix->sGSM, 0, sizeof(pOutFix->sGSM));
+      memset(&pFix->sGSM, 0, sizeof(pFix->sGSM));
     }
 
     // cell info - wcdma
     if ((gpsdev.cell_info->flags & LOCATION_CELL_INFO_WCDMA_CELL_INFO_SET) != 0)
     {
-      pOutFix->sWCDMA.bSetup = 1;
-      pOutFix->sWCDMA.uiMCC  = gpsdev.cell_info->wcdma_cell_info.mcc;
-      pOutFix->sWCDMA.uiMNC  = gpsdev.cell_info->wcdma_cell_info.mnc;
-      pOutFix->sWCDMA.uiUCID = gpsdev.cell_info->wcdma_cell_info.ucid;
+      pFix->sWCDMA.bSetup = 1;
+      pFix->sWCDMA.uiMCC  = gpsdev.cell_info->wcdma_cell_info.mcc;
+      pFix->sWCDMA.uiMNC  = gpsdev.cell_info->wcdma_cell_info.mnc;
+      pFix->sWCDMA.uiUCID = gpsdev.cell_info->wcdma_cell_info.ucid;
     }
     else
     {
-      memset(&pOutFix->sWCDMA, 0, sizeof(pOutFix->sWCDMA));
+      memset(&pFix->sWCDMA, 0, sizeof(pFix->sWCDMA));
     }
 
     // satellites count
-    pOutFix->cSatCount = (gpsdev.satellites->len > 0xFF) ? 0xFF : gpsdev.satellites->len;
-    pOutFix->cSatView  = quint8(gpsdev.satellites_in_view);
-    pOutFix->cSatUse   = quint8(gpsdev.satellites_in_use);
+    pFix->cSatCount = quint8(gpsdev.satellites->len);
+    pFix->cSatView  = quint8(gpsdev.satellites_in_view);
+    pFix->cSatUse   = quint8(gpsdev.satellites_in_use);
 
     // satellites
-    for (quint8 cIdx = 0; cIdx < pOutFix->cSatCount; ++cIdx)
+    for (quint8 cIdx = 0; cIdx < pFix->cSatCount; ++cIdx)
     {
-      LocationFixSat* pOutFixSat = pOutFix->getSat(cIdx);
-
-      if (!pOutFixSat)
-      {
-        // we should never get here !
-        pOutFix->cSatCount = cIdx;
-        break;
-      }
-
+      LocationFixSat* pFixSat = &pFix->pFixSat[cIdx];
       LocationGPSDeviceSatellite* pDevSat = (LocationGPSDeviceSatellite*)g_ptr_array_index(gpsdev.satellites, (uint)cIdx);
 
-      pOutFixSat->bInUse          = pDevSat->in_use ? 1 : 0;
-      pOutFixSat->iPRN            = pDevSat->prn;
-      pOutFixSat->iElevation      = pDevSat->elevation;
-      pOutFixSat->iAzimuth        = pDevSat->azimuth;
-      pOutFixSat->iSignalStrength = pDevSat->signal_strength;
+      pFixSat->bInUse          = pDevSat->in_use ? 1 : 0;
+      pFixSat->iPRN            = pDevSat->prn;
+      pFixSat->iElevation      = pDevSat->elevation;
+      pFixSat->iAzimuth        = pDevSat->azimuth;
+      pFixSat->iSignalStrength = pDevSat->signal_strength;
     }
-
-    // update the storage size value
-    pOutFix->updateStorageSize();
-
-    // zeroize trailing memory zone
-    pOutFix->clearTrailingZone();
   }
-
-  return pOutFix;
 }
 
 
@@ -376,12 +339,9 @@ void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointe
   if (pGpsDevice && pGpsDevice->fix)
   {
     pThis->m_uiFixTime = time(0);
-    pThis->m_pFix      = LocationMaemo::fixSetup(*pGpsDevice, pThis->m_pFix);
+    LocationMaemo::fixSetup(pThis->m_Fix, *pGpsDevice);
 
-    if (pThis->m_pFix)
-      emit pThis->sigGotLocationFix(pThis, pThis->m_pFix);
-    else
-      pThis->m_uiFixTime = 0;
+    emit pThis->sigGotLocationFix(pThis, pThis->m_Fix);
   }
 }
 

@@ -1,6 +1,7 @@
 TARGET = gpsrecorder
 
 CONFIG += precompile_header release
+#CONFIG += silent
 CONFIG(debug, debug|release) {
   TARGET = $$join(TARGET,,,d)
   message(This is a DEBUG build !)
@@ -20,6 +21,7 @@ PRECOMPILED_HEADER = src/stable.h
 
 HEADERS += \
   src/App.h \
+  src/GPSRFile.h \
   src/Location.h \
   src/LocationFix.h \
   src/LocationMaemo.h \
@@ -28,6 +30,7 @@ HEADERS += \
 SOURCES += \
   src/main.cpp \
   src/App.cpp \
+  src/GPSRFile.cpp \
   src/Location.cpp \
   src/LocationFix.cpp \
   src/LocationMaemo.cpp \

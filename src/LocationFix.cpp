@@ -7,64 +7,105 @@
 //
 //***************************************************************************
 
-#include "LocationFix.h"
-
+#include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// clear
+// LocationFixContainer
 //---------------------------------------------------------------------------
-void LocationFix::clear (void)
+LocationFixContainer::LocationFixContainer (void)
 {
-  fxuint32 uiSizeBak = uiMemorySize;
-  memset(&(this->uiMemorySize), 0, sizeof(LocationFix));
-  uiMemorySize = uiSizeBak;
+  m_uiBufferSize = 0;
+  m_pFix         = 0;
+  m_uiFixSize    = 0;
 }
 
 //---------------------------------------------------------------------------
-// updateStorageSize
+// ~LocationFixContainer
 //---------------------------------------------------------------------------
-void LocationFix::updateStorageSize (void)
+LocationFixContainer::~LocationFixContainer (void)
 {
-  fxuint32 uiNewStorageSize =
-    sizeof(LocationFix) +
-    (cSatCount * sizeof(LocationFixSat)) -
-    sizeof(uiMemorySize);
+  if (m_pFix)
+    free(m_pFix);
+}
 
-  Q_ASSERT(uiNewStorageSize <= uiMemorySize);
-  if (uiNewStorageSize <= uiMemorySize)
-    uiStorageSize = uiNewStorageSize;
+//---------------------------------------------------------------------------
+// reset
+//---------------------------------------------------------------------------
+void LocationFixContainer::reset (void)
+{
+  if (m_pFix)
+  {
+    free(m_pFix);
+    m_pFix = 0;
+  }
+
+  m_uiBufferSize = 0;
+  m_uiFixSize    = 0;
+}
+
+//---------------------------------------------------------------------------
+// allocate
+//---------------------------------------------------------------------------
+void LocationFixContainer::allocate (fxuint32 uiNewSize)
+{
+  if (m_pFix && m_uiBufferSize >= uiNewSize)
+    return;
+
+  if (!m_pFix)
+  {
+    m_pFix = (LocationFix*)malloc(uiNewSize);
+    Q_CHECK_PTR(m_pFix);
+
+    m_uiBufferSize = uiNewSize;
+    m_uiFixSize    = 0;
+  }
+  else if (m_uiBufferSize < uiNewSize)
+  {
+    m_pFix = (LocationFix*)realloc(m_pFix, uiNewSize);
+    Q_CHECK_PTR(m_pFix);
+
+    m_uiBufferSize = uiNewSize;
+  }
+}
+
+//---------------------------------------------------------------------------
+// prepare
+//---------------------------------------------------------------------------
+LocationFix* LocationFixContainer::prepare (fxuint8 cSatCount)
+{
+  this->allocate(LocationFixContainer::computeFixSize(cSatCount));
+  return m_pFix;
+}
+
+//---------------------------------------------------------------------------
+// setFix
+//---------------------------------------------------------------------------
+void LocationFixContainer::setFix (const LocationFix& fix)
+{
+  fxuint32 uiFixSize = LocationFixContainer::computeFixSize(fix.cSatCount);
+
+  this->allocate(uiFixSize);
+
+  memcpy(m_pFix, &fix, uiFixSize);
+  m_uiFixSize = uiFixSize;
+}
+
+//---------------------------------------------------------------------------
+// setFix
+//---------------------------------------------------------------------------
+void LocationFixContainer::setFix (const LocationFixContainer& fixCont)
+{
+  if (fixCont.hasFix())
+    m_uiFixSize = 0;
   else
-    uiStorageSize = 0;
+    this->setFix(*fixCont.getFix());
 }
 
 //---------------------------------------------------------------------------
-// clearTrailingZone
+// computeFixSize
 //---------------------------------------------------------------------------
-void LocationFix::clearTrailingZone (void)
+fxuint32 LocationFixContainer::computeFixSize (fxuint8 cSatCount)
 {
-  fxuint32 uiTrailingOffset = sizeof(LocationFix) + cSatCount * sizeof(LocationFixSat);
-
-  if (uiTrailingOffset < uiMemorySize)
-    memset((char*)(&(this->uiMemorySize)) + uiTrailingOffset, 0, uiMemorySize - uiTrailingOffset);
-}
-
-//---------------------------------------------------------------------------
-// getStorageZone
-//---------------------------------------------------------------------------
-const char* LocationFix::getStorageZone (void)
-{
-  return (char*)this->uiStorageSize;
-}
-
-//---------------------------------------------------------------------------
-// getSat
-//---------------------------------------------------------------------------
-LocationFixSat* LocationFix::getSat (fxuint8 cIndex)
-{
-  Q_ASSERT(cIndex < cSatCount);
-  if (cIndex >= cSatCount)
-    return 0;
-
-  return (LocationFixSat*)( ((char*)(&(this->uiMemorySize)) + sizeof(LocationFix)) + (cIndex * sizeof(LocationFixSat)) );
+  return sizeof(LocationFix) + cSatCount * sizeof(LocationFixSat);
 }
