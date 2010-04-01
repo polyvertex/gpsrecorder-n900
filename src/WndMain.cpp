@@ -196,7 +196,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer& fi
 
   if (m_GPSRFile.isOpen() &&
       !m_GPSRFile.isReading() &&
-      fix.uiFixMode >= FIXMODE_2D &&
+      fix.cFixMode >= FIXMODE_2D &&
       fix.hasFields(FIXFIELD_LATLONG) &&
       fix.uiHorizEP < 9000) // 90m
   {
