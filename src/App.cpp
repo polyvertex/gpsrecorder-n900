@@ -31,6 +31,7 @@ App::App (int& nArgc, char** ppszArgv)
   m_pLocation = Location::createDevice();
 
   // show up main window
+  // everything must be initialized before creating the main window !
   m_pWndMain = new WndMain();
   Q_CHECK_PTR(m_pWndMain);
   m_pWndMain->show();

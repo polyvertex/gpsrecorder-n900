@@ -11,6 +11,30 @@
 
 
 //---------------------------------------------------------------------------
+// getModeStr
+//---------------------------------------------------------------------------
+const char* LocationFix::getModeStr (void) const
+{
+  switch (cFixMode)
+  {
+    case FIXMODE_NOTSEEN :
+      return "NotSeen";
+    case FIXMODE_NOFIX :
+      return "NoFix";
+    case FIXMODE_2D :
+      return "2D";
+    case FIXMODE_3D :
+      return "3D";
+
+    default :
+      return "?";
+  }
+}
+
+
+
+
+//---------------------------------------------------------------------------
 // LocationFixContainer
 //---------------------------------------------------------------------------
 LocationFixContainer::LocationFixContainer (void)

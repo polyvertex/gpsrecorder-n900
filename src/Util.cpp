@@ -47,12 +47,12 @@ QFile::Permissions Util::filePermissions (const char* pszFile)
 //---------------------------------------------------------------------------
 // timeString
 //---------------------------------------------------------------------------
-const char* Util::timeString (bool bForFilename/*=false*/, time_t nTime/*=0*/)
+const char* Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/)
 {
   /*
   static char szTime[24]; // YYYY-MM-DD hh:mm:ss
 
-  time_t t = (nTime > 0) ? nTime : time(NULL);
+  time_t t = (uiTime > 0) ? uiTime : time(0);
   struct tm* ptm = localtime(&t);
 
   if (bForFilename)
@@ -68,8 +68,7 @@ const char* Util::timeString (bool bForFilename/*=false*/, time_t nTime/*=0*/)
   QDateTime dt;
   QString strFormat;
 
-  if (nTime > 0)
-    dt.setTime_t(nTime);
+  dt.setTime_t((uiTime > 0) ? uiTime : time(0));
   strFormat = bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss";
 
   strcpy((char*)&szDateTime, qPrintable(dt.toString(strFormat)));

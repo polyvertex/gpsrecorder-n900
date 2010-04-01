@@ -70,7 +70,8 @@ struct LocationFixCellInfoGsm
   fxuint16 uiMNC;    // Mobile Network Code
   fxuint16 uiLAC;    // Location Area Code
   fxuint16 uiCellId; // Cell ID
-};
+}
+__attribute__((packed));
 
 // WCDMA cell info
 struct LocationFixCellInfoWcdma
@@ -79,26 +80,41 @@ struct LocationFixCellInfoWcdma
   fxuint16 uiMCC;  // Mobile Country Code
   fxuint16 uiMNC;  // Mobile Network Code
   fxuint16 uiUCID; // UC ID
-};
+}
+__attribute__((packed));
 
 // satellite info
 struct LocationFixSat
 {
-  fxuint8 bInUse;          // is this satellite usedb to calculate this fix ?
-  fxint32 iPRN;            // id
-  fxint32 iElevation;      // elevation in [0;90] degrees
-  fxint32 iAzimuth;        // azimuth in [0;359] degrees
-  fxint32 iSignalStrength; // signal to noise ratio in [0;99] dBHz
-};
+  fxuint8  bInUse;          // is this satellite used to calculate this fix ?
+  fxint32  iPRN;            // id
+  fxuint8  cElevation;      // elevation in [0;90] degrees
+  fxuint16 wAzimuth;        // azimuth in [0;359] degrees
+  fxuint8  cSignalStrength; // signal to noise ratio in [0;99] dBHz
+}
+__attribute__((packed));
 
 
 
 // the location fix itself
 struct LocationFix
 {
+  const char* getModeStr (void) const;
+
+  bool hasFields (fxuint16 wWantedFields) const { return (wFixFields & wWantedFields) != 0; }
+
+  double getLatDeg     (void) const { return double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG); }
+  double getLongDeg    (void) const { return double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG); }
+  double getTrackDeg   (void) const { return double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK); }
+  double getTrackEpDeg (void) const { return double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK); }
+  double getSpeedKmh   (void) const { return double(uiSpeed)   / double(LOCFIX_MULTIPLIER_SPEED); }
+  double getSpeedKmhEp (void) const { return double(uiSpeedEP) / double(LOCFIX_MULTIPLIER_SPEED); }
+  double getClimbM     (void) const { return double(iClimb)    / double(LOCFIX_MULTIPLIER_CLIMB); }
+  double getClimbMEp   (void) const { return double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB); }
+
   // gps fix info
-  fxuint8  cFixMode;
-  fxuint16 wFixFields;
+  fxuint8  cFixMode;   // one of the FIXMODE_* values
+  fxuint16 wFixFields; // one or several FIXFIELD_* flags
   fxuint32 uiTime;
   fxuint32 uiTimeEP;   // estimated time uncertainty
   fxint32  iLat;       // latitude ; quint32(lat * LOCFIX_MULTIPLIER_LATLONG)
@@ -118,9 +134,8 @@ struct LocationFix
   LocationFixCellInfoWcdma sWCDMA;
 
   // satellites count
-  fxuint8 cSatCount; // number of satellites structures appended to this fix (FIXME : same as cSatView ???)
-  fxuint8 cSatView;  // number of satellites the gps device can see
-  fxuint8 cSatUse;   // number of satellites used to calculate this fix
+  fxuint8 cSatCount; // number of satellites structures appended to this fix
+  fxuint8 cSatUse;   // number of satellites actually used to calculate this fix
 
   // ... satellites (cSatCount * FixSat)
   LocationFixSat pFixSat[0];

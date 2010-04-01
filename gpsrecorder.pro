@@ -2,6 +2,7 @@ TARGET = gpsrecorder
 
 CONFIG += precompile_header release
 #CONFIG += silent
+CONFIG += debug
 CONFIG(debug, debug|release) {
   TARGET = $$join(TARGET,,,d)
   message(This is a DEBUG build !)

@@ -76,6 +76,9 @@ extern "C" {
 #define MY_STRINGIZE__SUB(x)  #x
 #define MY_CAT__SUB(a,b)      a##b
 
+// debug mark
+#define MY_DBGMARK { qDebug("DBGMARK --> %s(%d)", __FILE__, __LINE__); }
+
 
 //---------------------------------------------------------------------------
 // Local Headers
@@ -85,8 +88,8 @@ extern "C" {
 #include "Location.h"
 #include "LocationMaemo.h"
 #include "GPSRFile.h"
-#include "WndMain.h"
 
+#include "WndMain.h"
 #include "App.h"
 
 

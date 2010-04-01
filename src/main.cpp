@@ -42,6 +42,9 @@ static const char* _findDefaultUserDir (bool bOutputDir)
     psz = getenv("MYDOCSDIR");
     if (psz && _isWritableDir(psz))
       return psz;
+
+    if (_isWritableDir("/home/user/MyDocs")) // sudo gainroot does not give MYDOCSDIR env var
+      return "/home/user/MyDocs";
   }
 
   psz = getenv("HOME");
@@ -76,11 +79,11 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
     if (!hLogFile)
     {
       qInstallMsgHandler(0);
-      qWarning("Could not open/create log file \"%s\" !", qPrintable(str));
+      qWarning("Could not open/create log file \"%s\" ! Error %d : %s", qPrintable(str), errno, strerror(errno));
       return;
     }
 
-    str.fill('*', 80);
+    str.fill('*', 78);
 
     fprintf(hLogFile,
       "\n"
@@ -124,12 +127,15 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
           break;
       }
 
-      fprintf(hLogFile,
-        "%s [%c] %s%s",
-        Util::timeString(),
-        cLevel,
-        (pszMessage ? pszMessage : ""),
-        (bHasNewLine ? "" : "\n") );
+      for (int i = 0; i < 2; ++i)
+      {
+        fprintf((i == 0) ? hLogFile : stderr,
+          "%s [%c] %s%s",
+          Util::timeString(),
+          cLevel,
+          (pszMessage ? pszMessage : ""),
+          (bHasNewLine ? "" : "\n") );
+      }
     }
   }
 
@@ -155,10 +161,13 @@ int main (int nArgc, char** ppszArgv)
   qDebug("\n"); // open log file now so we can track start time
 
   App::setOutputDir(_findDefaultUserDir(true));
-  qDebug("Default output directory is \"%s\".", qPrintable(App::outputDir()));
+  qDebug("Default output directory is %s", qPrintable(App::outputDir()));
 
-  App app(nArgc, ppszArgv);
-  nRes = app.exec();
+  // run
+  {
+    App app(nArgc, ppszArgv);
+    nRes = app.exec();
+  }
 
   if (hLogFile)
   {

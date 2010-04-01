@@ -50,8 +50,11 @@ LocationMaemo::LocationMaemo (void)
 
   // init location lib
   {
-    m_pGpsDevice   = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
+    m_pGpsDevice = (LocationGPSDevice*)g_object_new(LOCATION_TYPE_GPS_DEVICE, NULL);
+    Q_CHECK_PTR(m_pGpsDevice);
+
     m_pGpsdControl = location_gpsd_control_get_default();
+    Q_CHECK_PTR(m_pGpsdControl);
 
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", m_eGpsdControlInterval, NULL);
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-method",   LOCATION_METHOD_AGNSS, NULL);
@@ -76,7 +79,7 @@ LocationMaemo::~LocationMaemo (void)
 {
   // uninit location lib
   {
-    location_gpsd_control_stop(m_pGpsdControl);
+    this->stop();
 
     g_signal_handler_disconnect(m_pGpsDevice, m_auiSigHdlGpsDevice[0]);
     g_signal_handler_disconnect(m_pGpsDevice, m_auiSigHdlGpsDevice[1]);
@@ -225,12 +228,15 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
     qFatal("fixSetup() got null fix !");
 
   // be sure we can safely cast the satellites count
-  Q_ASSERT(gpsdev.satellites->len <= 0xFF);
-  if (gpsdev.satellites->len > 0xFF)
-    qFatal("Got LocationGPSDevice fix with %d satellites !", gpsdev.satellites->len);
+  if (gpsdev.satellites)
+  {
+    Q_ASSERT(gpsdev.satellites->len <= 0xFF);
+    if (gpsdev.satellites->len > 0xFF)
+      qFatal("Got LocationGPSDevice fix with %d satellites !", gpsdev.satellites->len);
+  }
 
   // prepare destination buffer of this fix
-  pFix = fixCont.prepare((quint8)gpsdev.satellites->len);
+  pFix = fixCont.prepare(gpsdev.satellites ? (quint8)gpsdev.satellites->len : 0);
 
   // convert fix
   {
@@ -254,7 +260,7 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
     pFix->uiClimbEP  = quint16(_abs(devfix.epc) * (double)LOCFIX_MULTIPLIER_CLIMB);
 
     // cell info - gsm
-    if ((gpsdev.cell_info->flags & LOCATION_CELL_INFO_GSM_CELL_INFO_SET) != 0)
+    if (gpsdev.cell_info && (gpsdev.cell_info->flags & LOCATION_CELL_INFO_GSM_CELL_INFO_SET) != 0)
     {
       pFix->sGSM.bSetup   = 1;
       pFix->sGSM.uiMCC    = gpsdev.cell_info->gsm_cell_info.mcc;
@@ -268,7 +274,7 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
     }
 
     // cell info - wcdma
-    if ((gpsdev.cell_info->flags & LOCATION_CELL_INFO_WCDMA_CELL_INFO_SET) != 0)
+    if (gpsdev.cell_info && (gpsdev.cell_info->flags & LOCATION_CELL_INFO_WCDMA_CELL_INFO_SET) != 0)
     {
       pFix->sWCDMA.bSetup = 1;
       pFix->sWCDMA.uiMCC  = gpsdev.cell_info->wcdma_cell_info.mcc;
@@ -281,21 +287,24 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
     }
 
     // satellites count
-    pFix->cSatCount = quint8(gpsdev.satellites->len);
-    pFix->cSatView  = quint8(gpsdev.satellites_in_view);
+    pFix->cSatCount = quint8(gpsdev.satellites_in_view);
     pFix->cSatUse   = quint8(gpsdev.satellites_in_use);
+    Q_ASSERT((pFix->cSatCount <= 0) || (gpsdev.satellites && gpsdev.satellites->len <= 0xFF && pFix->cSatCount == quint8(gpsdev.satellites->len)));
 
     // satellites
-    for (quint8 cIdx = 0; cIdx < pFix->cSatCount; ++cIdx)
+    if (gpsdev.satellites)
     {
-      LocationFixSat* pFixSat = &pFix->pFixSat[cIdx];
-      LocationGPSDeviceSatellite* pDevSat = (LocationGPSDeviceSatellite*)g_ptr_array_index(gpsdev.satellites, (uint)cIdx);
+      for (quint8 cIdx = 0; cIdx < pFix->cSatCount; ++cIdx)
+      {
+        LocationFixSat* pFixSat = &pFix->pFixSat[cIdx];
+        LocationGPSDeviceSatellite* pDevSat = (LocationGPSDeviceSatellite*)g_ptr_array_index(gpsdev.satellites, (uint)cIdx);
 
-      pFixSat->bInUse          = pDevSat->in_use ? 1 : 0;
-      pFixSat->iPRN            = pDevSat->prn;
-      pFixSat->iElevation      = pDevSat->elevation;
-      pFixSat->iAzimuth        = pDevSat->azimuth;
-      pFixSat->iSignalStrength = pDevSat->signal_strength;
+        pFixSat->bInUse          = pDevSat->in_use ? 1 : 0;
+        pFixSat->iPRN            = pDevSat->prn;
+        pFixSat->cElevation      = fxuint8(pDevSat->elevation);
+        pFixSat->wAzimuth        = fxuint16(pDevSat->azimuth);
+        pFixSat->cSignalStrength = fxuint8(pDevSat->signal_strength);
+      }
     }
   }
 }
@@ -341,7 +350,7 @@ void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointe
     pThis->m_uiFixTime = time(0);
     LocationMaemo::fixSetup(pThis->m_Fix, *pGpsDevice);
 
-    emit pThis->sigGotLocationFix(pThis, pThis->m_Fix);
+    emit pThis->sigLocationFix(pThis, pThis->m_Fix);
   }
 }
 

@@ -24,7 +24,7 @@ public :
   static QFile::Permissions filePermissions (const char* pszFile);
 
   // time
-  static const char* timeString (bool bForFilename=false, time_t nTime=0);
+  static const char* timeString (bool bForFilename=false, time_t uiTime=0);
 };
 
 

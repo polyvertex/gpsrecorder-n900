@@ -26,6 +26,34 @@ public :
 
 
 private :
+  void showHome (void);
+  void showFix  (void);
+
+  void clearFixFields (void);
+
+
+private slots :
+  void onPushedStartStop (void);
+
+  void onLocationFix (Location* pLocation, const LocationFixContainer& fixCont);
+
+
+private :
+  LocationFixContainer m_FixCont;
+
+  QAction* m_pMenuStartStop;
+
+  QLineEdit* m_pTxtFixFields;
+  QLineEdit* m_pTxtFixMode;
+  QLineEdit* m_pTxtFixTime;
+  QLineEdit* m_pTxtFixLat;
+  QLineEdit* m_pTxtFixLong;
+  QLineEdit* m_pTxtFixAlt;
+  QLineEdit* m_pTxtFixTrack;
+  QLineEdit* m_pTxtFixSpeed;
+  QLineEdit* m_pTxtFixSatUse;
+  QLineEdit* m_pTxtFixGsm;
+  QLineEdit* m_pTxtFixWcdma;
 };
 
 

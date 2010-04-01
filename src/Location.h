@@ -43,7 +43,7 @@ public :
 
 
 signals :
-  void sigGotLocationFix (Location* pLocation, const LocationFixContainer& fixCont);
+  void sigLocationFix (Location* pLocation, const LocationFixContainer& fixCont);
 
 
 protected :
