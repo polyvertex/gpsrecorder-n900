@@ -34,7 +34,7 @@ public :
   {
     ERROR_NOTOPEN        = 1, // file is not open or is not in reading mode
     ERROR_READ           = 2, // system error occurred while reading file
-    ERROR_FORMAT         = 3, // file header does not match
+    ERROR_FORMAT         = 3, // file or chunk header does not match
     ERROR_FORMAT_VERSION = 4, // format version does not match
     ERROR_TRUNCATED      = 5, // file is not complete
   };
@@ -49,9 +49,10 @@ public :
 
   struct Chunk
   {
-    quint16 uiId;   // chunk type id
-    quint32 uiSize; // total size of this chunk including this header
-    quint32 uiTime; // posix timestamp, utc
+    quint8  aucMagic; // '@'
+    quint16 uiId;     // chunk type id
+    quint32 uiSize;   // total size of this chunk including this header
+    quint32 uiTime;   // posix timestamp, utc
     quint8  aData[0];
   }
   __attribute__((packed));

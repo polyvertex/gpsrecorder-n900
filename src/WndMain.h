@@ -40,6 +40,7 @@ private slots :
 
 private :
   LocationFixContainer m_FixCont;
+  GPSRFile m_GPSRFile;
 
   QAction* m_pMenuStartStop;
 

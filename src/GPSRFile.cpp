@@ -156,9 +156,10 @@ void GPSRFile::writeMessage (time_t uiTime, const char* pszMessage)
   m_Swap.reserve(uiChunkSize);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->uiId   = CHUNK_MESSAGE;
-  pChunk->uiSize = uiChunkSize;
-  pChunk->uiTime = uiTime ? uiTime : time(0);
+  pChunk->aucMagic = '@';
+  pChunk->uiId     = CHUNK_MESSAGE;
+  pChunk->uiSize   = uiChunkSize;
+  pChunk->uiTime   = uiTime ? uiTime : time(0);
 
   memcpy(pChunk->aData, pszMessage, uiMsgSize);
   pChunk->aData[uiMsgSize - 1] = 0;
@@ -188,9 +189,10 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
   m_Swap.reserve(uiChunkSize);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->uiId   = CHUNK_LOCATIONFIX;
-  pChunk->uiSize = uiChunkSize;
-  pChunk->uiTime = uiTime ? uiTime : time(0);
+  pChunk->aucMagic = '@';
+  pChunk->uiId     = CHUNK_LOCATIONFIX;
+  pChunk->uiSize   = uiChunkSize;
+  pChunk->uiTime   = uiTime ? uiTime : time(0);
 
   memcpy(pChunk->aData, fixCont.getFix(), fixCont.getFixSize());
 
@@ -215,9 +217,10 @@ void GPSRFile::writeSnap (time_t uiTime)
   m_Swap.reserve(uiChunkSize);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->uiId   = CHUNK_SNAP;
-  pChunk->uiSize = uiChunkSize;
-  pChunk->uiTime = uiTime ? uiTime : time(0);
+  pChunk->aucMagic = '@';
+  pChunk->uiId     = CHUNK_SNAP;
+  pChunk->uiSize   = uiChunkSize;
+  pChunk->uiTime   = uiTime ? uiTime : time(0);
 
   this->writeData((char*)pChunk, uiChunkSize);
 }
@@ -310,6 +313,11 @@ bool GPSRFile::readNext (void)
   // read chunk
   if (!this->readSize((char*)pChunk, sizeof(*pChunk), &m_bReadEOF))
     return false;
+  if (pChunk->aucMagic != '@')
+  {
+    emit sigReadError(this, ERROR_FORMAT);
+    return false;
+  }
   if (pChunk->uiSize > sizeof(*pChunk))
   {
     m_Swap.reserve(pChunk->uiSize);

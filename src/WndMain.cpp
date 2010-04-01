@@ -129,16 +129,29 @@ void WndMain::onPushedStartStop (void)
 
   if (pLocation->isStarted())
   {
+    m_GPSRFile.close();
+
     pLocation->stop();
-    this->clearFixFields();
+    //this->clearFixFields();
 
     m_pMenuStartStop->setText("Start");
   }
   else
   {
+    QByteArray strPath;
+
     this->clearFixFields();
     pLocation->resetLastFix();
     pLocation->start();
+
+    strPath  = App::outputDir().toAscii();
+    strPath += "/";
+    strPath += App::applicationName().toAscii();
+    strPath += "-";
+    strPath += Util::timeString(true);
+    strPath += ".gpsr";
+    if (m_GPSRFile.openWrite(strPath.constData(), true))
+      qDebug("Opened GPSR file %s", strPath.constData());
 
     m_pMenuStartStop->setText("Stop");
   }
@@ -180,6 +193,15 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer& fi
 
   m_FixCont.setFix(fixCont);
   const LocationFix& fix = *m_FixCont.getFix();
+
+  if (m_GPSRFile.isOpen() &&
+      !m_GPSRFile.isReading() &&
+      fix.uiFixMode >= FIXMODE_2D &&
+      fix.hasFields(FIXFIELD_LATLONG) &&
+      fix.uiHorizEP < 9000) // 90m
+  {
+    m_GPSRFile.writeLocationFix(time(0), m_FixCont);
+  }
 
   if (fix.wFixFields != FIXFIELD_NONE)
   {
