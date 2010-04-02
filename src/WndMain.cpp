@@ -72,8 +72,8 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   this->connect(
     App::instance()->location(),
-    SIGNAL(sigLocationFix(Location*, const LocationFixContainer&)),
-    SLOT(onLocationFix(Location*, const LocationFixContainer&)) );
+    SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
+    SLOT(onLocationFix(Location*, const LocationFixContainer*, bool)) );
 }
 
 //---------------------------------------------------------------------------
@@ -125,33 +125,25 @@ void WndMain::showFix (void)
 //---------------------------------------------------------------------------
 void WndMain::onPushedStartStop (void)
 {
-  Location* pLocation = App::instance()->location();
+  App* pApp = App::instance();
+  Location* pLocation = pApp->location();
 
   if (pLocation->isStarted())
   {
-    m_GPSRFile.close();
-
     pLocation->stop();
     //this->clearFixFields();
+
+    pApp->setState(App::STATE_STOPPED);
 
     m_pMenuStartStop->setText("Start");
   }
   else
   {
-    QByteArray strPath;
+    pApp->setState(App::STATE_STARTED);
 
     this->clearFixFields();
     pLocation->resetLastFix();
     pLocation->start();
-
-    strPath  = App::outputDir().toAscii();
-    strPath += "/";
-    strPath += App::applicationName().toAscii();
-    strPath += "-";
-    strPath += Util::timeString(true);
-    strPath += ".gpsr";
-    if (m_GPSRFile.openWrite(strPath.constData(), true))
-      qDebug("Opened GPSR file %s", strPath.constData());
 
     m_pMenuStartStop->setText("Stop");
   }
@@ -180,28 +172,17 @@ void WndMain::clearFixFields (void)
 //---------------------------------------------------------------------------
 // onLocationFix
 //---------------------------------------------------------------------------
-void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer& fixCont)
+void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
   QString strFields;
+  QString strMode;
   QString strTime;
   QString strGSM;
   QString strWCDMA;
 
   Q_UNUSED(pLocation);
-  if (!App::instance()->location()->isStarted())
-    return; // this can happen right after a stop()
 
-  m_FixCont.setFix(fixCont);
-  const LocationFix& fix = *m_FixCont.getFix();
-
-  if (m_GPSRFile.isOpen() &&
-      !m_GPSRFile.isReading() &&
-      fix.cFixMode >= FIXMODE_2D &&
-      fix.hasFields(FIXFIELD_LATLONG) &&
-      fix.uiHorizEP < 9000) // 90m
-  {
-    m_GPSRFile.writeLocationFix(time(0), m_FixCont);
-  }
+  const LocationFix& fix = *pFixCont->getFix();
 
   if (fix.wFixFields != FIXFIELD_NONE)
   {
@@ -219,6 +200,8 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer& fi
       strFields += "Climb ";
   }
 
+  strMode.sprintf("%s (accurate : %s)", fix.getModeStr(), (bAccurate ? "yes" : "no"));
+
   if (fix.uiTime == 0)
     strTime = "0";
   else
@@ -232,7 +215,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer& fi
 
 
   m_pTxtFixFields->setText(strFields);
-  m_pTxtFixMode->setText(fix.getModeStr());
+  m_pTxtFixMode->setText(strMode);
   m_pTxtFixTime->setText(strTime);
   m_pTxtFixLat->setText(QString::number(fix.getLatDeg(), 'f', 6));
   m_pTxtFixLong->setText(QString::number(fix.getLongDeg(), 'f', 6));

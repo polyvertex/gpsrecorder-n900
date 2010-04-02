@@ -151,17 +151,26 @@ public :
   LocationFixContainer (void);
   ~LocationFixContainer (void); // implicit reset()
 
-  LocationFix* prepare (fxuint8 cSatCount);
-  void         setFix  (const LocationFix& fix); // implicit prepare()
-  void         setFix  (const LocationFixContainer& fixCont); // implicit prepare()
-  void         reset   (void);
+  // auto init and copying
+  void setFix (const LocationFix& fix); // implicit prepare()
+  void setFix (const LocationFixContainer& fixCont); // implicit prepare()
 
+  // manually setup fix
+  LocationFix* prepare  (fxuint8 cSatCount);
+  void         finalize (void);
+
+  // free memory
+  void reset (void);
+
+  // properties
   LocationFix*       getFix     (void)       { return m_pFix; }
   const LocationFix* getFix     (void) const { return m_pFix; }
   bool               hasFix     (void) const { return m_uiFixSize > 0; }
   uint               getFixSize (void) const { return m_uiFixSize; }
 
+  // static utils
   static uint computeFixSize (fxuint8 cSatCount);
+
 
 private :
   void allocate (fxuint32 uiNewSize);

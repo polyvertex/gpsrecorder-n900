@@ -21,7 +21,8 @@ Location::Location (QObject* pParent)
   m_bStarted  = false;
 
   // last fix
-  m_uiFixTime = 0;
+  m_uiFixTime  = 0;
+  m_bAcquiring = true;
 }
 
 //---------------------------------------------------------------------------
@@ -74,5 +75,6 @@ const QVector<uint>& Location::allowedFixSteps (void)
 //---------------------------------------------------------------------------
 void Location::resetLastFix (void)
 {
-  m_uiFixTime = 0;
+  m_uiFixTime  = 0;
+  m_bAcquiring = true;
 }

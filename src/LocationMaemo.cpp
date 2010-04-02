@@ -174,8 +174,10 @@ void LocationMaemo::start (void)
   if (m_bStarted)
     return;
 
+  m_bAcquiring = true;
+  m_bStarted   = true;
+
   location_gpsd_control_start(m_pGpsdControl);
-  m_bStarted = true;
 }
 
 //---------------------------------------------------------------------------
@@ -187,7 +189,8 @@ void LocationMaemo::stop (void)
     return;
 
   location_gpsd_control_stop(m_pGpsdControl);
-  m_bStarted = false;
+  m_bStarted   = false;
+  m_bAcquiring = false;
 }
 
 
@@ -306,6 +309,9 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
         pFixSat->cSignalStrength = fxuint8(pDevSat->signal_strength);
       }
     }
+
+    // consolidate fix structure
+    fixCont.finalize();
   }
 }
 
@@ -344,14 +350,43 @@ void LocationMaemo::locationOnDevDisconnected (LocationGPSDevice* pGpsDevice, gp
 void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointer pUserData)
 {
   LocationMaemo* pThis = reinterpret_cast<LocationMaemo*>(pUserData);
+  bool bAccurate;
 
-  if (pGpsDevice && pGpsDevice->fix)
+  // we test the result of isStarted() because sometimes we are called right
+  // after stop() has been called and processed
+  if (!pThis->isStarted() || !pGpsDevice || !pGpsDevice->fix)
+    return;
+
+  if (pGpsDevice->fix->mode >= LOCATION_GPS_DEVICE_MODE_2D &&
+     (pGpsDevice->fix->fields & LOCATION_GPS_DEVICE_LATLONG_SET) != 0 &&
+      pGpsDevice->fix->eph < 9000.0) // 90m
   {
-    pThis->m_uiFixTime = time(0);
-    LocationMaemo::fixSetup(pThis->m_Fix, *pGpsDevice);
+    bAccurate = true;
 
-    emit pThis->sigLocationFix(pThis, pThis->m_Fix);
+    pThis->m_uiFixTime = time(0);
+    LocationMaemo::fixSetup(pThis->m_FixCont, *pGpsDevice);
+
+    if (pThis->m_bAcquiring)
+    {
+      pThis->m_bAcquiring = false;
+      emit pThis->sigLocationFixGain(pThis, &pThis->m_FixCont);
+    }
   }
+  else
+  {
+    bAccurate = false;
+
+    if (!pThis->m_bAcquiring)
+    {
+      pThis->m_bAcquiring = true;
+      emit pThis->sigLocationFixLost(pThis, &pThis->m_FixCont);
+    }
+
+    pThis->m_uiFixTime = time(0);
+    LocationMaemo::fixSetup(pThis->m_FixCont, *pGpsDevice);
+  }
+
+  emit pThis->sigLocationFix(pThis, &pThis->m_FixCont, bAccurate);
 }
 
 //---------------------------------------------------------------------------

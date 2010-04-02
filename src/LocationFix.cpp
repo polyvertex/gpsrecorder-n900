@@ -103,6 +103,30 @@ LocationFix* LocationFixContainer::prepare (fxuint8 cSatCount)
 }
 
 //---------------------------------------------------------------------------
+// finalize
+//---------------------------------------------------------------------------
+void LocationFixContainer::finalize (void)
+{
+  fxuint32 uiFixSize;
+
+  Q_ASSERT(m_pFix);
+  Q_ASSERT(m_uiBufferSize);
+  if (!m_pFix || !m_uiBufferSize)
+    return;
+
+  // compute the real storage size of the fix according to the number of
+  // trailing LocationFixSat elements
+  uiFixSize = LocationFixContainer::computeFixSize(m_pFix->cSatCount);
+  Q_ASSERT(uiFixSize <= m_uiBufferSize);
+  if (uiFixSize > m_uiBufferSize)
+  {
+    m_uiFixSize = 0;
+    return;
+  }
+  m_uiFixSize = uiFixSize;
+}
+
+//---------------------------------------------------------------------------
 // setFix
 //---------------------------------------------------------------------------
 void LocationFixContainer::setFix (const LocationFix& fix)

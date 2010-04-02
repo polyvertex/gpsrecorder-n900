@@ -200,6 +200,32 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
 }
 
 //---------------------------------------------------------------------------
+// writeLocationFixLost
+//---------------------------------------------------------------------------
+void GPSRFile::writeLocationFixLost (time_t uiTime)
+{
+  Chunk* pChunk;
+  uint   uiChunkSize;
+
+  Q_ASSERT(this->isOpen());
+  Q_ASSERT(!this->isReading());
+  if (!this->isOpen() || this->isReading())
+    return;
+
+  uiChunkSize = sizeof(Chunk);
+
+  m_Swap.reserve(uiChunkSize);
+  pChunk = (Chunk*)m_Swap.data();
+
+  pChunk->aucMagic = '@';
+  pChunk->uiId     = CHUNK_LOCATIONFIX_LOST;
+  pChunk->uiSize   = uiChunkSize;
+  pChunk->uiTime   = uiTime ? uiTime : time(0);
+
+  this->writeData((char*)pChunk, uiChunkSize);
+}
+
+//---------------------------------------------------------------------------
 // writeSnap
 //---------------------------------------------------------------------------
 void GPSRFile::writeSnap (time_t uiTime)
@@ -333,6 +359,9 @@ bool GPSRFile::readNext (void)
       break;
     case CHUNK_LOCATIONFIX :
       emit sigReadChunkLocationFix(this, pChunk->uiTime, (LocationFix&)*(pChunk->aData));
+      break;
+    case CHUNK_LOCATIONFIX_LOST :
+      emit sigReadChunkLocationFixLost(this, pChunk->uiTime);
       break;
     case CHUNK_SNAP :
       emit sigReadChunkSnap(this, pChunk->uiTime);

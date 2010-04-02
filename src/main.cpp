@@ -43,7 +43,8 @@ static const char* _findDefaultUserDir (bool bOutputDir)
     if (psz && _isWritableDir(psz))
       return psz;
 
-    if (_isWritableDir("/home/user/MyDocs")) // sudo gainroot does not give MYDOCSDIR env var
+    // sudo gainroot does not give MYDOCSDIR env var
+    if (_isWritableDir("/home/user/MyDocs"))
       return "/home/user/MyDocs";
   }
 

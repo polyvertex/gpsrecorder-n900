@@ -77,7 +77,7 @@ extern "C" {
 #define MY_CAT__SUB(a,b)      a##b
 
 // debug mark
-#define MY_DBGMARK { qDebug("DBGMARK --> %s(%d)", __FILE__, __LINE__); }
+#define MY_DBGMARK  { qDebug("DBGMARK %s(%d)", __FILE__, __LINE__); }
 
 
 //---------------------------------------------------------------------------

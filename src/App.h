@@ -21,6 +21,14 @@ class App : public QApplication
   Q_OBJECT
 
 public :
+  enum State
+  {
+    STATE_STOPPED,
+    STATE_STARTED,
+  };
+
+
+public :
   App (int& nArgc, char** ppszArgv);
   virtual ~App (void);
 
@@ -35,6 +43,15 @@ public :
   Location*  location (void) { return m_pLocation; }
   WndMain*   wndMain  (void) { return m_pWndMain; }
 
+  void        setState    (State eNewState);
+  State       getState    (void) const { return m_eState; }
+  const char* getStateStr (void) const;
+
+
+public slots :
+  void onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont);
+  void onLocationFix     (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
+
 
 private :
   static QString ms_strApplicationLabel;
@@ -45,6 +62,10 @@ private :
   QSettings m_Settings;
   Location* m_pLocation;
   WndMain*  m_pWndMain;
+
+  State m_eState;
+
+  GPSRFile m_GPSRFile;
 };
 
 

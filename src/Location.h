@@ -38,12 +38,14 @@ public :
 
   virtual bool isStarted (void) const { return m_bStarted; }
 
-  virtual const LocationFixContainer& getLastFix     (void) const { return m_Fix; }
+  virtual const LocationFixContainer& getLastFixCont (void) const { return m_FixCont; }
   virtual time_t                      getLastFixTime (void) const { return m_uiFixTime; }
 
 
 signals :
-  void sigLocationFix (Location* pLocation, const LocationFixContainer& fixCont);
+  void sigLocationFixGain (Location* pLocation, const LocationFixContainer* pFixCont);
+  void sigLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont);
+  void sigLocationFix     (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 
 protected :
@@ -52,8 +54,9 @@ protected :
   bool  m_bStarted;
 
   // last fix
-  LocationFixContainer m_Fix;
+  LocationFixContainer m_FixCont;
   time_t               m_uiFixTime;
+  bool                 m_bAcquiring;
 };
 
 

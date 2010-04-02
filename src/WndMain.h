@@ -35,13 +35,10 @@ private :
 private slots :
   void onPushedStartStop (void);
 
-  void onLocationFix (Location* pLocation, const LocationFixContainer& fixCont);
+  void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 
 private :
-  LocationFixContainer m_FixCont;
-  GPSRFile m_GPSRFile;
-
   QAction* m_pMenuStartStop;
 
   QLineEdit* m_pTxtFixFields;
