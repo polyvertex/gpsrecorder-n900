@@ -65,10 +65,13 @@ public :
 
   bool openWrite (const char* pszFile, bool bTruncate);
   bool openRead  (const char* pszFile); // implicit call to seekFirst()
-  bool isOpen    (void) const { return m_pFile != 0; }
-  bool isReading (void) const { return m_bReading; }
-  bool isEOF     (void) const { return m_bReadEOF; }
-  void close     (void);
+
+  bool        isOpen    (void) const { return m_pFile != 0; }
+  bool        isWriting (void) const { return m_bWriting; }
+  bool        isEOF     (void) const { return m_bReadEOF; }
+  const char* getPath   (void) const { return m_strFilePath.constData(); }
+
+  void close (void);
 
   void writeMessage         (time_t uiTime, const char* pszMessage);
   void writeLocationFix     (time_t uiTime, const LocationFixContainer& fixCont);
@@ -99,7 +102,7 @@ private :
 private :
   FILE*      m_pFile;
   QByteArray m_strFilePath;
-  bool       m_bReading;
+  bool       m_bWriting;
   bool       m_bReadEOF; // reached EOF
   QByteArray m_Swap;
 };

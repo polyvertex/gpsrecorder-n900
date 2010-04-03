@@ -20,7 +20,7 @@
 GPSRFile::GPSRFile (void)
 {
   m_pFile = 0;
-  m_bReading = false;
+  m_bWriting = false;
 }
 
 //---------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void GPSRFile::close (void)
 
   m_strFilePath.clear();
 
-  m_bReading = false;
+  m_bWriting = false;
   m_bReadEOF = false;
 }
 
@@ -59,7 +59,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
 {
   if (this->isOpen())
   {
-    if (!this->isReading())
+    if (this->isWriting())
       return true;
     this->close();
   }
@@ -75,7 +75,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
   }
 
   m_strFilePath = pszFile;
-  m_bReading    = false;
+  m_bWriting    = true;
   m_bReadEOF    = false;
 
   // make it non-blocking
@@ -113,7 +113,7 @@ bool GPSRFile::openRead (const char* pszFile)
 {
   if (this->isOpen())
   {
-    if (this->isReading())
+    if (!this->isWriting())
       return true;
     this->close();
   }
@@ -126,7 +126,7 @@ bool GPSRFile::openRead (const char* pszFile)
   }
 
   m_strFilePath = pszFile;
-  m_bReading    = true;
+  m_bWriting    = false;
   m_bReadEOF    = false;
 
   return this->seekFirst();
@@ -144,8 +144,8 @@ void GPSRFile::writeMessage (time_t uiTime, const char* pszMessage)
   uint   uiMsgSize;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
     return;
 
   Q_ASSERT(pszMessage);
@@ -179,8 +179,8 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
   uint   uiChunkSize;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
     return;
 
   Q_ASSERT(fixCont.hasFix());
@@ -211,8 +211,8 @@ void GPSRFile::writeLocationFixLost (time_t uiTime)
   uint   uiChunkSize;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
     return;
 
   uiChunkSize = sizeof(Chunk);
@@ -237,8 +237,8 @@ void GPSRFile::writeSnap (time_t uiTime)
   uint   uiChunkSize;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
     return;
 
   uiChunkSize = sizeof(Chunk);
@@ -264,8 +264,8 @@ bool GPSRFile::seekFirst (void)
   Header* pHeader;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(!this->isWriting());
+  if (!this->isOpen() || this->isWriting())
   {
     emit sigReadError(this, ERROR_NOTOPEN);
     return false;
@@ -321,8 +321,8 @@ bool GPSRFile::readNext (void)
   Chunk* pChunk;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(!this->isWriting());
+  if (!this->isOpen() || this->isWriting())
   {
     emit sigReadError(this, ERROR_NOTOPEN);
     return false;
@@ -388,8 +388,8 @@ void GPSRFile::writeData (const char* pData, uint uiSize)
   uint uiRes;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(!this->isReading());
-  if (!this->isOpen() || this->isReading())
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
     return;
 
   Q_ASSERT(pData);
@@ -418,8 +418,8 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
   uint uiRes;
 
   Q_ASSERT(this->isOpen());
-  Q_ASSERT(this->isReading());
-  if (!this->isOpen() || !this->isReading())
+  Q_ASSERT(!this->isWriting());
+  if (!this->isOpen() || this->isWriting())
   {
     emit sigReadError(this, ERROR_NOTOPEN);
     return false;

@@ -28,7 +28,8 @@ App::App (int& nArgc, char** ppszArgv)
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
   // init properties
-  m_eState = STATE_STOPPED;
+  m_eState        = STATE_STOPPED;
+  m_bVirginOutput = true;
 
   // create location driver
   m_pLocation = Location::createDevice();
@@ -58,6 +59,8 @@ App::~App (void)
 
   if (m_pLocation)
     delete m_pLocation;
+
+  this->closeGPSRFile();
 }
 
 
@@ -109,6 +112,8 @@ void App::setState (App::State eNewState)
   {
     QByteArray strPath;
 
+    m_bVirginOutput = true;
+
     strPath  = App::outputDir().toAscii();
     strPath += "/";
     strPath += App::applicationName().toAscii();
@@ -122,7 +127,7 @@ void App::setState (App::State eNewState)
   }
   else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
   {
-    m_GPSRFile.close();
+    this->closeGPSRFile();
   }
 
   m_eState = eNewState;
@@ -149,6 +154,37 @@ const char* App::getStateStr (void) const
 
 
 //---------------------------------------------------------------------------
+// closeGPSRFile
+//---------------------------------------------------------------------------
+void App::closeGPSRFile (void)
+{
+  if (m_GPSRFile.isOpen())
+  {
+    if (!m_GPSRFile.isWriting())
+    {
+      m_GPSRFile.close();
+    }
+    else
+    {
+      QByteArray strPath;
+
+      strPath = m_GPSRFile.getPath();
+      m_GPSRFile.close();
+
+      if (m_bVirginOutput)
+      {
+        qDebug("Deleting GPSR file %s because nothing was written in it.", strPath.constData());
+        QFile::remove(strPath);
+      }
+    }
+  }
+
+  m_bVirginOutput = true;
+}
+
+
+
+//---------------------------------------------------------------------------
 // onLocationFixLost
 //---------------------------------------------------------------------------
 void App::onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont)
@@ -156,7 +192,7 @@ void App::onLocationFixLost (Location* pLocation, const LocationFixContainer* pL
   Q_UNUSED(pLocation);
   Q_UNUSED(pLastFixCont);
 
-  if (m_GPSRFile.isOpen() && !m_GPSRFile.isReading())
+  if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
     m_GPSRFile.writeLocationFixLost(time(0));
 }
 
@@ -167,6 +203,9 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
 {
   Q_UNUSED(pLocation);
 
-  if (bAccurate && m_GPSRFile.isOpen() && !m_GPSRFile.isReading())
+  if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+  {
+    m_bVirginOutput = false;
     m_GPSRFile.writeLocationFix(time(0), *pFixCont);
+  }
 }

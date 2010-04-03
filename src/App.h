@@ -54,6 +54,10 @@ public slots :
 
 
 private :
+  void closeGPSRFile (void);
+
+
+private :
   static QString ms_strApplicationLabel;
   static QString ms_strOutputDir;
 
@@ -66,6 +70,7 @@ private :
   State m_eState;
 
   GPSRFile m_GPSRFile;
+  bool     m_bVirginOutput;
 };
 
 
