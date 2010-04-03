@@ -36,7 +36,8 @@ public :
   virtual void start (void) = 0;
   virtual void stop  (void) = 0;
 
-  virtual bool isStarted (void) const { return m_bStarted; }
+  virtual bool isStarted   (void) const { return m_bStarted; }
+  virtual bool isAcquiring (void) const { return m_bAcquiring; }
 
   virtual const LocationFixContainer& getLastFixCont (void) const { return m_FixCont; }
   virtual time_t                      getLastFixTime (void) const { return m_uiFixTime; }

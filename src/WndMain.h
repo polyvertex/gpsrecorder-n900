@@ -41,6 +41,8 @@ private slots :
 private :
   QAction* m_pMenuStartStop;
 
+  QLineEdit* m_pTxtStatus;
+
   QLineEdit* m_pTxtFixFields;
   QLineEdit* m_pTxtFixMode;
   QLineEdit* m_pTxtFixTime;

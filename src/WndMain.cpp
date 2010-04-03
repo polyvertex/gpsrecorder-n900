@@ -24,6 +24,10 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
   this->menuBar()->clear();
   m_pMenuStartStop = this->menuBar()->addAction("Start", this, SLOT(onPushedStartStop()));
 
+  m_pTxtStatus = new QLineEdit();
+  m_pTxtStatus->setReadOnly(true);
+  m_pTxtStatus->setDisabled(true);
+
   m_pTxtFixFields = new QLineEdit();
   m_pTxtFixFields->setReadOnly(true);
   m_pTxtFixFields->setDisabled(true);
@@ -102,6 +106,7 @@ void WndMain::showFix (void)
   QWidget* pWidget = new QWidget();
   QFormLayout* pForm = new QFormLayout();
 
+  pForm->addRow("Status :", m_pTxtStatus);
   pForm->addRow("Fields :", m_pTxtFixFields);
   pForm->addRow("Mode :",   m_pTxtFixMode);
   pForm->addRow("Time :",   m_pTxtFixTime);
@@ -134,12 +139,14 @@ void WndMain::onPushedStartStop (void)
     //this->clearFixFields();
 
     pApp->setState(App::STATE_STOPPED);
+    m_pTxtStatus->setText("Stopped");
 
     m_pMenuStartStop->setText("Start");
   }
   else
   {
     pApp->setState(App::STATE_STARTED);
+    m_pTxtStatus->setText("Started");
 
     this->clearFixFields();
     pLocation->resetLastFix();
@@ -174,55 +181,56 @@ void WndMain::clearFixFields (void)
 //---------------------------------------------------------------------------
 void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
-  QString strFields;
-  QString strMode;
-  QString strTime;
-  QString strGSM;
-  QString strWCDMA;
+  QString str;
 
   Q_UNUSED(pLocation);
-
   const LocationFix& fix = *pFixCont->getFix();
 
+
+  str.sprintf("%s, %s",
+    App::instance()->getStateStr(),
+    (bAccurate ? "Fixed" : pLocation->isAcquiring() ? "Acquiring" : "Lost") );
+  m_pTxtStatus->setText(str);
+
+  str.clear();
   if (fix.wFixFields != FIXFIELD_NONE)
   {
     if (fix.hasFields(FIXFIELD_TIME))
-      strFields += "Time ";
+      str += "Time ";
     if (fix.hasFields(FIXFIELD_LATLONG))
-      strFields += "LatLong ";
+      str += "LatLong ";
     if (fix.hasFields(FIXFIELD_ALT))
-      strFields += "Alt ";
+      str += "Alt ";
     if (fix.hasFields(FIXFIELD_TRACK))
-      strFields += "Track ";
+      str += "Track ";
     if (fix.hasFields(FIXFIELD_SPEED))
-      strFields += "Speed ";
+      str += "Speed ";
     if (fix.hasFields(FIXFIELD_CLIMB))
-      strFields += "Climb ";
+      str += "Climb ";
   }
+  m_pTxtFixFields->setText(str);
 
-  strMode.sprintf("%s (accurate : %s)", fix.getModeStr(), (bAccurate ? "yes" : "no"));
+  m_pTxtFixMode->setText(fix.getModeStr());
 
-  if (fix.uiTime == 0)
-    strTime = "0";
-  else
-    strTime.sprintf("%s (%u)", Util::timeString(false, fix.uiTime), fix.uiTime);
+  str.clear();
+  if (fix.uiTime > 0)
+    str.sprintf("%s (%u)", Util::timeString(false, fix.uiTime), fix.uiTime);
+  m_pTxtFixTime->setText(str);
 
-  if (fix.sGSM.bSetup)
-    strGSM.sprintf("MCC:%u MNC:%u LAC:%u Cell:%u", (uint)fix.sGSM.uiMCC, (uint)fix.sGSM.uiMNC, (uint)fix.sGSM.uiLAC, (uint)fix.sGSM.uiCellId);
-
-  if (fix.sWCDMA.bSetup)
-    strWCDMA.sprintf("MCC:%u MNC:%u UCID:%u", (uint)fix.sWCDMA.uiMCC, (uint)fix.sWCDMA.uiMNC, (uint)fix.sWCDMA.uiUCID);
-
-
-  m_pTxtFixFields->setText(strFields);
-  m_pTxtFixMode->setText(strMode);
-  m_pTxtFixTime->setText(strTime);
   m_pTxtFixLat->setText(QString::number(fix.getLatDeg(), 'f', 6));
   m_pTxtFixLong->setText(QString::number(fix.getLongDeg(), 'f', 6));
   m_pTxtFixAlt->setText(QString::number(fix.iAlt));
   m_pTxtFixTrack->setText(QString::number(fix.getTrackDeg(), 'f', 1));
   m_pTxtFixSpeed->setText(QString::number(fix.getSpeedKmh(), 'f', 2));
   m_pTxtFixSatUse->setText(QString::number(fix.cSatUse) + "/" + QString::number(fix.cSatCount));
-  m_pTxtFixGsm->setText(strGSM);
-  m_pTxtFixWcdma->setText(strWCDMA);
+
+  str.clear();
+  if (fix.sGSM.bSetup)
+    str.sprintf("MCC:%u MNC:%u LAC:%u Cell:%u", (uint)fix.sGSM.uiMCC, (uint)fix.sGSM.uiMNC, (uint)fix.sGSM.uiLAC, (uint)fix.sGSM.uiCellId);
+  m_pTxtFixGsm->setText(str);
+
+  str.clear();
+  if (fix.sWCDMA.bSetup)
+    str.sprintf("MCC:%u MNC:%u UCID:%u", (uint)fix.sWCDMA.uiMCC, (uint)fix.sWCDMA.uiMNC, (uint)fix.sWCDMA.uiUCID);
+  m_pTxtFixWcdma->setText(str);
 }

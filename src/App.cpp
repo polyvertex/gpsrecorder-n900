@@ -115,8 +115,10 @@ void App::setState (App::State eNewState)
     strPath += "-";
     strPath += Util::timeString(true);
     strPath += ".gpsr";
-    if (m_GPSRFile.openWrite(strPath.constData(), true))
-      qDebug("Opened GPSR file %s", strPath.constData());
+    if (!m_GPSRFile.openWrite(strPath.constData(), true))
+    {
+      // TODO : warn user !!!
+    }
   }
   else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
   {
@@ -134,9 +136,9 @@ const char* App::getStateStr (void) const
   switch (m_eState)
   {
     case STATE_STOPPED :
-      return "stopped";
+      return "Stopped";
     case STATE_STARTED :
-      return "started";
+      return "Started";
 
     default :
       Q_ASSERT(0);
