@@ -40,7 +40,7 @@ void GPSRFile::close (void)
 {
   if (m_pFile)
   {
-    qDebug("Closing GPSR file %s.", m_strFilePath.constData());
+    qDebug("Closing GPSR file %s", m_strFilePath.constData());
 
     fclose(m_pFile);
     m_pFile = 0;
@@ -70,7 +70,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
   m_pFile = fopen(pszFile, "wb");
   if (!m_pFile)
   {
-    qWarning("Could not create file %s ! Error %d : %s", pszFile, errno, strerror(errno));
+    qWarning("Could not create %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
 
@@ -89,7 +89,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
   {
     Header* pHeader;
 
-    m_Swap.reserve(sizeof(*pHeader));
+    m_Swap.reserve(sizeof(*pHeader) +1);
     pHeader = (Header*)m_Swap.data();
 
     pHeader->aucMagic[0] = 'G';
@@ -121,7 +121,7 @@ bool GPSRFile::openRead (const char* pszFile)
   m_pFile = fopen(pszFile, "rb");
   if (!m_pFile)
   {
-    qWarning("Could not open file %s ! Error %d : %s", pszFile, errno, strerror(errno));
+    qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
 
@@ -156,7 +156,7 @@ void GPSRFile::writeMessage (time_t uiTime, const char* pszMessage)
   uiMsgSize   = strlen(pszMessage) + 1; // +1 for the trailing '\0'
   uiChunkSize = sizeof(Chunk) + uiMsgSize;
 
-  m_Swap.reserve(uiChunkSize);
+  m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
   pChunk->aucMagic = '@';
@@ -189,7 +189,7 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
 
   uiChunkSize = sizeof(Chunk) + fixCont.getFixSize();
 
-  m_Swap.reserve(uiChunkSize);
+  m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
   pChunk->aucMagic = '@';
@@ -217,7 +217,7 @@ void GPSRFile::writeLocationFixLost (time_t uiTime)
 
   uiChunkSize = sizeof(Chunk);
 
-  m_Swap.reserve(uiChunkSize);
+  m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
   pChunk->aucMagic = '@';
@@ -243,7 +243,7 @@ void GPSRFile::writeSnap (time_t uiTime)
 
   uiChunkSize = sizeof(Chunk);
 
-  m_Swap.reserve(uiChunkSize);
+  m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
   pChunk->aucMagic = '@';
@@ -283,7 +283,7 @@ bool GPSRFile::seekFirst (void)
   m_bReadEOF = false;
 
   // prepare swap buffer
-  m_Swap.reserve(sizeof(*pHeader));
+  m_Swap.reserve(sizeof(*pHeader) +1);
   pHeader = (Header*)m_Swap.data();
 
   // read file header
@@ -318,6 +318,7 @@ bool GPSRFile::seekFirst (void)
 //---------------------------------------------------------------------------
 bool GPSRFile::readNext (void)
 {
+  Chunk chunkHeader;
   Chunk* pChunk;
 
   Q_ASSERT(this->isOpen());
@@ -335,22 +336,22 @@ bool GPSRFile::readNext (void)
     return false;
   }
 
-  // prepare swap buffer
-  m_Swap.reserve(sizeof(*pChunk));
-  pChunk = (Chunk*)m_Swap.data();
 
   // read chunk
-  if (!this->readSize((char*)pChunk, sizeof(*pChunk), &m_bReadEOF))
+  if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), &m_bReadEOF))
     return false;
-  if (pChunk->aucMagic != '@')
+  if (chunkHeader.aucMagic != '@')
   {
     emit sigReadError(this, ERROR_FORMAT);
     return false;
   }
-  if (pChunk->uiSize > sizeof(*pChunk))
+  if (chunkHeader.uiSize > sizeof(*pChunk))
   {
-    m_Swap.reserve(pChunk->uiSize);
-    if (!this->readSize((char*)pChunk, pChunk->uiSize - sizeof(*pChunk), &m_bReadEOF))
+    m_Swap.reserve(chunkHeader.uiSize +1);
+    pChunk = (Chunk*)m_Swap.data();
+    memcpy(pChunk, &chunkHeader, sizeof(chunkHeader));
+
+    if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), &m_bReadEOF))
       return false;
   }
 
@@ -401,9 +402,9 @@ void GPSRFile::writeData (const char* pData, uint uiSize)
   {
     clearerr(m_pFile);
 
-    uiRes = fwrite(&pData[uiWritten], 1, (uiSize - uiWritten), m_pFile);
+    uiRes = fwrite(pData + uiWritten, 1, (uiSize - uiWritten), m_pFile);
     if (uiRes < (uiSize - uiWritten) && ferror(m_pFile))
-      qFatal("Failed to write %u bytes into file %s !", uiSize, m_strFilePath.constData());
+      qFatal("Failed to write %u bytes into %s !", uiSize, m_strFilePath.constData());
 
     uiWritten += uiRes;
   }
@@ -435,7 +436,7 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
   {
     clearerr(m_pFile);
 
-    uiRes = fread(&pOutData[uiRead], 1, (uiExpectedSize - uiRead), m_pFile);
+    uiRes = fread(pOutData + uiRead, 1, (uiExpectedSize - uiRead), m_pFile);
     if (uiRes < (uiExpectedSize - uiRead))
     {
       if (feof(m_pFile))
@@ -443,7 +444,11 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
         if (pbGotEOF)
           *pbGotEOF = true;
 
-        emit sigReadError(this, ERROR_TRUNCATED);
+        if (uiRes == 0)
+          emit sigReadEOF(this);
+        else
+          emit sigReadError(this, ERROR_TRUNCATED);
+
         return false;
       }
       else

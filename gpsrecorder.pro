@@ -9,7 +9,8 @@ CONFIG(debug, debug|release) {
 }
 
 # http://qt.nokia.com/doc/4.5/qmake-variable-reference.html#qt
-QT = core gui
+QT  = core gui
+#QT += maemo5
 
 INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
 LIBS        += -lglib-2.0 -llocation
@@ -22,6 +23,11 @@ PRECOMPILED_HEADER = src/stable.h
 
 HEADERS += \
   src/App.h \
+  src/Exporter.h \
+  src/ExporterSink.h \
+  src/ExporterSinkCsv.h \
+  src/ExporterSinkGpx.h \
+  src/ExporterSinkKml.h \
   src/GPSRFile.h \
   src/Location.h \
   src/LocationFix.h \
@@ -31,6 +37,11 @@ HEADERS += \
 SOURCES += \
   src/main.cpp \
   src/App.cpp \
+  src/Exporter.cpp \
+  src/ExporterSink.cpp \
+  src/ExporterSinkCsv.cpp \
+  src/ExporterSinkGpx.cpp \
+  src/ExporterSinkKml.cpp \
   src/GPSRFile.cpp \
   src/Location.cpp \
   src/LocationFix.cpp \

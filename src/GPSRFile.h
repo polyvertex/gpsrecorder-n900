@@ -83,13 +83,13 @@ public :
 
 
 signals :
-  void sigReadError                (GPSRFile* pGPSRFile, Error eError);
+  void sigReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
   void sigReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion);
   void sigReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMsgLen);
   void sigReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void sigReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
   void sigReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
-  void sigReadChunkUnknown         (GPSRFile* pGPSRFile, Chunk* pChunk);
+  void sigReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void sigReadEOF                  (GPSRFile* pGPSRFile);
 
 

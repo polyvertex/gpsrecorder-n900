@@ -34,6 +34,8 @@ public :
 
   static void           setApplicationLabel (const QString& strLabel);
   static const QString& applicationLabel    (void);
+  static void           setApplicationUrl   (const QString& strUrl);
+  static const QString& applicationUrl      (void);
   static void           setOutputDir        (const QString& strOutputDir);
   static const QString& outputDir           (void);
 
@@ -59,6 +61,7 @@ private :
 
 private :
   static QString ms_strApplicationLabel;
+  static QString ms_strApplicationUrl;
   static QString ms_strOutputDir;
 
 

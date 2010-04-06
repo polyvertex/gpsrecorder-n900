@@ -52,10 +52,14 @@ extern "C" {
 #include <location/location-misc.h>
 }
 
-// maemo - qt
+// qt
 #include <QObject>
 #include <QSettings>
 #include <QtGui>
+
+// qt - maemo
+// requires 'libqt4-maemo5-maemo5' package into the device
+//#include <QMaemo5InformationBox> // qt4.6+
 
 
 //---------------------------------------------------------------------------
@@ -81,6 +85,12 @@ extern "C" {
 
 
 //---------------------------------------------------------------------------
+// Raw Types
+//---------------------------------------------------------------------------
+class ExporterSink;
+
+
+//---------------------------------------------------------------------------
 // Local Headers
 //---------------------------------------------------------------------------
 #include "Util.h"
@@ -88,6 +98,11 @@ extern "C" {
 #include "Location.h"
 #include "LocationMaemo.h"
 #include "GPSRFile.h"
+#include "Exporter.h"
+#include "ExporterSink.h"
+#include "ExporterSinkCsv.h"
+#include "ExporterSinkGpx.h"
+#include "ExporterSinkKml.h"
 
 #include "WndMain.h"
 #include "App.h"

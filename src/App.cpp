@@ -14,6 +14,7 @@
 // Static Members
 //---------------------------------------------------------------------------
 QString App::ms_strApplicationLabel;
+QString App::ms_strApplicationUrl;
 QString App::ms_strOutputDir;
 
 
@@ -80,6 +81,22 @@ void App::setApplicationLabel (const QString& strLabel)
 const QString& App::applicationLabel (void)
 {
   return ms_strApplicationLabel;
+}
+
+//---------------------------------------------------------------------------
+// setApplicationUrl
+//---------------------------------------------------------------------------
+void App::setApplicationUrl (const QString& strUrl)
+{
+  ms_strApplicationUrl = strUrl;
+}
+
+//---------------------------------------------------------------------------
+// applicationUrl
+//---------------------------------------------------------------------------
+const QString& App::applicationUrl (void)
+{
+  return ms_strApplicationUrl;
 }
 
 //---------------------------------------------------------------------------
@@ -173,7 +190,7 @@ void App::closeGPSRFile (void)
 
       if (m_bVirginOutput)
       {
-        qDebug("Deleting GPSR file %s because nothing was written in it.", strPath.constData());
+        qDebug("Deleting %s because nothing was written in it.", strPath.constData());
         QFile::remove(strPath);
       }
     }

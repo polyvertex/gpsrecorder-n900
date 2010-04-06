@@ -34,12 +34,14 @@ private :
 
 private slots :
   void onPushedStartStop (void);
+  void onPushedExport    (void);
 
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 
 private :
   QAction* m_pMenuStartStop;
+  QAction* m_pMenuExport;
 
   QLineEdit* m_pTxtStatus;
 

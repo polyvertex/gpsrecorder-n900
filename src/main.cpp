@@ -28,38 +28,66 @@ static bool _isWritableDir (const char* pszPath)
 }
 
 //---------------------------------------------------------------------------
-// _findDefaultUserDir
+// _findHomeDir
 //---------------------------------------------------------------------------
-static const char* _findDefaultUserDir (bool bOutputDir)
+static void _findHomeDir (QByteArray& strOutPath)
 {
   // according to the Qt documentation, the QDir::homePath() utility does not
   // seem to use the getpwuid() function...
 
   char* psz;
 
-  if (bOutputDir)
-  {
-    psz = getenv("MYDOCSDIR");
-    if (psz && _isWritableDir(psz))
-      return psz;
-
-    // sudo gainroot does not give MYDOCSDIR env var
-    if (_isWritableDir("/home/user/MyDocs"))
-      return "/home/user/MyDocs";
-  }
+  psz = getenv("MYDOCSDIR");
+  if (psz)
+    strOutPath = psz;
+  else // sudo gainroot does not give MYDOCSDIR env var
+    strOutPath = "/home/user/MyDocs";
+  if (_isWritableDir(strOutPath.constData()))
+    return;
 
   psz = getenv("HOME");
   if (psz && _isWritableDir(psz))
-    return psz;
+  {
+    strOutPath = psz;
+    return;
+  }
 
   struct passwd* ps_passwd = getpwuid(getuid());
   if (ps_passwd && ps_passwd->pw_dir && ps_passwd->pw_dir[0] && _isWritableDir(ps_passwd->pw_dir))
-    return ps_passwd->pw_dir;
+  {
+    strOutPath = ps_passwd->pw_dir;
+    return;
+  }
 
-  if (_isWritableDir("~/"))
-    return "~/";
+  strOutPath = "~/";
+  if (_isWritableDir(strOutPath.constData()))
+    return;
 
-  return "/";
+  strOutPath = "/";
+}
+
+//---------------------------------------------------------------------------
+// _findOutputDir
+//---------------------------------------------------------------------------
+static bool _findOutputDir (QByteArray& strOutPath)
+{
+  _findHomeDir(strOutPath);
+  if (!strOutPath.endsWith('/'))
+    strOutPath += '/';
+  strOutPath += qPrintable(QCoreApplication::applicationName());
+
+  if (_isWritableDir(strOutPath.constData()))
+    return true;
+
+  if (Util::fileExists(strOutPath.constData()))
+    goto __Failed; // maybe a file ?
+
+  if (mkdir(strOutPath.constData(), 0777) == 0)
+    return true;
+
+__Failed :
+  strOutPath = qPrintable(QCoreApplication::applicationName());
+  return false;
 }
 
 //---------------------------------------------------------------------------
@@ -69,23 +97,23 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
 {
   if (!hLogFile)
   {
+    QByteArray strLogFile;
     QString str;
 
-    str  = _findDefaultUserDir(false);
-    str += "/.";
-    str += QCoreApplication::applicationName();
-    str += ".log";
+    _findOutputDir(strLogFile);
+    strLogFile += "/.";
+    strLogFile += qPrintable(QCoreApplication::applicationName());
+    strLogFile += ".log";
 
-    hLogFile = fopen(qPrintable(str), "a");
+    hLogFile = fopen(strLogFile.constData(), "a");
     if (!hLogFile)
     {
       qInstallMsgHandler(0);
-      qWarning("Could not open/create log file \"%s\" ! Error %d : %s", qPrintable(str), errno, strerror(errno));
+      qWarning("Could not open/create log file \"%s\" ! Error %d : %s", strLogFile.constData(), errno, strerror(errno));
       return;
     }
 
     str.fill('*', 78);
-
     fprintf(hLogFile,
       "\n"
       "%s\n"
@@ -155,14 +183,22 @@ int main (int nArgc, char** ppszArgv)
   QCoreApplication::setOrganizationName("polyvertex");
   QCoreApplication::setOrganizationDomain("polyvertex.net");
   QCoreApplication::setApplicationName("gpsrecorder");
-  App::setApplicationLabel("GPS Recorder");
   QCoreApplication::setApplicationVersion("0.0.1");
+  App::setApplicationLabel("GPS Recorder");
+  App::setApplicationUrl("http://maemo.jcl.name/gpsrecorder/");
+
+  {
+    QByteArray strOutDir;
+
+    if (!_findOutputDir(strOutDir))
+      qFatal("Failed to choose output directory !");
+
+    App::setOutputDir(strOutDir);
+    qDebug("Output directory is %s", strOutDir.constData());
+  }
 
   qInstallMsgHandler(_logHandler);
   qDebug("\n"); // open log file now so we can track start time
-
-  App::setOutputDir(_findDefaultUserDir(true));
-  qDebug("Default output directory is %s", qPrintable(App::outputDir()));
 
   // run
   {

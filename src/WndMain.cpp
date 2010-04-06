@@ -23,6 +23,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   this->menuBar()->clear();
   m_pMenuStartStop = this->menuBar()->addAction("Start", this, SLOT(onPushedStartStop()));
+  m_pMenuExport    = this->menuBar()->addAction("Export", this, SLOT(onPushedExport()));
 
   m_pTxtStatus = new QLineEdit();
   m_pTxtStatus->setReadOnly(true);
@@ -142,6 +143,7 @@ void WndMain::onPushedStartStop (void)
     m_pTxtStatus->setText("Stopped");
 
     m_pMenuStartStop->setText("Start");
+    m_pMenuExport->setEnabled(true);
   }
   else
   {
@@ -153,8 +155,18 @@ void WndMain::onPushedStartStop (void)
     pLocation->start();
 
     m_pMenuStartStop->setText("Stop");
+    m_pMenuExport->setEnabled(false);
   }
 }
+
+//---------------------------------------------------------------------------
+// onPushedExport
+//---------------------------------------------------------------------------
+void WndMain::onPushedExport (void)
+{
+  Exporter::exportStatic();
+}
+
 
 
 
@@ -184,8 +196,8 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   QString str;
 
   Q_UNUSED(pLocation);
-  const LocationFix& fix = *pFixCont->getFix();
 
+  const LocationFix& fix = *pFixCont->getFix();
 
   str.sprintf("%s, %s",
     App::instance()->getStateStr(),
