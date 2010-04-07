@@ -132,9 +132,7 @@ void App::setState (App::State eNewState)
     m_bVirginOutput = true;
 
     strPath  = App::outputDir().toAscii();
-    strPath += "/";
-    strPath += App::applicationName().toAscii();
-    strPath += "-";
+    strPath += "/track-";
     strPath += Util::timeString(true);
     strPath += ".gpsr";
     if (!m_GPSRFile.openWrite(strPath.constData(), true))

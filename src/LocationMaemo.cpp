@@ -46,7 +46,7 @@ inline static double _abs (double d)
 LocationMaemo::LocationMaemo (void)
 : Location(0)
 {
-  m_eGpsdControlInterval = LOCATION_INTERVAL_5S;
+  m_eGpsdControlInterval = LOCATION_INTERVAL_2S;
 
   // init location lib
   {

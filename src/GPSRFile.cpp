@@ -40,7 +40,7 @@ void GPSRFile::close (void)
 {
   if (m_pFile)
   {
-    qDebug("Closing GPSR file %s", m_strFilePath.constData());
+    //qDebug("Closing GPSR file %s", m_strFilePath.constData());
 
     fclose(m_pFile);
     m_pFile = 0;
@@ -102,7 +102,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
     this->writeData((char*)pHeader, sizeof(*pHeader));
   }
 
-  qDebug("Opened GPSR file %s", pszFile);
+  //qDebug("Opened GPSR file %s", pszFile);
   return true;
 }
 

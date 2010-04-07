@@ -101,7 +101,7 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
     QString str;
 
     _findOutputDir(strLogFile);
-    strLogFile += "/.";
+    strLogFile += "/";
     strLogFile += qPrintable(QCoreApplication::applicationName());
     strLogFile += ".log";
 

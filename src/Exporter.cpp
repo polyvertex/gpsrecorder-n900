@@ -95,7 +95,7 @@ void Exporter::run (const QString& strInputDir)
     m_strOutputBasePath = strFile.left(strFile.length() - 5);
 
     if (m_GPSRFile.openRead(qPrintable(strFile)))
-      while (m_GPSRFile.readNext()) {  ; }
+      while (m_GPSRFile.readNext()) { ; }
     m_GPSRFile.close();
 
     exporterCsv.close();
@@ -139,7 +139,7 @@ void Exporter::onReadChunkMessage (GPSRFile* pGPSRFile, time_t uiTime, const cha
   Q_UNUSED(pszMessage);
   Q_UNUSED(uiMsgLen);
 
-  // TODO
+  // nothing to do for now...
 }
 
 //---------------------------------------------------------------------------

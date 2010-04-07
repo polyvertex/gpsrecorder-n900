@@ -17,7 +17,7 @@ Location::Location (QObject* pParent)
 : QObject(pParent)
 {
   // state
-  m_uiFixStep = 5;
+  m_uiFixStep = 2;
   m_bStarted  = false;
 
   // last fix
