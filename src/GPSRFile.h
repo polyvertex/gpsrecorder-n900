@@ -58,6 +58,13 @@ public :
   }
   __attribute__((packed));
 
+  struct ChunkReadInfo
+  {
+    uint    uiOffset; // offset in file
+    quint16 uiId;     // same as Chunk::uiId
+    uint    uiSize;   // same as Chunk::uiSize
+  };
+
 
 public :
   GPSRFile (void);
@@ -68,7 +75,8 @@ public :
 
   bool        isOpen    (void) const { return m_pFile != 0; }
   bool        isWriting (void) const { return m_bWriting; }
-  bool        isEOF     (void) const { return m_bReadEOF; }
+  bool        isError   (void) const { return m_bError; }
+  bool        isEOF     (void) const { return m_bEOF; }
   const char* getPath   (void) const { return m_strFilePath.constData(); }
 
   void close (void);
@@ -78,8 +86,10 @@ public :
   void writeLocationFixLost (time_t uiTime);
   void writeSnap            (time_t uiTime);
 
-  bool seekFirst (void); // causes a sigReadSOF or a sigReadError
-  bool readNext  (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
+  bool seekFirst    (void); // causes a sigReadSOF or a sigReadError
+  bool readNext     (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
+  bool readPrevious (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
+  bool readIndex    (int nChunkIndex);
 
 
 signals :
@@ -97,14 +107,21 @@ private :
   uint maxChunkDataSize (void) const { return sizeof(m_Swap) - sizeof(Chunk); }
   void writeData        (const char* pData, uint uiSize);
   bool readSize         (char* pOutData, uint uiExpectedSize, bool* pbGotEOF);
+  void signalReadError  (Error eError);
 
 
 private :
   FILE*      m_pFile;
   QByteArray m_strFilePath;
   bool       m_bWriting;
-  bool       m_bReadEOF; // reached EOF
+  bool       m_bError;
+  bool       m_bEOF; // only used in 'read' mode
   QByteArray m_Swap;
+
+  // 'read' mode state
+  bool m_bDiscoveryRead;
+  int  m_nReadIndex;
+  QVector<ChunkReadInfo> m_vecReadChunks;
 };
 
 

@@ -20,7 +20,13 @@
 GPSRFile::GPSRFile (void)
 {
   m_pFile = 0;
+
   m_bWriting = false;
+  m_bError   = false;
+  m_bEOF     = false;
+
+  m_bDiscoveryRead = false;
+  m_nReadIndex     = -1;
 }
 
 //---------------------------------------------------------------------------
@@ -49,7 +55,12 @@ void GPSRFile::close (void)
   m_strFilePath.clear();
 
   m_bWriting = false;
-  m_bReadEOF = false;
+  m_bError   = false;
+  m_bEOF     = false;
+
+  m_bDiscoveryRead = false;
+  m_nReadIndex     = -1;
+  m_vecReadChunks.clear();
 }
 
 //---------------------------------------------------------------------------
@@ -65,25 +76,22 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
   }
 
   if (!bTruncate && Util::fileExists(pszFile))
+  {
+    m_bError = true;
     return false;
+  }
 
   m_pFile = fopen(pszFile, "wb");
   if (!m_pFile)
   {
+    m_bError = true;
     qWarning("Could not create %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
 
   m_strFilePath = pszFile;
   m_bWriting    = true;
-  m_bReadEOF    = false;
-
-  // make it non-blocking
-  /*{
-    int nFlags = fcntl(fileno(m_pFile), F_GETFL, 0);
-    nFlags |= O_NONBLOCK;
-    fcntl(fileno(m_pFile), F_SETFL, nFlags);
-  }*/
+  m_bError      = false;
 
   // write header
   {
@@ -118,16 +126,38 @@ bool GPSRFile::openRead (const char* pszFile)
     this->close();
   }
 
+  // open files
   m_pFile = fopen(pszFile, "rb");
   if (!m_pFile)
   {
+    m_bError = true;
     qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
 
+  // setup members
   m_strFilePath = pszFile;
   m_bWriting    = false;
-  m_bReadEOF    = false;
+  m_bError      = false;
+  m_bEOF        = false;
+
+  // read the entire file in one pass to discover its content so we will be
+  // able to easily navigate into it after
+  {
+    bool bRes;
+
+    m_bDiscoveryRead = true;
+    m_nReadIndex     = -1;
+    m_vecReadChunks.clear();
+
+    if (!this->seekFirst())
+      return false;
+    while (bRes = this->readNext()) { ; }
+    if (!bRes && m_bError)
+      return false;
+
+    m_bDiscoveryRead = false;
+  }
 
   return this->seekFirst();
 }
@@ -263,11 +293,14 @@ bool GPSRFile::seekFirst (void)
 {
   Header* pHeader;
 
+  if (m_bError)
+    return false;
+
   Q_ASSERT(this->isOpen());
   Q_ASSERT(!this->isWriting());
   if (!this->isOpen() || this->isWriting())
   {
-    emit sigReadError(this, ERROR_NOTOPEN);
+    this->signalReadError(ERROR_NOTOPEN);
     return false;
   }
 
@@ -276,18 +309,19 @@ bool GPSRFile::seekFirst (void)
   if (ferror(m_pFile) || feof(m_pFile))
   {
     if (feof(m_pFile))
-      m_bReadEOF = true;
-    emit sigReadError(this, ERROR_READ);
+      m_bEOF = true;
+    this->signalReadError(ERROR_READ);
     return false;
   }
-  m_bReadEOF = false;
+  m_bEOF = false;
+  m_nReadIndex = -1;
 
   // prepare swap buffer
   m_Swap.reserve(sizeof(*pHeader) +1);
   pHeader = (Header*)m_Swap.data();
 
   // read file header
-  if (!readSize((char*)pHeader, sizeof(*pHeader), &m_bReadEOF))
+  if (!readSize((char*)pHeader, sizeof(*pHeader), &m_bEOF))
     return false;
 
   // validate header
@@ -295,20 +329,21 @@ bool GPSRFile::seekFirst (void)
     if (pHeader->aucMagic[0] != 'G' ||
         pHeader->aucMagic[1] != 'P' ||
         pHeader->aucMagic[2] != 'S' ||
-        pHeader->aucMagic[3] != 'R' )
+        pHeader->aucMagic[3] != 'R')
     {
-      emit sigReadError(this, ERROR_FORMAT);
+      this->signalReadError(ERROR_FORMAT);
       return false;
     }
 
     if (pHeader->ucFormat != FORMAT_VERSION)
     {
-      emit sigReadError(this, ERROR_FORMAT_VERSION);
+      this->signalReadError(ERROR_FORMAT_VERSION);
       return false;
     }
   }
 
-  emit sigReadSOF(this, pHeader->uiTime, pHeader->ucFormat);
+  if (!m_bDiscoveryRead)
+    emit sigReadSOF(this, pHeader->uiTime, pHeader->ucFormat);
 
   return true;
 }
@@ -318,31 +353,81 @@ bool GPSRFile::seekFirst (void)
 //---------------------------------------------------------------------------
 bool GPSRFile::readNext (void)
 {
-  Chunk chunkHeader;
+  return this->readIndex(m_nReadIndex + 1);
+}
+
+//---------------------------------------------------------------------------
+// readPrevious
+//---------------------------------------------------------------------------
+bool GPSRFile::readPrevious (void)
+{
+  Q_ASSERT(m_nReadIndex > 0);
+  if (m_nReadIndex <= 0)
+    return false;
+
+  return this->readIndex(m_nReadIndex - 1);
+}
+
+//---------------------------------------------------------------------------
+// readIndex
+//---------------------------------------------------------------------------
+bool GPSRFile::readIndex (int nChunkIndex)
+{
+  Chunk  chunkHeader;
   Chunk* pChunk;
+  int    nChunkOffset;
+
+  if (m_bError)
+    return false;
 
   Q_ASSERT(this->isOpen());
   Q_ASSERT(!this->isWriting());
   if (!this->isOpen() || this->isWriting())
   {
-    emit sigReadError(this, ERROR_NOTOPEN);
+    this->signalReadError(ERROR_NOTOPEN);
     return false;
   }
 
-  // eof already reached ?
-  if (m_bReadEOF)
+  if (nChunkIndex == m_nReadIndex + 1)
   {
-    emit sigReadEOF(this);
-    return false;
-  }
+    // behave like a 'next' action
 
+    // eof already reached ?
+    if (m_bEOF)
+    {
+      if (!m_bDiscoveryRead)
+        emit sigReadEOF(this);
+      return false;
+    }
+
+    ++m_nReadIndex;
+
+    if (m_bDiscoveryRead)
+      nChunkOffset = (int)ftell(m_pFile);
+  }
+  else
+  {
+    Q_ASSERT(m_bDiscoveryRead == false);
+    Q_ASSERT(nChunkIndex >= 0);
+    Q_ASSERT(nChunkIndex < m_vecReadChunks.count());
+    if (nChunkIndex < 0 || nChunkIndex >= m_vecReadChunks.count())
+      return false;
+
+    if (fseek(m_pFile, (int)m_vecReadChunks[nChunkIndex].uiOffset, SEEK_SET) < 0)
+    {
+      this->signalReadError(ERROR_READ);
+      return false;
+    }
+
+    m_nReadIndex = nChunkIndex;
+  }
 
   // read chunk
-  if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), &m_bReadEOF))
+  if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), &m_bEOF))
     return false;
   if (chunkHeader.aucMagic != '@')
   {
-    emit sigReadError(this, ERROR_FORMAT);
+    this->signalReadError(ERROR_FORMAT);
     return false;
   }
   if (chunkHeader.uiSize > sizeof(*pChunk))
@@ -351,28 +436,48 @@ bool GPSRFile::readNext (void)
     pChunk = (Chunk*)m_Swap.data();
     memcpy(pChunk, &chunkHeader, sizeof(chunkHeader));
 
-    if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), &m_bReadEOF))
+    if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), &m_bEOF))
       return false;
   }
 
-  // signal this chunk
-  switch (pChunk->uiId)
+  // discovery mode ?
+  if (m_bDiscoveryRead)
   {
-    case CHUNK_MESSAGE :
-      emit sigReadChunkMessage(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
-      break;
-    case CHUNK_LOCATIONFIX :
-      emit sigReadChunkLocationFix(this, pChunk->uiTime, (LocationFix&)*(pChunk->aData));
-      break;
-    case CHUNK_LOCATIONFIX_LOST :
-      emit sigReadChunkLocationFixLost(this, pChunk->uiTime);
-      break;
-    case CHUNK_SNAP :
-      emit sigReadChunkSnap(this, pChunk->uiTime);
-      break;
-    default :
-      emit sigReadChunkUnknown(this, pChunk);
-      break;
+    Q_ASSERT(m_nReadIndex == m_vecReadChunks.count());
+    Q_ASSERT(nChunkOffset > 0);
+
+    if (m_nReadIndex == m_vecReadChunks.count() && nChunkOffset > 0)
+    {
+      ChunkReadInfo chunkReadInfo;
+
+      chunkReadInfo.uiOffset = (uint)nChunkOffset;
+      chunkReadInfo.uiId     = chunkHeader.uiId;
+      chunkReadInfo.uiSize   = chunkHeader.uiSize;
+
+      m_vecReadChunks.push_back(chunkReadInfo);
+    }
+  }
+  else
+  {
+    // signal this chunk
+    switch (pChunk->uiId)
+    {
+      case CHUNK_MESSAGE :
+        emit sigReadChunkMessage(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        break;
+      case CHUNK_LOCATIONFIX :
+        emit sigReadChunkLocationFix(this, pChunk->uiTime, (LocationFix&)*(pChunk->aData));
+        break;
+      case CHUNK_LOCATIONFIX_LOST :
+        emit sigReadChunkLocationFixLost(this, pChunk->uiTime);
+        break;
+      case CHUNK_SNAP :
+        emit sigReadChunkSnap(this, pChunk->uiTime);
+        break;
+      default :
+        emit sigReadChunkUnknown(this, pChunk);
+        break;
+    }
   }
 
   return true;
@@ -422,7 +527,7 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
   Q_ASSERT(!this->isWriting());
   if (!this->isOpen() || this->isWriting())
   {
-    emit sigReadError(this, ERROR_NOTOPEN);
+    this->signalReadError(ERROR_NOTOPEN);
     return false;
   }
 
@@ -444,16 +549,21 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
         if (pbGotEOF)
           *pbGotEOF = true;
 
-        if (uiRes == 0)
-          emit sigReadEOF(this);
+        if (uiRes == 0 && uiRead == 0)
+        {
+          if (!m_bDiscoveryRead)
+            emit sigReadEOF(this);
+        }
         else
-          emit sigReadError(this, ERROR_TRUNCATED);
+        {
+          this->signalReadError(ERROR_TRUNCATED);
+        }
 
         return false;
       }
       else
       {
-        emit sigReadError(this, ERROR_READ);
+        this->signalReadError(ERROR_READ);
         return false;
       }
     }
@@ -464,4 +574,13 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
   }
 
   return true;
+}
+
+//---------------------------------------------------------------------------
+// signalReadError
+//---------------------------------------------------------------------------
+void GPSRFile::signalReadError (Error eError)
+{
+  m_bError = true;
+  emit sigReadError(this, eError);
 }
