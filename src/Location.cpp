@@ -45,6 +45,19 @@ Location* Location::createDevice (void)
 }
 
 //---------------------------------------------------------------------------
+// createDevice
+//---------------------------------------------------------------------------
+Location* Location::createReplay (const char* pszInputFile)
+{
+  LocationGPSRFile* pLocation = new LocationGPSRFile();
+  Q_CHECK_PTR(pLocation);
+
+  pLocation->setInputFileName(pszInputFile);
+
+  return pLocation;
+}
+
+//---------------------------------------------------------------------------
 // allowedFixSteps
 //---------------------------------------------------------------------------
 const QVector<uint>& Location::allowedFixSteps (void)
@@ -66,6 +79,14 @@ const QVector<uint>& Location::allowedFixSteps (void)
   }
 
   return vecFixSteps;
+}
+
+//---------------------------------------------------------------------------
+// isAllowedFixStep
+//---------------------------------------------------------------------------
+bool Location::isAllowedFixStep (uint uiFixStep)
+{
+  return Location::allowedFixSteps().indexOf(uiFixStep) >= 0;
 }
 
 

@@ -24,9 +24,10 @@ public :
   Location (QObject* pParent);
   virtual ~Location (void);
 
-  static Location*            createDevice    (void); // try to create a true Location driver
-//static Location*            createReplay    (void); // driver to load and replay raw file data
-  static const QVector<uint>& allowedFixSteps (void);
+  static Location*            createDevice     (void); // try to create a true Location driver
+  static Location*            createReplay     (const char* pszInputFile); // driver to load and replay raw file data
+  static const QVector<uint>& allowedFixSteps  (void);
+  static bool                 isAllowedFixStep (uint uiFixStep);
 
 
   virtual bool setFixStep (uint uiNewFixStepSeconds) = 0;

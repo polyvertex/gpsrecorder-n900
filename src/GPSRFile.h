@@ -63,6 +63,7 @@ public :
     uint    uiOffset; // offset in file
     quint16 uiId;     // same as Chunk::uiId
     uint    uiSize;   // same as Chunk::uiSize
+    uint    uiTime;   // same as Chunk::uiTime
   };
 
 
@@ -92,9 +93,10 @@ public :
   bool readChunk    (int nChunkIndex);
 
   // read mode properties
-  bool isReadDiscovery    (void) const { return m_bDiscoveryRead; }
-  int  getReadChunkIndex  (void) const { return m_nReadIndex; }
-  int  getReadChunksCount (void) const { return m_vecReadChunks.count(); }
+  bool                          isReadDiscovery    (void) const { return m_bDiscoveryRead; }
+  int                           getReadChunkIndex  (void) const { return m_nReadIndex; }
+  int                           getReadChunksCount (void) const { return m_vecReadChunks.count(); }
+  const QVector<ChunkReadInfo>& getReadChunksInfo  (void) const { return m_vecReadChunks; }
 
 
 signals :

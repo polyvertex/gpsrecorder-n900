@@ -458,6 +458,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
       chunkReadInfo.uiOffset = (uint)nChunkOffset;
       chunkReadInfo.uiId     = chunkHeader.uiId;
       chunkReadInfo.uiSize   = chunkHeader.uiSize;
+      chunkReadInfo.uiTime   = chunkHeader.uiTime;
 
       m_vecReadChunks.push_back(chunkReadInfo);
     }
