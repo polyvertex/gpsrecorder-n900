@@ -89,7 +89,12 @@ public :
   bool seekFirst    (void); // causes a sigReadSOF or a sigReadError
   bool readNext     (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
   bool readPrevious (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
-  bool readIndex    (int nChunkIndex);
+  bool readChunk    (int nChunkIndex);
+
+  // read mode properties
+  bool isReadDiscovery    (void) const { return m_bDiscoveryRead; }
+  int  getReadChunkIndex  (void) const { return m_nReadIndex; }
+  int  getReadChunksCount (void) const { return m_vecReadChunks.count(); }
 
 
 signals :

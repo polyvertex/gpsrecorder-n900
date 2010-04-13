@@ -46,7 +46,7 @@ void GPSRFile::close (void)
 {
   if (m_pFile)
   {
-    //qDebug("Closing GPSR file %s", m_strFilePath.constData());
+    qDebug("Closing GPSR file %s", m_strFilePath.constData());
 
     fclose(m_pFile);
     m_pFile = 0;
@@ -110,7 +110,8 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
     this->writeData((char*)pHeader, sizeof(*pHeader));
   }
 
-  //qDebug("Opened GPSR file %s", pszFile);
+  qDebug("Created GPSR file %s", pszFile);
+
   return true;
 }
 
@@ -141,8 +142,8 @@ bool GPSRFile::openRead (const char* pszFile)
   m_bError      = false;
   m_bEOF        = false;
 
-  // read the entire file in one pass to discover its content so we will be
-  // able to easily navigate into it after
+  // first, silently read the entire file in one pass to discover its content
+  // and to give us the ability to navigate easily through chunks
   {
     bool bRes;
 
@@ -152,12 +153,15 @@ bool GPSRFile::openRead (const char* pszFile)
 
     if (!this->seekFirst())
       return false;
+
     while (bRes = this->readNext()) { ; }
     if (!bRes && m_bError)
       return false;
 
     m_bDiscoveryRead = false;
   }
+
+  qDebug("Opened GPSR file '%s' (%d chunks).", pszFile, m_vecReadChunks.count());
 
   return this->seekFirst();
 }
@@ -353,7 +357,7 @@ bool GPSRFile::seekFirst (void)
 //---------------------------------------------------------------------------
 bool GPSRFile::readNext (void)
 {
-  return this->readIndex(m_nReadIndex + 1);
+  return this->readChunk(m_nReadIndex + 1);
 }
 
 //---------------------------------------------------------------------------
@@ -361,17 +365,17 @@ bool GPSRFile::readNext (void)
 //---------------------------------------------------------------------------
 bool GPSRFile::readPrevious (void)
 {
-  Q_ASSERT(m_nReadIndex > 0);
-  if (m_nReadIndex <= 0)
+  Q_ASSERT(m_nReadIndex >= 1);
+  if (m_nReadIndex < 1)
     return false;
 
-  return this->readIndex(m_nReadIndex - 1);
+  return this->readChunk(m_nReadIndex - 1);
 }
 
 //---------------------------------------------------------------------------
-// readIndex
+// readChunk
 //---------------------------------------------------------------------------
-bool GPSRFile::readIndex (int nChunkIndex)
+bool GPSRFile::readChunk (int nChunkIndex)
 {
   Chunk  chunkHeader;
   Chunk* pChunk;
@@ -388,7 +392,7 @@ bool GPSRFile::readIndex (int nChunkIndex)
     return false;
   }
 
-  if (nChunkIndex == m_nReadIndex + 1)
+  if (m_bDiscoveryRead)
   {
     // behave like a 'next' action
 
@@ -400,6 +404,7 @@ bool GPSRFile::readIndex (int nChunkIndex)
       return false;
     }
 
+    Q_ASSERT(nChunkIndex == m_nReadIndex + 1);
     ++m_nReadIndex;
 
     if (m_bDiscoveryRead)
