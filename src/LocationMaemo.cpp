@@ -57,7 +57,7 @@ LocationMaemo::LocationMaemo (void)
     Q_CHECK_PTR(m_pGpsdControl);
 
     g_object_set(G_OBJECT(m_pGpsdControl), "preferred-interval", m_eGpsdControlInterval, NULL);
-    g_object_set(G_OBJECT(m_pGpsdControl), "preferred-method",   LOCATION_METHOD_AGNSS, NULL);
+    g_object_set(G_OBJECT(m_pGpsdControl), "preferred-method",   LOCATION_METHOD_GNSS | LOCATION_METHOD_AGNSS, NULL);
 
     m_auiSigHdlGpsDevice[0] = g_signal_connect(G_OBJECT(m_pGpsDevice), "connected",    G_CALLBACK(LocationMaemo::locationOnDevConnected), this);
     m_auiSigHdlGpsDevice[1] = g_signal_connect(G_OBJECT(m_pGpsDevice), "disconnected", G_CALLBACK(LocationMaemo::locationOnDevDisconnected), this);

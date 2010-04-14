@@ -185,7 +185,7 @@ int main (int nArgc, char** ppszArgv)
   QCoreApplication::setApplicationName("gpsrecorder");
   QCoreApplication::setApplicationVersion("0.0.1");
   App::setApplicationLabel("GPS Recorder");
-  App::setApplicationUrl("http://maemo.jcl.name/gpsrecorder/");
+  App::setApplicationUrl("http://gpsrecorder.jcl.name/");
 
   {
     QByteArray strOutDir;
