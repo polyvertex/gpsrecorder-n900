@@ -8,6 +8,7 @@
 //***************************************************************************
 
 #include "stable.h"
+#include "revision.h"
 
 
 //---------------------------------------------------------------------------
@@ -183,7 +184,7 @@ int main (int nArgc, char** ppszArgv)
   QCoreApplication::setOrganizationName("polyvertex");
   QCoreApplication::setOrganizationDomain("polyvertex.net");
   QCoreApplication::setApplicationName("gpsrecorder");
-  QCoreApplication::setApplicationVersion("0.0.1");
+  QCoreApplication::setApplicationVersion(QString("0.0.") + SVN_REVISION_STR);
   App::setApplicationLabel("GPS Recorder");
   App::setApplicationUrl("http://gpsrecorder.jcl.name/");
 

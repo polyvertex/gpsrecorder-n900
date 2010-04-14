@@ -80,6 +80,13 @@ INSTALLS     += icon64
 icon64.path   = /usr/share/icons/hicolor/64x64/apps
 icon64.files  = data/64x64/gpsrecorder.png
 
+
+PRE_TARGETDEPS          += src/revision.h
+build-revision.target    = src/revision.h
+build-revision.commands  = scripts/revision2c.sh src/revision.h
+build-revision.depends   = FORCE
+QMAKE_EXTRA_TARGETS     += build-revision
+
 #
 # Targets for debian source and binary package creation
 #
@@ -90,6 +97,6 @@ debian-all.depends  = debian-src debian-bin
 #
 # Clean all but Makefile
 #
-compiler_clean.commands = -$(DEL_FILE) $(TARGET)
+compiler_clean.commands = -$(DEL_FILE) $(TARGET) src/revision.h
 
 QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin compiler_clean
