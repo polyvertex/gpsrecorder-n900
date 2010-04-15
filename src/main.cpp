@@ -188,6 +188,10 @@ int main (int nArgc, char** ppszArgv)
   App::setApplicationLabel("GPS Recorder");
   App::setApplicationUrl("http://gpsrecorder.jcl.name/");
 
+  printf("%s version %s compiled on " __DATE__ " at " __TIME__ "\n",
+    qPrintable(QCoreApplication::applicationName()),
+    qPrintable(QCoreApplication::applicationVersion()));
+
   {
     QByteArray strOutDir;
 
