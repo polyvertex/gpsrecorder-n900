@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.nokia.gpsrecorder
+Exec=/usr/bin/gpsrecorder
