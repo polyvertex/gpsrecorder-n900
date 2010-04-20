@@ -4,7 +4,7 @@ CONFIG += precompile_header release
 #CONFIG += silent
 CONFIG += debug
 CONFIG(debug, debug|release) {
-  TARGET = $$join(TARGET,,,-debug)
+  #TARGET = $$join(TARGET,,,-debug)
   message(This is a DEBUG build !)
 }
 

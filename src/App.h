@@ -44,6 +44,7 @@ public :
   QSettings* settings (void) { return &m_Settings; }
   Location*  location (void) { return m_pLocation; }
   WndMain*   wndMain  (void) { return m_pWndMain; }
+  GPSRFile*  outFile  (void) { return &m_GPSRFile; }
 
   void        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }

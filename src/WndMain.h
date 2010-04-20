@@ -34,6 +34,7 @@ private :
 
 private slots :
   void onPushedStartStop (void);
+  void onPushedSnap      (void);
   void onPushedExport    (void);
 
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
@@ -41,21 +42,29 @@ private slots :
 
 private :
   QAction* m_pMenuStartStop;
+  QAction* m_pMenuSnap;
   QAction* m_pMenuExport;
 
-  QLineEdit* m_pTxtStatus;
+  QLabel* m_pLblStatus;
 
-  QLineEdit* m_pTxtFixFields;
-  QLineEdit* m_pTxtFixMode;
-  QLineEdit* m_pTxtFixTime;
-  QLineEdit* m_pTxtFixLat;
-  QLineEdit* m_pTxtFixLong;
-  QLineEdit* m_pTxtFixAlt;
-  QLineEdit* m_pTxtFixTrack;
-  QLineEdit* m_pTxtFixSpeed;
-  QLineEdit* m_pTxtFixSatUse;
-  QLineEdit* m_pTxtFixGsm;
-  QLineEdit* m_pTxtFixWcdma;
+  QLabel* m_pLblFixFields;
+  QLabel* m_pLblFixMode;
+  QLabel* m_pLblFixTime;
+  QLabel* m_pLblFixLat;
+  QLabel* m_pLblFixLong;
+  QLabel* m_pLblFixAlt;
+  QLabel* m_pLblFixTrack;
+  QLabel* m_pLblFixSpeed;
+  QLabel* m_pLblFixSatUse;
+  QLabel* m_pLblFixGsm;
+  QLabel* m_pLblFixWcdma;
+
+  time_t m_uiStartTime;
+
+  LocationFixCellInfoGsm   m_CellInfoGsm;
+  time_t                   m_uiCellInfoGsmTime;
+  LocationFixCellInfoWcdma m_CellInfoWcdma;
+  time_t                   m_uiCellInfoWcdmaTime;
 };
 
 

@@ -105,6 +105,7 @@ struct LocationFix
 
   double getLatDeg     (void) const { return double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG); }
   double getLongDeg    (void) const { return double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG); }
+  double getHorizEpM   (void) const { return double(uiHorizEP) / 100.0; }
   double getTrackDeg   (void) const { return double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK); }
   double getTrackEpDeg (void) const { return double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK); }
   double getSpeedKmh   (void) const { return double(uiSpeed)   / double(LOCFIX_MULTIPLIER_SPEED); }
@@ -137,7 +138,7 @@ struct LocationFix
   fxuint8 cSatCount; // number of satellites structures appended to this fix
   fxuint8 cSatUse;   // number of satellites actually used to calculate this fix
 
-  // ... satellites (cSatCount * FixSat)
+  // ... satellites (cSatCount * LocationFixSat)
   LocationFixSat pFixSat[0];
 }
 __attribute__((packed));

@@ -28,7 +28,7 @@ App::App (int& nArgc, char** ppszArgv)
   Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
-  // init properties
+  // init members
   m_eState        = STATE_STOPPED;
   m_bVirginOutput = true;
 
@@ -221,6 +221,6 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
   {
     m_bVirginOutput = false;
-    m_GPSRFile.writeLocationFix(time(0), *pFixCont);
+    m_GPSRFile.writeLocationFix(pFixCont->getFix()->uiTime, *pFixCont);
   }
 }
