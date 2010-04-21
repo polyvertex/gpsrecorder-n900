@@ -414,7 +414,6 @@ bool GPSRFile::readChunk (int nChunkIndex)
   {
     Q_ASSERT(m_bDiscoveryRead == false);
     Q_ASSERT(nChunkIndex >= 0);
-    Q_ASSERT(nChunkIndex < m_vecReadChunks.count());
     if (nChunkIndex < 0 || nChunkIndex >= m_vecReadChunks.count())
       return false;
 

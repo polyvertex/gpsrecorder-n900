@@ -77,7 +77,9 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
   Q_ASSERT(pszFilePath[0]);
 
   this->close();
-  m_strFilePath.sprintf("%s.%s", pszFilePath, this->extension());
+  m_strFilePath  = pszFilePath;
+  m_strFilePath += '.';
+  m_strFilePath += this->extension();
 
   m_pFile = fopen(qPrintable(m_strFilePath), "wb");
   if (!m_pFile)

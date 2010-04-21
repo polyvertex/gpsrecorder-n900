@@ -23,9 +23,9 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   {
     this->menuBar()->clear();
-    m_pMenuStartStop = this->menuBar()->addAction("Start", this, SLOT(onPushedStartStop()));
-    m_pMenuSnap      = this->menuBar()->addAction("Snap", this, SLOT(onPushedSnap()));
-    m_pMenuExport    = this->menuBar()->addAction("Export", this, SLOT(onPushedExport()));
+    m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onPushedStartStop()));
+    m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
+    m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
 
     m_pMenuSnap->setEnabled(false);
   }
@@ -103,18 +103,18 @@ void WndMain::showFix (void)
   QWidget* pWidget = new QWidget();
   QFormLayout* pForm = new QFormLayout();
 
-  pForm->addRow("Status :", m_pLblStatus);
-  pForm->addRow("Fields :", m_pLblFixFields);
-  pForm->addRow("Mode :",   m_pLblFixMode);
-  pForm->addRow("Time :",   m_pLblFixTime);
-  pForm->addRow("Lat :",    m_pLblFixLat);
-  pForm->addRow("Long :",   m_pLblFixLong);
-  pForm->addRow("Alt :",    m_pLblFixAlt);
-  pForm->addRow("Track :",  m_pLblFixTrack);
-  pForm->addRow("Speed :",  m_pLblFixSpeed);
-  pForm->addRow("SatUse :", m_pLblFixSatUse);
-  pForm->addRow("GSM :",    m_pLblFixGsm);
-  pForm->addRow("WCDMA :",  m_pLblFixWcdma);
+  pForm->addRow(tr("Status :"), m_pLblStatus);
+  pForm->addRow(tr("Fields :"), m_pLblFixFields);
+  pForm->addRow(tr("Mode :"),   m_pLblFixMode);
+  pForm->addRow(tr("Time :"),   m_pLblFixTime);
+  pForm->addRow(tr("Lat :"),    m_pLblFixLat);
+  pForm->addRow(tr("Long :"),   m_pLblFixLong);
+  pForm->addRow(tr("Alt :"),    m_pLblFixAlt);
+  pForm->addRow(tr("Track :"),  m_pLblFixTrack);
+  pForm->addRow(tr("Speed :"),  m_pLblFixSpeed);
+  pForm->addRow(tr("SatUse :"), m_pLblFixSatUse);
+  pForm->addRow(tr("GSM :"),    m_pLblFixGsm);
+  pForm->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
 
   pWidget->setLayout(pForm);
   this->setCentralWidget(pWidget);
@@ -144,16 +144,16 @@ void WndMain::onPushedStartStop (void)
     //this->clearFixFields();
 
     pApp->setState(App::STATE_STOPPED);
-    m_pLblStatus->setText("Stopped");
+    m_pLblStatus->setText(tr("Stopped"));
 
-    m_pMenuStartStop->setText("Start");
+    m_pMenuStartStop->setText(tr("Start"));
     m_pMenuSnap->setEnabled(false);
-    m_pMenuExport->setEnabled(true);
+    m_pMenuConvert->setEnabled(true);
   }
   else
   {
     pApp->setState(App::STATE_STARTED);
-    m_pLblStatus->setText("Started");
+    m_pLblStatus->setText(tr("Started"));
 
     this->clearFixFields();
     m_uiStartTime = time(0);
@@ -161,9 +161,9 @@ void WndMain::onPushedStartStop (void)
     pLocation->resetLastFix();
     pLocation->start();
 
-    m_pMenuStartStop->setText("Stop");
+    m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
-    m_pMenuExport->setEnabled(false);
+    m_pMenuConvert->setEnabled(false);
   }
 }
 
@@ -186,11 +186,12 @@ void WndMain::onPushedSnap (void)
 }
 
 //---------------------------------------------------------------------------
-// onPushedExport
+// onPushedConvert
 //---------------------------------------------------------------------------
-void WndMain::onPushedExport (void)
+void WndMain::onPushedConvert (void)
 {
-  Exporter::exportStatic();
+  WndConvert wndConvert(this);
+  wndConvert.exec();
 }
 
 
@@ -233,7 +234,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   // status
   str.sprintf("%s, %s",
     App::instance()->getStateStr(),
-    (bAccurate ? "Fixed" : pLocation->isAcquiring() ? "Acquiring" : "Lost") );
+    (bAccurate ? QT_TR_NOOP("Fixed") : pLocation->isAcquiring() ? QT_TR_NOOP("Acquiring") : QT_TR_NOOP("Lost")) );
   m_pLblStatus->setText(str);
 
   // fix fields
@@ -241,17 +242,17 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   if (fix.wFixFields != FIXFIELD_NONE)
   {
     if (fix.hasFields(FIXFIELD_TIME))
-      str += "Time ";
+      str += tr("Time ");
     if (fix.hasFields(FIXFIELD_LATLONG))
-      str += "LatLong ";
+      str += tr("LatLong ");
     if (fix.hasFields(FIXFIELD_ALT))
-      str += "Alt ";
+      str += tr("Alt ");
     if (fix.hasFields(FIXFIELD_TRACK))
-      str += "Track ";
+      str += tr("Track ");
     if (fix.hasFields(FIXFIELD_SPEED))
-      str += "Speed ";
+      str += tr("Speed ");
     if (fix.hasFields(FIXFIELD_CLIMB))
-      str += "Climb ";
+      str += tr("Climb ");
   }
   m_pLblFixFields->setText(str);
 

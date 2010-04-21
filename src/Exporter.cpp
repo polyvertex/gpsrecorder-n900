@@ -60,48 +60,79 @@ Exporter::~Exporter (void)
 
 
 //---------------------------------------------------------------------------
-// exportStatic
+// clear
 //---------------------------------------------------------------------------
-void Exporter::exportStatic (void)
+void Exporter::clear (void)
 {
-  Exporter exporter;
-  exporter.run(App::outputDir());
+  m_strOutputBasePath.clear();
+  m_GPSRFile.close();
+  m_FixCont.reset();
+}
+
+
+
+//---------------------------------------------------------------------------
+// exportFile
+//---------------------------------------------------------------------------
+bool Exporter::exportFile (const QString& strFile)
+{
+  if (strFile.endsWith(".gpsr", Qt::CaseInsensitive))
+    m_strOutputBasePath = strFile.left(strFile.length() - 5);
+  else
+    m_strOutputBasePath = strFile;
+
+  if (!m_GPSRFile.openRead(qPrintable(strFile)))
+    return false;
+
+  while (m_GPSRFile.readNext()) { ; }
+
+  this->clear();
+
+  return true;
 }
 
 //---------------------------------------------------------------------------
-// run
+// exportFiles
 //---------------------------------------------------------------------------
-void Exporter::run (const QString& strInputDir)
+uint Exporter::exportFiles (const QStringList& filesList)
 {
-  ExporterSinkCsv exporterCsv(this);
-  ExporterSinkGpx exporterGpx(this);
-  ExporterSinkKml exporterKml(this);
+  uint uiSuccessCount = 0;
 
-  if (!Util::fileIsDir(qPrintable(strInputDir)))
+  for (int i = 0; i < filesList.size(); ++i)
   {
-    qWarning("Not a directory : %s !", qPrintable(strInputDir));
-    return;
+    if (this->exportFile(filesList[i]))
+      ++uiSuccessCount;
   }
 
-  QDirIterator dirIt(strInputDir);
+  return uiSuccessCount;
+}
+
+//---------------------------------------------------------------------------
+// exportDir
+//---------------------------------------------------------------------------
+uint Exporter::exportDir (const QString& strDirectory, const QString& strSuffix/*=".gpsr"*/)
+{
+  if (!Util::fileIsDir(qPrintable(strDirectory)))
+  {
+    qWarning("Not a directory : %s !", qPrintable(strDirectory));
+    return 0;
+  }
+
+  QDirIterator dirIt(strDirectory);
   QString strFile;
+  uint uiSuccessCount = 0;
 
   while (dirIt.hasNext())
   {
     strFile = dirIt.next();
-    if (!strFile.endsWith(".gpsr", Qt::CaseInsensitive))
+    if (!strFile.endsWith(strSuffix, Qt::CaseInsensitive))
       continue;
 
-    m_strOutputBasePath = strFile.left(strFile.length() - 5);
-
-    if (m_GPSRFile.openRead(qPrintable(strFile)))
-      while (m_GPSRFile.readNext()) { ; }
-    m_GPSRFile.close();
-
-    exporterCsv.close();
-    exporterGpx.close();
-    exporterKml.close();
+    if (this->exportFile(strFile))
+      ++uiSuccessCount;
   }
+
+  return uiSuccessCount;
 }
 
 

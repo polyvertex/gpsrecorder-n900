@@ -24,11 +24,13 @@ public :
   Exporter (void);
   virtual ~Exporter (void);
 
-  static void exportStatic (void);
+  bool exportFile  (const QString& strFile);
+  uint exportFiles (const QStringList& filesList);
+  uint exportDir   (const QString& strDirectory, const QString& strSuffix=".gpsr");
 
 
 private :
-  void run (const QString& strInputDir);
+  void clear (void);
 
 
 private slots :
