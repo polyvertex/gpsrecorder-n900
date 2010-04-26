@@ -51,10 +51,11 @@ public :
 
   static App* instance (void) { return static_cast<App*>(QCoreApplication::instance()); }
 
-  QSettings* settings (void) { return &m_Settings; }
-  Location*  location (void) { return m_pLocation; }
-  WndMain*   wndMain  (void) { return m_pWndMain; }
-  GPSRFile*  outFile  (void) { return &m_GPSRFile; }
+  QSettings* settings      (void) { return &m_Settings; }
+  bool       writeSettings (void);
+  Location*  location      (void) { return m_pLocation; }
+  WndMain*   wndMain       (void) { return m_pWndMain; }
+  GPSRFile*  outFile       (void) { return &m_GPSRFile; }
 
   void        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }

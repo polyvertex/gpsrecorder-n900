@@ -161,7 +161,7 @@ bool GPSRFile::openRead (const char* pszFile)
     m_bDiscoveryRead = false;
   }
 
-  qDebug("Opened GPSR file '%s' (%d chunks).", pszFile, m_vecReadChunks.count());
+  qDebug("Opened  GPSR file %s (%d chunks).", pszFile, m_vecReadChunks.count());
 
   return this->seekFirst();
 }

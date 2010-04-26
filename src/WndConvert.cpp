@@ -200,6 +200,8 @@ void WndConvert::onPushedConvert (void)
     settings.setValue(App::SETTINGNAME_CONVERT_CSV, QVariant(m_pChkCsv->checkState() != Qt::Unchecked));
     settings.setValue(App::SETTINGNAME_CONVERT_GPX, QVariant(m_pChkGpx->checkState() != Qt::Unchecked));
     settings.setValue(App::SETTINGNAME_CONVERT_KML, QVariant(m_pChkKml->checkState() != Qt::Unchecked));
+
+    App::instance()->writeSettings();
   }
 
   // create export sinks
