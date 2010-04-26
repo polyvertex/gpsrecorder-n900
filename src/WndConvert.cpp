@@ -24,7 +24,6 @@ WndConvert::WndConvert (QWidget* pParent/*=0*/)
   this->setWindowTitle(tr("Convert"));
 
   this->setupControls();
-  this->onPushedBrowse();
 }
 
 //---------------------------------------------------------------------------
@@ -47,15 +46,18 @@ void WndConvert::setupControls (void)
   // browse input file(s)
   {
     QHBoxLayout* pHBox = new QHBoxLayout;
-    QPushButton* pBtnBrowse = new QPushButton(tr("Browse"));
+    QPushButton* pBtnBrowseFiles = new QPushButton(tr("Files"));
+    QPushButton* pBtnBrowseDir = new QPushButton(tr("Dir"));
 
     m_pTxtBrowse = new QLineEdit;
     m_pTxtBrowse->setReadOnly(true);
 
-    this->connect(pBtnBrowse, SIGNAL(clicked()), SLOT(onPushedBrowse()));
+    this->connect(pBtnBrowseFiles, SIGNAL(clicked()), SLOT(onPushedBrowseFiles()));
+    this->connect(pBtnBrowseDir, SIGNAL(clicked()), SLOT(onPushedBrowseDir()));
 
     pHBox->addWidget(m_pTxtBrowse);
-    pHBox->addWidget(pBtnBrowse);
+    pHBox->addWidget(pBtnBrowseFiles);
+    pHBox->addWidget(pBtnBrowseDir);
     pLeftLayout->addLayout(pHBox);
   }
 
@@ -102,9 +104,9 @@ void WndConvert::setupControls (void)
 
 
 //---------------------------------------------------------------------------
-// onPushedBrowse
+// onPushedBrowseFiles
 //---------------------------------------------------------------------------
-void WndConvert::onPushedBrowse (void)
+void WndConvert::onPushedBrowseFiles (void)
 {
   m_InputFiles = QFileDialog::getOpenFileNames(
     this,
@@ -114,7 +116,7 @@ void WndConvert::onPushedBrowse (void)
 
   if (m_InputFiles.isEmpty())
   {
-    m_pTxtBrowse->setText(tr("No selection"));
+    m_pTxtBrowse->clear();
   }
   else if (m_InputFiles.count() == 1)
   {
@@ -126,6 +128,29 @@ void WndConvert::onPushedBrowse (void)
 
     str.sprintf(QT_TR_NOOP("%d files selected"), m_InputFiles.count());
     m_pTxtBrowse->setText(str);
+  }
+}
+
+//---------------------------------------------------------------------------
+// onPushedBrowseDir
+//---------------------------------------------------------------------------
+void WndConvert::onPushedBrowseDir (void)
+{
+  QString strDir = QFileDialog::getExistingDirectory(
+    this,
+    tr("Select a directory to convert"),
+    App::outputDir(),
+    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (strDir.isEmpty())
+  {
+    m_InputFiles.clear();
+    m_pTxtBrowse->clear();
+  }
+  else
+  {
+    m_InputFiles.append(strDir);
+    m_pTxtBrowse->setText(strDir);
   }
 }
 
@@ -153,7 +178,14 @@ void WndConvert::onPushedConvert (void)
   if (m_pChkKml->checkState() != Qt::Unchecked)
     pSinkKml = new ExporterSinkKml(&exporter);
 
-  uiSuccessCount = exporter.exportFiles(m_InputFiles);
+  if (m_InputFiles.count() == 1 && Util::fileIsDir(qPrintable(m_InputFiles[0])))
+  {
+    uiSuccessCount = exporter.exportDir(m_InputFiles[0]);
+  }
+  else
+  {
+    uiSuccessCount = exporter.exportFiles(m_InputFiles);
+  }
 
   delete pSinkCsv;
   delete pSinkGpx;

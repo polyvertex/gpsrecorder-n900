@@ -24,7 +24,7 @@ QString App::ms_strOutputDir;
 App::App (int& nArgc, char** ppszArgv)
 : QApplication(nArgc, ppszArgv)
 {
-  // ensure the QSettings default constructor will load *our* settings
+  // ensure the QSettings default constructor has loaded *our* settings
   Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 

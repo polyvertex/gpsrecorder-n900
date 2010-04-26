@@ -30,8 +30,9 @@ private :
 
 
 private slots :
-  void onPushedBrowse  (void);
-  void onPushedConvert (void);
+  void onPushedBrowseFiles (void);
+  void onPushedBrowseDir   (void);
+  void onPushedConvert     (void);
 
 
 private :

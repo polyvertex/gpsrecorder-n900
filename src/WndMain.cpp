@@ -138,7 +138,7 @@ void WndMain::onPushedStartStop (void)
   App* pApp = App::instance();
   Location* pLocation = pApp->location();
 
-  if (pLocation->isStarted())
+  if (pApp->getState() == App::STATE_STARTED)
   {
     pLocation->stop();
     //this->clearFixFields();
