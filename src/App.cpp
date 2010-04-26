@@ -13,9 +13,20 @@
 //---------------------------------------------------------------------------
 // Static Members
 //---------------------------------------------------------------------------
+const char* App::SETTINGNAME_LOGSTEP            = "LogStep";
+const char* App::SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
+const char* App::SETTINGNAME_CONVERT_CSV        = "ConvertCsv";
+const char* App::SETTINGNAME_CONVERT_GPX        = "ConvertGpx";
+const char* App::SETTINGNAME_CONVERT_KML        = "ConvertKml";
+const char* App::SETTINGNAME_KML_LINECOLOR      = "KmlLineColor";
+const char* App::SETTINGNAME_KML_LINEWIDTH      = "KmlLineWidth";
+const char* App::SETTINGNAME_KML_AIRCRAFTMODE   = "KmlAircraftMode";
+const char* App::SETTINGNAME_KML_COLORBYSPEED   = "KmlColorBySpeed";
+
 QString App::ms_strApplicationLabel;
 QString App::ms_strApplicationUrl;
 QString App::ms_strOutputDir;
+
 
 
 //---------------------------------------------------------------------------
@@ -132,7 +143,7 @@ void App::setState (App::State eNewState)
     m_bVirginOutput = true;
 
     strPath  = App::outputDir().toAscii();
-    strPath += "/track-";
+    strPath += "/gpstrack-";
     strPath += Util::timeString(true);
     strPath += ".gpsr";
     if (!m_GPSRFile.openWrite(strPath.constData(), true))

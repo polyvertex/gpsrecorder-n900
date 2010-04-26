@@ -21,6 +21,16 @@ class App : public QApplication
   Q_OBJECT
 
 public :
+  static const char* SETTINGNAME_LOGSTEP;
+  static const char* SETTINGNAME_GPSALWAYSCONNECTED;
+  static const char* SETTINGNAME_CONVERT_CSV;
+  static const char* SETTINGNAME_CONVERT_GPX;
+  static const char* SETTINGNAME_CONVERT_KML;
+  static const char* SETTINGNAME_KML_LINECOLOR;
+  static const char* SETTINGNAME_KML_LINEWIDTH;
+  static const char* SETTINGNAME_KML_AIRCRAFTMODE;
+  static const char* SETTINGNAME_KML_COLORBYSPEED;
+
   enum State
   {
     STATE_STOPPED,

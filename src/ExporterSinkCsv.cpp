@@ -30,6 +30,9 @@ ExporterSinkCsv::ExporterSinkCsv (Exporter* pParent)
     pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
+
+  // read convert settings
+  this->extractSettings(*App::instance()->settings());
 }
 
 //---------------------------------------------------------------------------
@@ -38,6 +41,16 @@ ExporterSinkCsv::ExporterSinkCsv (Exporter* pParent)
 ExporterSinkCsv::~ExporterSinkCsv (void)
 {
   this->close();
+}
+
+
+
+//---------------------------------------------------------------------------
+// extractSettings
+//---------------------------------------------------------------------------
+void ExporterSinkCsv::extractSettings (const QSettings& settings)
+{
+  Q_UNUSED(settings);
 }
 
 

@@ -491,6 +491,24 @@ bool GPSRFile::readChunk (int nChunkIndex)
 
 
 //---------------------------------------------------------------------------
+// getReadChunksCount
+//---------------------------------------------------------------------------
+int GPSRFile::getReadChunksCount (quint16 uiChunkId) const
+{
+  int nCount = 0;
+
+  for (int i = 0; i < m_vecReadChunks.count(); ++i)
+  {
+    if (m_vecReadChunks[i].uiId == uiChunkId)
+      ++nCount;
+  }
+
+  return nCount;
+}
+
+
+
+//---------------------------------------------------------------------------
 // writeData
 //---------------------------------------------------------------------------
 void GPSRFile::writeData (const char* pData, uint uiSize)

@@ -105,6 +105,7 @@ class ExporterSink;
 #include "ExporterSinkGpx.h"
 #include "ExporterSinkKml.h"
 
+#include "WndConfig.h"
 #include "WndConvert.h"
 #include "WndMain.h"
 #include "App.h"

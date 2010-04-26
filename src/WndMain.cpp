@@ -25,6 +25,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     this->menuBar()->clear();
     m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onPushedStartStop()));
     m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
+    m_pMenuConfig    = this->menuBar()->addAction(tr("Config"), this, SLOT(onPushedConfig()));
     m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
 
     m_pMenuSnap->setEnabled(false);
@@ -183,6 +184,15 @@ void WndMain::onPushedSnap (void)
   pGPSRFile->writeSnap(time(0));
 
   // TODO : popup a message to inform user (no confirmation needed !)
+}
+
+//---------------------------------------------------------------------------
+// onPushedConfig
+//---------------------------------------------------------------------------
+void WndMain::onPushedConfig (void)
+{
+  WndConfig wndConfig(this);
+  wndConfig.exec();
 }
 
 //---------------------------------------------------------------------------

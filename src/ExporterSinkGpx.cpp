@@ -35,6 +35,9 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
     pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
+
+  // read convert settings
+  this->extractSettings(*App::instance()->settings());
 }
 
 //---------------------------------------------------------------------------
@@ -43,6 +46,16 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
 ExporterSinkGpx::~ExporterSinkGpx (void)
 {
   this->close();
+}
+
+
+
+//---------------------------------------------------------------------------
+// extractSettings
+//---------------------------------------------------------------------------
+void ExporterSinkGpx::extractSettings (const QSettings& settings)
+{
+  Q_UNUSED(settings);
 }
 
 

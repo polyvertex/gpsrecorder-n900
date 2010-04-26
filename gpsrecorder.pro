@@ -34,6 +34,7 @@ HEADERS += \
   src/LocationGPSRFile.h \
   src/LocationMaemo.h \
   src/Util.h \
+  src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h
 SOURCES += \
@@ -50,6 +51,7 @@ SOURCES += \
   src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
   src/Util.cpp \
+  src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp
 

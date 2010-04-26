@@ -96,6 +96,7 @@ public :
   bool                          isReadDiscovery    (void) const { return m_bDiscoveryRead; }
   int                           getReadChunkIndex  (void) const { return m_nReadIndex; }
   int                           getReadChunksCount (void) const { return m_vecReadChunks.count(); }
+  int                           getReadChunksCount (quint16 uiChunkId) const;
   const QVector<ChunkReadInfo>& getReadChunksInfo  (void) const { return m_vecReadChunks; }
 
 

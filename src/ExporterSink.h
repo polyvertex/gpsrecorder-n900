@@ -21,10 +21,6 @@ class ExporterSink : public QObject
   Q_OBJECT
 
 public :
-  typedef QHash<QString,QString>  Settings;
-
-
-public :
   ExporterSink (Exporter* pParent);
   virtual ~ExporterSink (void);
 
@@ -37,6 +33,10 @@ public :
   virtual void close (void);
 
 
+private :
+  virtual void extractSettings (const QSettings& settings) = 0;
+
+
 public slots :
   virtual void onSOF         (const char* pszFilePath, time_t uiTime) = 0;
   virtual void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont) = 0;
@@ -44,9 +44,8 @@ public slots :
 
 
 protected :
-  Settings m_Settings;
-  FILE*    m_pFile;
-  QString  m_strFilePath;
+  FILE*   m_pFile;
+  QString m_strFilePath;
 };
 
 

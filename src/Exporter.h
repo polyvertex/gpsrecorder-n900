@@ -28,6 +28,8 @@ public :
   uint exportFiles (const QStringList& filesList);
   uint exportDir   (const QString& strDirectory, const QString& strSuffix=".gpsr");
 
+  GPSRFile& gpsrFile (void) { return m_GPSRFile; }
+
 
 private :
   void clear (void);

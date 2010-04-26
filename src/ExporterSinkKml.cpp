@@ -15,10 +15,6 @@
 //---------------------------------------------------------------------------
 #define KML_NL  "\r\n"
 
-// color components are ABGR ordered, so for example,
-// "FF00FF00" is green and "FF00FFFF" is yellow
-#define KML_COLOR  "FF00FF00"
-
 
 
 //---------------------------------------------------------------------------
@@ -39,6 +35,15 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
+
+  // default settings
+  m_strLineColor  = qPrintable(ExporterSinkKml::colorToString(ExporterSinkKml::defaultLineColor()));
+  m_nLineWidth    = ExporterSinkKml::defaultLineWidth();
+  m_bAircraftMode = ExporterSinkKml::defaultAircraftMode();
+  m_bColorBySpeed = ExporterSinkKml::defaultColorBySpeed();
+
+  // read convert settings
+  this->extractSettings(*App::instance()->settings());
 }
 
 //---------------------------------------------------------------------------
@@ -52,6 +57,57 @@ ExporterSinkKml::~ExporterSinkKml (void)
 
 
 //---------------------------------------------------------------------------
+// colorToString
+//---------------------------------------------------------------------------
+QString ExporterSinkKml::colorToString (const QColor& color)
+{
+  // in kml format, color components are ABGR ordered, so for example,
+  // "FF00FF00" is green and "FF00FFFF" is yellow
+  return QString().sprintf("%02X%02X%02X%02X",
+    color.alpha(),
+    color.blue(),
+    color.green(),
+    color.red());
+}
+
+//---------------------------------------------------------------------------
+// extractSettings
+//---------------------------------------------------------------------------
+void ExporterSinkKml::extractSettings (const QSettings& settings)
+{
+  QVariant var;
+
+  // line color
+  var = settings.value(App::SETTINGNAME_KML_LINECOLOR);
+  if (var.type() == QVariant::String)
+    m_strLineColor = qPrintable(ExporterSinkKml::colorToString(var.value<QColor>()));
+
+  // line width
+  var = settings.value(App::SETTINGNAME_KML_LINEWIDTH);
+  if (var.isValid())
+  {
+    m_nLineWidth = var.toInt();
+
+    if (m_nLineWidth < 1)
+      m_nLineWidth = 1;
+    else if (m_nLineWidth > 5)
+      m_nLineWidth = 5;
+  }
+
+  // aircraft mode
+  var = settings.value(App::SETTINGNAME_KML_AIRCRAFTMODE);
+  if (var.canConvert(QVariant::Bool))
+    m_bAircraftMode = var.toBool();
+
+  // color by speed
+  var = settings.value(App::SETTINGNAME_KML_COLORBYSPEED);
+  if (var.canConvert(QVariant::Bool))
+    m_bColorBySpeed = var.toBool();
+}
+
+
+
+//---------------------------------------------------------------------------
 // close
 //---------------------------------------------------------------------------
 void ExporterSinkKml::close (void)
@@ -60,8 +116,8 @@ void ExporterSinkKml::close (void)
   if (m_pFile)
   {
     fprintf(m_pFile,
-      "    </coordinates>" KML_NL
-      "  </LineString>" KML_NL
+      "  </coordinates>" KML_NL
+      " </LineString>" KML_NL
       "</Placemark>" KML_NL
       "</kml>" KML_NL );
   }
@@ -94,27 +150,35 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
   // write header
   fprintf(m_pFile,
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" KML_NL
-    "<kml xmlns=\"http://earth.google.com/kml/2.0\">" KML_NL
+    "<kml xmlns=\"http://www.opengis.net/kml/2.2\">" KML_NL
     "<Placemark>" KML_NL
-    "  <description>KML file created by %s v%s. Please visit %s for more info.</description>" KML_NL
-    "  <name>Track %s</name>" KML_NL
-    "  <visibility>1</visibility>" KML_NL
-    "  <open>1</open>" KML_NL
-    "  <Style>" KML_NL
-    "    <LineStyle>" KML_NL
-    "      <color>" KML_COLOR "</color>" KML_NL
-    "      <width>2</width>" KML_NL
-    "    </LineStyle>" KML_NL
-    //"    <PolyStyle>" KML_NL
-    //"      <color>7F00FF00</color>" KML_NL
-    //"    </PolyStyle>" KML_NL
-    "  </Style>" KML_NL
-    "  <LineString>" KML_NL
-    "    <tesselate>1</tesselate>" KML_NL
-    "    <altitudeMode>relativeToGround</altitudeMode>" KML_NL
-    "    <coordinates>" KML_NL,
+    " <name>GPS Track %s</name>" KML_NL
+    " <description>" KML_NL
+    "  <![CDATA[" KML_NL
+    "   %d waypoints.<br />" KML_NL
+    "   <br />" KML_NL
+    "   KML file created by %s v%s. Please visit %s for more info." KML_NL
+    "  ]]>" KML_NL
+    " </description>" KML_NL
+    " <visibility>1</visibility>" KML_NL
+    " <open>1</open>" KML_NL
+    " <Style>" KML_NL
+    "  <LineStyle>" KML_NL
+    "   <color>%s</color>" KML_NL
+    "   <width>%d</width>" KML_NL
+    "  </LineStyle>" KML_NL
+    " </Style>" KML_NL
+    " <LineString>" KML_NL
+    "  <extrude>1</extrude>" KML_NL
+    "  <tesselate>1</tesselate>" KML_NL
+    "  <altitudeMode>%s</altitudeMode>" KML_NL
+    "  <coordinates>" KML_NL,
+    Util::timeString(false, uiTime),
+    this->parent()->gpsrFile().getReadChunksCount(GPSRFile::CHUNK_LOCATIONFIX),
     qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()), qPrintable(App::applicationUrl()),
-    Util::timeString(false, uiTime) );
+    m_strLineColor.constData(),
+    m_nLineWidth,
+    (m_bAircraftMode ? "absolute" : "clampToGround") );
 
   // TODO : add a snap with the time to mark the beginning of the track
 }
@@ -132,10 +196,14 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  if (!fix.hasFields(FIXFIELD_LATLONG)) //if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG | FIXFIELD_ALT | FIXFIELD_TRACK | FIXFIELD_SPEED))
+  if (!fix.hasFields(FIXFIELD_LATLONG | FIXFIELD_ALT)) //if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG | FIXFIELD_ALT | FIXFIELD_TRACK | FIXFIELD_SPEED))
     return;
 
-  fprintf(m_pFile, "%.6lf,%.6lf,1\n", fix.getLongDeg(), fix.getLatDeg());
+  fprintf(m_pFile,
+    "%.6lf,%.6lf,%d\n",
+    fix.getLongDeg(),
+    fix.getLatDeg(),
+    fix.iAlt);
 }
 
 //---------------------------------------------------------------------------

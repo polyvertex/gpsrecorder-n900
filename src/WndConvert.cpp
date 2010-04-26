@@ -17,7 +17,6 @@ WndConvert::WndConvert (QWidget* pParent/*=0*/)
 : QDialog(pParent)
 {
   Q_ASSERT(App::instance());
-  Q_ASSERT(App::instance()->location());
   Q_ASSERT(pParent);
 
   this->setModal(true);
@@ -69,10 +68,6 @@ void WndConvert::setupControls (void)
     m_pChkGpx = new QCheckBox("GPX");
     m_pChkKml = new QCheckBox("KML");
 
-    m_pChkCsv->setCheckState(Qt::Checked);
-    m_pChkGpx->setCheckState(Qt::Checked);
-    m_pChkKml->setCheckState(Qt::Checked);
-
     pHBox->addWidget(m_pChkCsv);
     pHBox->addWidget(m_pChkGpx);
     pHBox->addWidget(m_pChkKml);
@@ -98,6 +93,22 @@ void WndConvert::setupControls (void)
     pRootLayout->addWidget(pBtnConvert, 0, Qt::AlignBottom);
   }
 
+  // apply settings to the widgets
+  {
+    QSettings& settings = *App::instance()->settings();
+    QVariant var;
+
+    var = settings.value(App::SETTINGNAME_CONVERT_CSV);
+    m_pChkCsv->setCheckState(!var.canConvert(QVariant::Bool) ? Qt::Checked : (var.toBool() ? Qt::Checked : Qt::Unchecked));
+
+    var = settings.value(App::SETTINGNAME_CONVERT_GPX);
+    m_pChkGpx->setCheckState(!var.canConvert(QVariant::Bool) ? Qt::Checked : (var.toBool() ? Qt::Checked : Qt::Unchecked));
+
+    var = settings.value(App::SETTINGNAME_CONVERT_KML);
+    m_pChkKml->setCheckState(!var.canConvert(QVariant::Bool) ? Qt::Checked : (var.toBool() ? Qt::Checked : Qt::Unchecked));
+  }
+
+  // apply layout
   this->setLayout(pRootLayout);
 }
 
@@ -165,12 +176,33 @@ void WndConvert::onPushedConvert (void)
   ExporterSinkKml* pSinkKml = 0;
   uint uiSuccessCount = 0;
 
-  if (m_InputFiles.isEmpty())
+  // check convert action
   {
-    // TODO : popup a message "No file selected !"
-    return;
+    if (m_InputFiles.isEmpty())
+    {
+      // TODO : popup a message "No file selected !"
+      return;
+    }
+
+    if (m_pChkCsv->checkState() == Qt::Unchecked &&
+        m_pChkGpx->checkState() == Qt::Unchecked &&
+        m_pChkKml->checkState() == Qt::Unchecked)
+    {
+      // TODO : popup a message "No output format selected !"
+      return;
+    }
   }
 
+  // keep convert options
+  {
+    QSettings& settings = *App::instance()->settings();
+
+    settings.setValue(App::SETTINGNAME_CONVERT_CSV, QVariant(m_pChkCsv->checkState() != Qt::Unchecked));
+    settings.setValue(App::SETTINGNAME_CONVERT_GPX, QVariant(m_pChkGpx->checkState() != Qt::Unchecked));
+    settings.setValue(App::SETTINGNAME_CONVERT_KML, QVariant(m_pChkKml->checkState() != Qt::Unchecked));
+  }
+
+  // create export sinks
   if (m_pChkCsv->checkState() != Qt::Unchecked)
     pSinkCsv = new ExporterSinkCsv(&exporter);
   if (m_pChkGpx->checkState() != Qt::Unchecked)
@@ -178,20 +210,19 @@ void WndConvert::onPushedConvert (void)
   if (m_pChkKml->checkState() != Qt::Unchecked)
     pSinkKml = new ExporterSinkKml(&exporter);
 
+  // do export
   if (m_InputFiles.count() == 1 && Util::fileIsDir(qPrintable(m_InputFiles[0])))
-  {
     uiSuccessCount = exporter.exportDir(m_InputFiles[0]);
-  }
   else
-  {
     uiSuccessCount = exporter.exportFiles(m_InputFiles);
-  }
 
+  // free export sinks
   delete pSinkCsv;
   delete pSinkGpx;
   delete pSinkKml;
 
   // TODO : popup a message to show the uiSuccessCount value
 
-  emit this->done(0);
+  // exit dialog
+  this->done(0);
 }

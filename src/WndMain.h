@@ -35,6 +35,7 @@ private :
 private slots :
   void onPushedStartStop (void);
   void onPushedSnap      (void);
+  void onPushedConfig    (void);
   void onPushedConvert   (void);
 
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
@@ -43,6 +44,7 @@ private slots :
 private :
   QAction* m_pMenuStartStop;
   QAction* m_pMenuSnap;
+  QAction* m_pMenuConfig;
   QAction* m_pMenuConvert;
 
   QLabel* m_pLblStatus;
