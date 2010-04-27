@@ -28,17 +28,14 @@ public :
   void close (void);
 
   // default settings
-  static QColor defaultLineColor    (void) { return QColor(0, 255, 0, 255); }
-  static int    defaultLineWidth    (void) { return 2; }
-  static bool   defaultAircraftMode (void) { return false; }
-  static bool   defaultColorBySpeed (void) { return false; }
+  static QColor         defaultLineColor    (void) { return QColor(0, 255, 0, 255); }
+  static int            defaultLineWidth    (void) { return 2; }
+  static QPair<int,int> lineWidthBounds     (void) { return QPair<int,int>(1, 5); }
+  static bool           defaultAircraftMode (void) { return false; }
+  static bool           defaultColorBySpeed (void) { return false; }
 
   // static utils
   static QString colorToString (const QColor& color);
-
-
-private :
-  void extractSettings (const QSettings& settings);
 
 
 public slots :
@@ -52,7 +49,6 @@ private :
   QByteArray m_strLineColor;
   int        m_nLineWidth;
   bool       m_bAircraftMode;
-  bool       m_bColorBySpeed;
 };
 
 

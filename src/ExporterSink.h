@@ -33,10 +33,6 @@ public :
   virtual void close (void);
 
 
-private :
-  virtual void extractSettings (const QSettings& settings) = 0;
-
-
 public slots :
   virtual void onSOF         (const char* pszFilePath, time_t uiTime) = 0;
   virtual void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont) = 0;

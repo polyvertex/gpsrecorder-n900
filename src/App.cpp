@@ -13,16 +13,6 @@
 //---------------------------------------------------------------------------
 // Static Members
 //---------------------------------------------------------------------------
-const char* App::SETTINGNAME_LOGSTEP            = "LogStep";
-const char* App::SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
-const char* App::SETTINGNAME_CONVERT_CSV        = "ConvertCsv";
-const char* App::SETTINGNAME_CONVERT_GPX        = "ConvertGpx";
-const char* App::SETTINGNAME_CONVERT_KML        = "ConvertKml";
-const char* App::SETTINGNAME_KML_LINECOLOR      = "KmlLineColor";
-const char* App::SETTINGNAME_KML_LINEWIDTH      = "KmlLineWidth";
-const char* App::SETTINGNAME_KML_AIRCRAFTMODE   = "KmlAircraftMode";
-const char* App::SETTINGNAME_KML_COLORBYSPEED   = "KmlColorBySpeed";
-
 QString App::ms_strApplicationLabel;
 QString App::ms_strApplicationUrl;
 QString App::ms_strOutputDir;
@@ -35,10 +25,6 @@ QString App::ms_strOutputDir;
 App::App (int& nArgc, char** ppszArgv)
 : QApplication(nArgc, ppszArgv)
 {
-  // ensure the QSettings default constructor has loaded *our* settings
-  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
-  Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
-
   // init members
   m_eState        = STATE_STOPPED;
   m_bVirginOutput = true;
@@ -66,8 +52,6 @@ App::App (int& nArgc, char** ppszArgv)
 //---------------------------------------------------------------------------
 App::~App (void)
 {
-  this->writeSettings();
-
   if (m_pWndMain)
     delete m_pWndMain;
 
@@ -76,7 +60,6 @@ App::~App (void)
 
   this->closeGPSRFile();
 }
-
 
 
 
@@ -126,27 +109,6 @@ void App::setOutputDir (const QString& strOutputDir)
 const QString& App::outputDir (void)
 {
   return ms_strOutputDir;
-}
-
-
-
-//---------------------------------------------------------------------------
-// writeSettings
-//---------------------------------------------------------------------------
-bool App::writeSettings (void)
-{
-  QSettings::Status eStatus;
-
-  m_Settings.sync();
-
-  eStatus = m_Settings.status();
-  if (eStatus != QSettings::NoError)
-  {
-    qWarning("Failed to write settings ! Code %d.", eStatus);
-    return false;
-  }
-
-  return true;
 }
 
 

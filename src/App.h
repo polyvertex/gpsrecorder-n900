@@ -21,16 +21,6 @@ class App : public QApplication
   Q_OBJECT
 
 public :
-  static const char* SETTINGNAME_LOGSTEP;
-  static const char* SETTINGNAME_GPSALWAYSCONNECTED;
-  static const char* SETTINGNAME_CONVERT_CSV;
-  static const char* SETTINGNAME_CONVERT_GPX;
-  static const char* SETTINGNAME_CONVERT_KML;
-  static const char* SETTINGNAME_KML_LINECOLOR;
-  static const char* SETTINGNAME_KML_LINEWIDTH;
-  static const char* SETTINGNAME_KML_AIRCRAFTMODE;
-  static const char* SETTINGNAME_KML_COLORBYSPEED;
-
   enum State
   {
     STATE_STOPPED,
@@ -51,11 +41,11 @@ public :
 
   static App* instance (void) { return static_cast<App*>(QCoreApplication::instance()); }
 
-  QSettings* settings      (void) { return &m_Settings; }
-  bool       writeSettings (void);
-  Location*  location      (void) { return m_pLocation; }
-  WndMain*   wndMain       (void) { return m_pWndMain; }
-  GPSRFile*  outFile       (void) { return &m_GPSRFile; }
+  AppSettings* settings      (void) { return &m_Settings; }
+  bool         writeSettings (void);
+  Location*    location      (void) { return m_pLocation; }
+  WndMain*     wndMain       (void) { return m_pWndMain; }
+  GPSRFile*    outFile       (void) { return &m_GPSRFile; }
 
   void        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }
@@ -78,9 +68,9 @@ private :
 
 
 private :
-  QSettings m_Settings;
-  Location* m_pLocation;
-  WndMain*  m_pWndMain;
+  AppSettings m_Settings;
+  Location*   m_pLocation;
+  WndMain*    m_pWndMain;
 
   State m_eState;
 

@@ -36,14 +36,14 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
 
-  // default settings
-  m_strLineColor  = qPrintable(ExporterSinkKml::colorToString(ExporterSinkKml::defaultLineColor()));
-  m_nLineWidth    = ExporterSinkKml::defaultLineWidth();
-  m_bAircraftMode = ExporterSinkKml::defaultAircraftMode();
-  m_bColorBySpeed = ExporterSinkKml::defaultColorBySpeed();
+  // read settings
+  {
+    AppSettings& settings = *App::instance()->settings();
 
-  // read convert settings
-  this->extractSettings(*App::instance()->settings());
+    m_strLineColor  = qPrintable(ExporterSinkKml::colorToString(settings.getKmlLineColor()));
+    m_nLineWidth    = settings.getKmlLineWidth();
+    m_bAircraftMode = settings.getKmlAircraftMode();
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -68,41 +68,6 @@ QString ExporterSinkKml::colorToString (const QColor& color)
     color.blue(),
     color.green(),
     color.red());
-}
-
-//---------------------------------------------------------------------------
-// extractSettings
-//---------------------------------------------------------------------------
-void ExporterSinkKml::extractSettings (const QSettings& settings)
-{
-  QVariant var;
-
-  // line color
-  var = settings.value(App::SETTINGNAME_KML_LINECOLOR);
-  if (var.type() == QVariant::String)
-    m_strLineColor = qPrintable(ExporterSinkKml::colorToString(var.value<QColor>()));
-
-  // line width
-  var = settings.value(App::SETTINGNAME_KML_LINEWIDTH);
-  if (var.isValid())
-  {
-    m_nLineWidth = var.toInt();
-
-    if (m_nLineWidth < 1)
-      m_nLineWidth = 1;
-    else if (m_nLineWidth > 5)
-      m_nLineWidth = 5;
-  }
-
-  // aircraft mode
-  var = settings.value(App::SETTINGNAME_KML_AIRCRAFTMODE);
-  if (var.canConvert(QVariant::Bool))
-    m_bAircraftMode = var.toBool();
-
-  // color by speed
-  var = settings.value(App::SETTINGNAME_KML_COLORBYSPEED);
-  if (var.canConvert(QVariant::Bool))
-    m_bColorBySpeed = var.toBool();
 }
 
 

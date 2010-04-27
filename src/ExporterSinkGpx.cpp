@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------
 // Macros
 //---------------------------------------------------------------------------
-#define GPX_NL  "\n"
+#define GPX_NL  "\r\n"
 
 
 
@@ -35,9 +35,6 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
     pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
-
-  // read convert settings
-  this->extractSettings(*App::instance()->settings());
 }
 
 //---------------------------------------------------------------------------
@@ -46,16 +43,6 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
 ExporterSinkGpx::~ExporterSinkGpx (void)
 {
   this->close();
-}
-
-
-
-//---------------------------------------------------------------------------
-// extractSettings
-//---------------------------------------------------------------------------
-void ExporterSinkGpx::extractSettings (const QSettings& settings)
-{
-  Q_UNUSED(settings);
 }
 
 
@@ -102,12 +89,22 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
   }
 
   // write header
-  fprintf(m_pFile,
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" GPX_NL
-    "<gpx creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/0\">" GPX_NL
-    "<trk>" GPX_NL
-    "<trkseg>" GPX_NL,
-    qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()) );
+  {
+    QDateTime dt;
+    dt.setTimeSpec(Qt::UTC);
+    dt.setTime_t(uiTime);
+
+    fprintf(m_pFile,
+      "<?xml version=\"1.0\" ?>" GPX_NL
+      "<gpx version=\"1.0\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/0\">" GPX_NL
+      "<metadata>" GPX_NL
+      " <time>%s</time>" GPX_NL
+      "</metadata>" GPX_NL
+      "<trk>" GPX_NL
+      "<trkseg>" GPX_NL,
+      qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()),
+      qPrintable(dt.toString(Qt::ISODate)) );
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -123,18 +120,43 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG))
+  if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG | FIXFIELD_ALT))
     return;
 
   QDateTime dt;
+  dt.setTimeSpec(Qt::UTC);
   dt.setTime_t(uiTime);
 
+  QByteArray strFixMode;
+  switch (fix.cFixMode)
+  {
+    case FIXMODE_NOFIX :
+      strFixMode = " <fix>none</fix>" GPX_NL;
+      break;
+    case FIXMODE_2D :
+      strFixMode = " <fix>2d</fix>" GPX_NL;
+      break;
+    case FIXMODE_3D :
+      strFixMode = " <fix>3d</fix>" GPX_NL;
+      break;
+    default :
+      // as it is said in GPX format spec :
+      // "To signify the fix info is unknown, leave out fixType entirely"
+      break;
+  }
+
   fprintf(m_pFile,
-    " <trkpt lat=\"%.6lf\" lon=\"%.6lf\">"
-    "<time>%s</time>"
+    "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
+    " <time>%s</time>" GPX_NL
+    "%s"
+    " <ele>%i</ele>" GPX_NL
+    " <sat>%i</sat>" GPX_NL
     "</trkpt>" GPX_NL,
     fix.getLatDeg(), fix.getLongDeg(),
-    qPrintable(dt.toString(Qt::ISODate)) );
+    qPrintable(dt.toString(Qt::ISODate)),
+    strFixMode.constData(),
+    fix.iAlt,
+    (int)fix.cSatUse );
 }
 
 //---------------------------------------------------------------------------

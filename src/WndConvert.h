@@ -30,18 +30,30 @@ private :
 
 
 private slots :
-  void onPushedBrowseFiles (void);
-  void onPushedBrowseDir   (void);
-  void onPushedConvert     (void);
+  void onClickedBrowseFiles  (void);
+  void onClickedBrowseDir    (void);
+  void onClickedKmlLineColor (void);
+  void onClickedConvert      (void);
 
 
 private :
   QStringList m_InputFiles;
 
   QLineEdit* m_pTxtBrowse;
-  QCheckBox* m_pChkCsv;
-  QCheckBox* m_pChkGpx;
-  QCheckBox* m_pChkKml;
+
+  // csv
+  QGroupBox* m_pGroupBoxCsv;
+  QComboBox* m_pCboCsvSeparator;
+
+  // gpx
+  QGroupBox* m_pGroupBoxGpx;
+
+  // kml
+  QGroupBox*   m_pGroupBoxKml;
+  QPushButton* m_pBtnKmlLineColor;
+  QColor       m_KmlLineColor;
+  QComboBox*   m_pCboKmlLineWidth;
+  QCheckBox*   m_pChkKmlAircraft;
 };
 
 

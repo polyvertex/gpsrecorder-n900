@@ -16,7 +16,7 @@
 ExporterSinkCsv::ExporterSinkCsv (Exporter* pParent)
 : ExporterSink(pParent)
 {
-  m_cSeparator = ',';
+  m_cSeparator = ExporterSinkCsv::defaultSeparator();
 
   this->connect(
     pParent,
@@ -31,8 +31,8 @@ ExporterSinkCsv::ExporterSinkCsv (Exporter* pParent)
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
 
-  // read convert settings
-  this->extractSettings(*App::instance()->settings());
+  // read settings
+  m_cSeparator = App::instance()->settings()->getCsvSeparator();
 }
 
 //---------------------------------------------------------------------------
@@ -46,21 +46,24 @@ ExporterSinkCsv::~ExporterSinkCsv (void)
 
 
 //---------------------------------------------------------------------------
-// extractSettings
-//---------------------------------------------------------------------------
-void ExporterSinkCsv::extractSettings (const QSettings& settings)
-{
-  Q_UNUSED(settings);
-}
-
-
-
-//---------------------------------------------------------------------------
 // close
 //---------------------------------------------------------------------------
 void ExporterSinkCsv::close (void)
 {
   ExporterSink::close();
+}
+
+
+
+//---------------------------------------------------------------------------
+// separatorIndex
+//---------------------------------------------------------------------------
+int ExporterSinkCsv::separatorIndex (char cSep)
+{
+  const char* pszSeps = ExporterSinkCsv::supportedSeparators();
+  char* psz = strchr(pszSeps, cSep);
+
+  return !psz ? -1 : int(psz - pszSeps);
 }
 
 

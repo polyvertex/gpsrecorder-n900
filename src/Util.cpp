@@ -47,27 +47,14 @@ QFile::Permissions Util::filePermissions (const char* pszFile)
 //---------------------------------------------------------------------------
 // timeString
 //---------------------------------------------------------------------------
-const char* Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/)
+const char* Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/, bool bUTC/*=false*/)
 {
-  /*
-  static char szTime[24]; // YYYY-MM-DD hh:mm:ss
-
-  time_t t = (uiTime > 0) ? uiTime : time(0);
-  struct tm* ptm = localtime(&t);
-
-  if (bForFilename)
-    sprintf((char*)&szTime, "%04d%02d%02d-%02d%02d%02d", 1900+ptm->tm_year, 1+ptm->tm_mon, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
-  else
-    sprintf((char*)&szTime, "%04d-%02d-%02d %02d:%02d:%02d", 1900+ptm->tm_year, 1+ptm->tm_mon, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
-
-  return (char*)&szTime;
-  */
-
   static char szDateTime[32];
 
   QDateTime dt;
   QString strFormat;
 
+  dt.setTimeSpec(bUTC ? Qt::UTC : Qt::LocalTime);
   dt.setTime_t((uiTime > 0) ? uiTime : time(0));
   strFormat = bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss";
 

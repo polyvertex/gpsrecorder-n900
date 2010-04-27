@@ -27,9 +27,11 @@ public :
 
   void close (void);
 
-
-private :
-  void extractSettings (const QSettings& settings);
+  // default settings
+  static char        defaultSeparator    (void) { return ','; }
+  static const char* supportedSeparators (void) { return ",;\t"; }
+  static int         separatorIndex      (char cSep);
+  static bool        isAllowedSeparator  (char cSep) { return separatorIndex(cSep) >= 0; }
 
 
 public slots :

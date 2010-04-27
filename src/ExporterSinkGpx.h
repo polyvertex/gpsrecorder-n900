@@ -28,10 +28,6 @@ public :
   void close (void);
 
 
-private :
-  void extractSettings (const QSettings& settings);
-
-
 public slots :
   void onSOF         (const char* pszFilePath, time_t uiTime);
   void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);

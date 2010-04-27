@@ -23,6 +23,7 @@ PRECOMPILED_HEADER = src/stable.h
 
 HEADERS += \
   src/App.h \
+  src/AppSettings.h \
   src/Exporter.h \
   src/ExporterSink.h \
   src/ExporterSinkCsv.h \
@@ -40,6 +41,7 @@ HEADERS += \
 SOURCES += \
   src/main.cpp \
   src/App.cpp \
+  src/AppSettings.cpp \
   src/Exporter.cpp \
   src/ExporterSink.cpp \
   src/ExporterSinkCsv.cpp \
