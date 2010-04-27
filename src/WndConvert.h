@@ -33,6 +33,9 @@ private slots :
   void onClickedBrowseFiles  (void);
   void onClickedBrowseDir    (void);
   void onClickedKmlLineColor (void);
+  void onStateChangedCsv     (int nNewState);
+  void onStateChangedGpx     (int nNewState);
+  void onStateChangedKml     (int nNewState);
   void onClickedConvert      (void);
 
 
@@ -42,13 +45,16 @@ private :
   QLineEdit* m_pTxtBrowse;
 
   // csv
+  QCheckBox* m_pChkCsv;
   QGroupBox* m_pGroupBoxCsv;
   QComboBox* m_pCboCsvSeparator;
 
   // gpx
+  QCheckBox* m_pChkGpx;
   QGroupBox* m_pGroupBoxGpx;
 
   // kml
+  QCheckBox*   m_pChkKml;
   QGroupBox*   m_pGroupBoxKml;
   QPushButton* m_pBtnKmlLineColor;
   QColor       m_KmlLineColor;

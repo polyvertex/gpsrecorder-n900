@@ -52,9 +52,9 @@ void WndConvert::setupControls (void)
 
   // browse input file(s)
   {
-    QHBoxLayout* pHBox = new QHBoxLayout;
+    QGridLayout* pGrid = new QGridLayout;
     QPushButton* pBtnBrowseFiles = new QPushButton(tr("Files"));
-    QPushButton* pBtnBrowseDir = new QPushButton(tr("Dir"));
+    QPushButton* pBtnBrowseDir = new QPushButton(tr("Directory"));
 
     m_pTxtBrowse = new QLineEdit;
     m_pTxtBrowse->setReadOnly(true);
@@ -62,11 +62,11 @@ void WndConvert::setupControls (void)
     this->connect(pBtnBrowseFiles, SIGNAL(clicked()), SLOT(onClickedBrowseFiles()));
     this->connect(pBtnBrowseDir, SIGNAL(clicked()), SLOT(onClickedBrowseDir()));
 
-    pHBox->addWidget(m_pTxtBrowse);
-    pHBox->addWidget(pBtnBrowseFiles);
-    pHBox->addWidget(pBtnBrowseDir);
-    pLeftLayout->addLayout(pHBox);
-    pLeftLayout->addStretch(1);
+    pGrid->addWidget(m_pTxtBrowse,    0, 0, 1, 2);
+    pGrid->addWidget(pBtnBrowseFiles, 1, 0);
+    pGrid->addWidget(pBtnBrowseDir,   1, 1);
+    pLeftLayout->addLayout(pGrid);
+    pLeftLayout->addSpacing(5);
   }
 
   // output format - csv
@@ -85,27 +85,25 @@ void WndConvert::setupControls (void)
 
     pForm->addRow(tr("Separator :"), m_pCboCsvSeparator);
 
-    m_pGroupBoxCsv = new QGroupBox("CSV");
-    m_pGroupBoxCsv->setCheckable(true);
-    m_pGroupBoxCsv->setChecked(settings.getConvertCsv());
+    m_pGroupBoxCsv = new QGroupBox(tr("CSV options :"));
+    m_pGroupBoxCsv->setEnabled(settings.getConvertCsv());
     m_pGroupBoxCsv->setLayout(pForm);
 
     pLeftLayout->addWidget(m_pGroupBoxCsv);
-    pLeftLayout->addStretch(1);
+    pLeftLayout->addSpacing(5);
   }
 
   // output format - gpx
-  {
-    QFormLayout* pForm = new QFormLayout;
-
-    m_pGroupBoxGpx = new QGroupBox("GPX");
-    m_pGroupBoxGpx->setCheckable(true);
-    m_pGroupBoxGpx->setChecked(settings.getConvertGpx());
-    m_pGroupBoxGpx->setLayout(pForm);
-
-    pLeftLayout->addWidget(m_pGroupBoxGpx);
-    pLeftLayout->addStretch(1);
-  }
+  //{
+  //  QFormLayout* pForm = new QFormLayout;
+  //
+  //  m_pGroupBoxGpx = new QGroupBox(tr("GPX options :"));
+  //  m_pGroupBoxGpx->setEnabled(settings.getConvertGpx());
+  //  m_pGroupBoxGpx->setLayout(pForm);
+  //
+  //  pLeftLayout->addWidget(m_pGroupBoxGpx);
+  //  pLeftLayout->addSpacing(5);
+  //}
 
   // output format - kml
   {
@@ -113,9 +111,9 @@ void WndConvert::setupControls (void)
 
     m_KmlLineColor = settings.getKmlLineColor();
     m_pBtnKmlLineColor = new QPushButton;
-    m_pBtnKmlLineColor->setFlat(true);
+    //m_pBtnKmlLineColor->setFlat(true);
     m_pBtnKmlLineColor->setAutoFillBackground(true);
-    m_pBtnKmlLineColor->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(m_KmlLineColor.red()).arg(m_KmlLineColor.green()).arg(m_KmlLineColor.blue()));
+    m_pBtnKmlLineColor->setStyleSheet(QString("background-color:rgb(%1,%2,%3)").arg(m_KmlLineColor.red()).arg(m_KmlLineColor.green()).arg(m_KmlLineColor.blue()));
     this->connect(m_pBtnKmlLineColor, SIGNAL(clicked()), SLOT(onClickedKmlLineColor()));
 
     m_pCboKmlLineWidth = new QComboBox;
@@ -129,20 +127,32 @@ void WndConvert::setupControls (void)
     pForm->addRow(tr("Line Width :"), m_pCboKmlLineWidth);
     pForm->addRow(tr("Aircraft Mode :"), m_pChkKmlAircraft);
 
-    m_pGroupBoxKml = new QGroupBox("KML");
-    m_pGroupBoxKml->setCheckable(true);
-    m_pGroupBoxKml->setChecked(settings.getConvertKml());
+    m_pGroupBoxKml = new QGroupBox(tr("KML options :"));
+    m_pGroupBoxKml->setEnabled(settings.getConvertKml());
     m_pGroupBoxKml->setLayout(pForm);
 
     pLeftLayout->addWidget(m_pGroupBoxKml);
-    pLeftLayout->addStretch(1);
+    pLeftLayout->addSpacing(5);
   }
 
   // main layout setup
   {
     QScrollArea* pScrollArea = new QScrollArea;
     QWidget*     pScrollWidget = new QWidget();
+    QVBoxLayout* pRightLayout = new QVBoxLayout;
     QPushButton* pBtnConvert = new QPushButton(tr("Convert"));
+
+    m_pChkCsv = new QCheckBox("CSV");
+    m_pChkCsv->setCheckState(settings.getConvertCsv() ? Qt::Checked : Qt::Unchecked);
+    this->connect(m_pChkCsv, SIGNAL(stateChanged(int)), SLOT(onStateChangedCsv(int)));
+
+    m_pChkGpx = new QCheckBox("GPX");
+    m_pChkGpx->setCheckState(settings.getConvertGpx() ? Qt::Checked : Qt::Unchecked);
+    this->connect(m_pChkGpx, SIGNAL(stateChanged(int)), SLOT(onStateChangedGpx(int)));
+
+    m_pChkKml = new QCheckBox("KML");
+    m_pChkKml->setCheckState(settings.getConvertKml() ? Qt::Checked : Qt::Unchecked);
+    this->connect(m_pChkKml, SIGNAL(stateChanged(int)), SLOT(onStateChangedKml(int)));
 
     this->connect(pBtnConvert, SIGNAL(clicked()), SLOT(onClickedConvert()));
 
@@ -153,8 +163,14 @@ void WndConvert::setupControls (void)
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pScrollArea->setProperty("FingerScrollable", true);
 
+    pRightLayout->addWidget(m_pChkCsv);
+    pRightLayout->addWidget(m_pChkGpx);
+    pRightLayout->addWidget(m_pChkKml);
+    pRightLayout->addSpacing(5);
+    pRightLayout->addWidget(pBtnConvert);
+
     pRootLayout->addWidget(pScrollArea);
-    pRootLayout->addWidget(pBtnConvert, 0, Qt::AlignBottom);
+    pRootLayout->addLayout(pRightLayout);
   }
 
   // apply layout
@@ -219,7 +235,39 @@ void WndConvert::onClickedBrowseDir (void)
 //---------------------------------------------------------------------------
 void WndConvert::onClickedKmlLineColor (void)
 {
-  // TODO
+  QColor newColor;
+
+  newColor = QColorDialog::getColor(m_KmlLineColor, this);
+  if (newColor.isValid())
+  {
+    m_KmlLineColor = newColor;
+    m_pBtnKmlLineColor->setStyleSheet(QString("background-color:rgb(%1,%2,%3)").arg(m_KmlLineColor.red()).arg(m_KmlLineColor.green()).arg(m_KmlLineColor.blue()));
+  }
+}
+
+//---------------------------------------------------------------------------
+// onStateChangedCsv
+//---------------------------------------------------------------------------
+void WndConvert::onStateChangedCsv (int nNewState)
+{
+  m_pGroupBoxCsv->setEnabled((nNewState == Qt::Unchecked) ? false : true);
+}
+
+//---------------------------------------------------------------------------
+// onStateChangedGpx
+//---------------------------------------------------------------------------
+void WndConvert::onStateChangedGpx (int nNewState)
+{
+  Q_UNUSED(nNewState);
+  //m_pGroupBoxGpx->setEnabled((nNewState == Qt::Unchecked) ? false : true);
+}
+
+//---------------------------------------------------------------------------
+// onStateChangedKml
+//---------------------------------------------------------------------------
+void WndConvert::onStateChangedKml (int nNewState)
+{
+  m_pGroupBoxKml->setEnabled((nNewState == Qt::Unchecked) ? false : true);
 }
 
 //---------------------------------------------------------------------------
@@ -241,9 +289,9 @@ void WndConvert::onClickedConvert (void)
       return;
     }
 
-    if (!m_pGroupBoxCsv->isChecked() &&
-        !m_pGroupBoxGpx->isChecked() &&
-        !m_pGroupBoxKml->isChecked())
+    if (m_pChkCsv->checkState() == Qt::Unchecked &&
+        m_pChkGpx->checkState() == Qt::Unchecked &&
+        m_pChkKml->checkState() == Qt::Unchecked)
     {
       // TODO : popup a message "No output format selected !"
       return;
@@ -254,21 +302,21 @@ void WndConvert::onClickedConvert (void)
   {
     AppSettings& settings = *App::instance()->settings();
 
-    settings.setConvertCsv(m_pGroupBoxCsv->isChecked());
-    settings.setConvertGpx(m_pGroupBoxGpx->isChecked());
-    settings.setConvertKml(m_pGroupBoxKml->isChecked());
+    settings.setConvertCsv((m_pChkCsv->checkState() == Qt::Unchecked) ? false : true);
+    settings.setConvertGpx((m_pChkGpx->checkState() == Qt::Unchecked) ? false : true);
+    settings.setConvertKml((m_pChkKml->checkState() == Qt::Unchecked) ? false : true);
 
-    if (m_pGroupBoxCsv->isChecked())
+    if (m_pChkCsv->checkState() != Qt::Unchecked)
     {
       settings.setCsvSeparator((char)m_pCboCsvSeparator->itemData(m_pCboCsvSeparator->currentIndex()).toInt());
     }
 
-    //if (m_pGroupBoxGpx->isChecked())
+    //if (m_pChkGpx->checkState() != Qt::Unchecked)
     //{
     //  // nothing to do for now...
     //}
 
-    if (m_pGroupBoxKml->isChecked())
+    if (m_pChkKml->checkState() != Qt::Unchecked)
     {
       settings.setKmlLineColor(m_KmlLineColor);
       settings.setKmlLineWidth(uint(m_pCboKmlLineWidth->currentIndex() + 1));
@@ -279,11 +327,11 @@ void WndConvert::onClickedConvert (void)
   }
 
   // create needed export sinks
-  if (m_pGroupBoxCsv->isChecked())
+  if (m_pChkCsv->checkState() != Qt::Unchecked)
     pSinkCsv = new ExporterSinkCsv(&exporter);
-  if (m_pGroupBoxGpx->isChecked())
+  if (m_pChkGpx->checkState() != Qt::Unchecked)
     pSinkGpx = new ExporterSinkGpx(&exporter);
-  if (m_pGroupBoxKml->isChecked())
+  if (m_pChkKml->checkState() != Qt::Unchecked)
     pSinkKml = new ExporterSinkKml(&exporter);
 
   // do export
