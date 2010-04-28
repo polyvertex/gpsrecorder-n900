@@ -61,8 +61,6 @@ private :
   QLabel* m_pLblFixGsm;
   QLabel* m_pLblFixWcdma;
 
-  time_t m_uiStartTime;
-
   LocationFixCellInfoGsm   m_CellInfoGsm;
   time_t                   m_uiCellInfoGsmTime;
   LocationFixCellInfoWcdma m_CellInfoWcdma;

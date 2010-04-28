@@ -53,6 +53,7 @@ public :
 
 
 public slots :
+  void onSettingsWritten (void);
   void onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont);
   void onLocationFix     (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
@@ -76,6 +77,7 @@ private :
 
   GPSRFile m_GPSRFile;
   bool     m_bVirginOutput;
+  time_t   m_uiLastFixWrite;
 };
 
 

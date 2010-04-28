@@ -67,7 +67,6 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
   m_pLblFixWcdma = new QLabel();
   m_pLblFixWcdma->setDisabled(true);
 
-  m_uiStartTime = 0;
   this->clearFixFields();
 
   this->showHome();
@@ -137,11 +136,9 @@ void WndMain::showFix (void)
 void WndMain::onPushedStartStop (void)
 {
   App* pApp = App::instance();
-  Location* pLocation = pApp->location();
 
   if (pApp->getState() == App::STATE_STARTED)
   {
-    pLocation->stop();
     //this->clearFixFields();
 
     pApp->setState(App::STATE_STOPPED);
@@ -153,14 +150,10 @@ void WndMain::onPushedStartStop (void)
   }
   else
   {
+    this->clearFixFields();
+
     pApp->setState(App::STATE_STARTED);
     m_pLblStatus->setText(tr("Started"));
-
-    this->clearFixFields();
-    m_uiStartTime = time(0);
-
-    pLocation->resetLastFix();
-    pLocation->start();
 
     m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
@@ -202,6 +195,9 @@ void WndMain::onPushedConvert (void)
 {
   WndConvert wndConvert(this);
   wndConvert.exec();
+
+  if (!App::instance()->location()->isStarted())
+    this->clearFixFields();
 }
 
 

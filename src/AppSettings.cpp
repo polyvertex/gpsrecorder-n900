@@ -14,7 +14,7 @@
 // Static Members
 //---------------------------------------------------------------------------
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
-//atic const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
+static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
 //
 static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX = "ConvertGpx";
@@ -32,11 +32,15 @@ static const char* SETTINGNAME_KML_AIRCRAFTMODE = "KmlAircraftMode";
 //---------------------------------------------------------------------------
 // AppSettings
 //---------------------------------------------------------------------------
-AppSettings::AppSettings (void)
+AppSettings::AppSettings (QObject* pParent/*=0*/)
+: QObject(pParent)
 {
   // ensure the QSettings default constructor has loaded *our* settings
   Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
+
+  // refresh 'clone' log step value
+  this->getLogStep_Impl();
 }
 
 //---------------------------------------------------------------------------
@@ -57,13 +61,17 @@ QSettings::Status AppSettings::write (void)
   QSettings::Status eStatus;
 
   m_Settings.sync();
-
   eStatus = m_Settings.status();
   if (eStatus != QSettings::NoError)
   {
     qWarning("Failed to write settings ! Code %d.", eStatus);
     return eStatus;
   }
+
+  // refresh 'clone' log step value
+  this->getLogStep_Impl();
+
+  emit sigSettingsWritten();
 
   return eStatus;
 }
@@ -78,7 +86,7 @@ void AppSettings::setLogStep (uint uiLogStepSeconds)
   m_Settings.setValue(SETTINGNAME_LOGSTEP, QVariant(uiLogStepSeconds));
 }
 
-uint AppSettings::getLogStep (void)
+uint AppSettings::getLogStep_Impl (void)
 {
   QVariant var = m_Settings.value(SETTINGNAME_LOGSTEP);
   if (var.canConvert(QVariant::UInt))
@@ -88,12 +96,35 @@ uint AppSettings::getLogStep (void)
     QPair<uint,uint> bounds = AppSettings::logStepBounds();
 
     if (bOk && ui >= bounds.first && ui <= bounds.second)
+    {
+      m_uiLogStepClone = ui;
       return ui;
+    }
     else
+    {
       this->setLogStep(AppSettings::defaultLogStep());
+    }
   }
 
+  m_uiLogStepClone = AppSettings::defaultLogStep();
   return AppSettings::defaultLogStep();
+}
+
+//---------------------------------------------------------------------------
+// GpsAlwaysConnected
+//---------------------------------------------------------------------------
+void AppSettings::setGpsAlwaysConnected (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_GPSALWAYSCONNECTED, QVariant(bEnable));
+}
+
+bool AppSettings::getGpsAlwaysConnected (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_GPSALWAYSCONNECTED);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultGpsAlwaysConnected();
 }
 
 //---------------------------------------------------------------------------

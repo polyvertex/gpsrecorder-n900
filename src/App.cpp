@@ -26,8 +26,15 @@ App::App (int& nArgc, char** ppszArgv)
 : QApplication(nArgc, ppszArgv)
 {
   // init members
-  m_eState        = STATE_STOPPED;
-  m_bVirginOutput = true;
+  m_eState         = STATE_STOPPED;
+  m_bVirginOutput  = true;
+  m_uiLastFixWrite = 0;
+
+  // connect to AppSettings signals
+  this->connect(
+    &m_Settings,
+    SIGNAL(sigSettingsWritten(void)),
+    SLOT(onSettingsWritten(void)) );
 
   // create location driver
   m_pLocation = Location::createDevice();
@@ -45,6 +52,9 @@ App::App (int& nArgc, char** ppszArgv)
   m_pWndMain = new WndMain();
   Q_CHECK_PTR(m_pWndMain);
   m_pWndMain->show();
+
+
+  this->onSettingsWritten();
 }
 
 //---------------------------------------------------------------------------
@@ -52,6 +62,8 @@ App::App (int& nArgc, char** ppszArgv)
 //---------------------------------------------------------------------------
 App::~App (void)
 {
+  m_Settings.disconnect();
+
   if (m_pWndMain)
     delete m_pWndMain;
 
@@ -125,7 +137,8 @@ void App::setState (App::State eNewState)
   {
     QByteArray strPath;
 
-    m_bVirginOutput = true;
+    m_bVirginOutput  = true;
+    m_uiLastFixWrite = 0;
 
     strPath  = App::outputDir().toAscii();
     strPath += "/gpstrack-";
@@ -135,9 +148,15 @@ void App::setState (App::State eNewState)
     {
       // TODO : warn user !!!
     }
+
+    m_pLocation->resetLastFix();
+    m_pLocation->start();
   }
   else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
   {
+    if (!m_Settings.getGpsAlwaysConnected())
+      m_pLocation->stop();
+
     this->closeGPSRFile();
   }
 
@@ -196,6 +215,32 @@ void App::closeGPSRFile (void)
 
 
 //---------------------------------------------------------------------------
+// onSettingsWritten
+//---------------------------------------------------------------------------
+void App::onSettingsWritten (void)
+{
+  // startup or shutdown location service if needed
+  if (m_Settings.getGpsAlwaysConnected())
+  {
+    if (!m_pLocation->isStarted())
+    {
+      m_pLocation->setFixStep(Location::selectBestAllowedFixStep(m_Settings.getLogStep()));
+      m_pLocation->start();
+    }
+  }
+  else
+  {
+    if ((m_eState == STATE_STOPPED) && m_pLocation->isStarted())
+      m_pLocation->stop();
+  }
+
+  // adjust fix step to desired log step
+  m_pLocation->setFixStep(Location::selectBestAllowedFixStep(m_Settings.getLogStep()));
+}
+
+
+
+//---------------------------------------------------------------------------
 // onLocationFixLost
 //---------------------------------------------------------------------------
 void App::onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont)
@@ -216,7 +261,15 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
 
   if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
   {
-    m_bVirginOutput = false;
-    m_GPSRFile.writeLocationFix(pFixCont->getFix()->uiTime, *pFixCont);
+    bool bCanLog =
+      (m_Settings.getLogStep() == m_pLocation->getFixStep()) ||
+      ((pFixCont->getFix()->uiTime - m_uiLastFixWrite) >= m_Settings.getLogStep());
+
+    if (bCanLog)
+    {
+      m_bVirginOutput  = false;
+      m_uiLastFixWrite = pFixCont->getFix()->uiTime;
+      m_GPSRFile.writeLocationFix(pFixCont->getFix()->uiTime, *pFixCont);
+    }
   }
 }

@@ -17,7 +17,7 @@ Location::Location (QObject* pParent)
 : QObject(pParent)
 {
   // state
-  m_uiFixStep = 2;
+  m_uiFixStep = 1;
   m_bStarted  = false;
 
   // last fix
@@ -87,6 +87,29 @@ const QVector<uint>& Location::allowedFixSteps (void)
 bool Location::isAllowedFixStep (uint uiFixStep)
 {
   return Location::allowedFixSteps().indexOf(uiFixStep) >= 0;
+}
+
+//---------------------------------------------------------------------------
+// selectBestAllowedFixStep
+//---------------------------------------------------------------------------
+uint Location::selectBestAllowedFixStep (uint uiDesiredFixStep)
+{
+  if (Location::isAllowedFixStep(uiDesiredFixStep))
+  {
+    return uiDesiredFixStep;
+  }
+  else
+  {
+    const QVector<uint>& vecFixSteps = Location::allowedFixSteps();
+
+    for (int i = 0; i < vecFixSteps.count(); ++i)
+    {
+      if (vecFixSteps[i] * 2 == uiDesiredFixStep)
+        return vecFixSteps[i];
+    }
+  }
+
+  return 1;
 }
 
 
