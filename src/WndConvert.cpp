@@ -47,7 +47,7 @@ WndConvert::~WndConvert (void)
 void WndConvert::setupControls (void)
 {
   AppSettings& settings = *App::instance()->settings();
-  QHBoxLayout* pRootLayout = new QHBoxLayout;
+  QGridLayout* pRootLayout = new QGridLayout;
   QVBoxLayout* pLeftLayout = new QVBoxLayout;
 
   // browse input file(s)
@@ -85,7 +85,7 @@ void WndConvert::setupControls (void)
 
     pForm->addRow(tr("Separator :"), m_pCboCsvSeparator);
 
-    m_pGroupBoxCsv = new QGroupBox(tr("CSV options :"));
+    m_pGroupBoxCsv = new QGroupBox(tr("CSV options"));
     m_pGroupBoxCsv->setEnabled(settings.getConvertCsv());
     m_pGroupBoxCsv->setLayout(pForm);
 
@@ -97,7 +97,7 @@ void WndConvert::setupControls (void)
   //{
   //  QFormLayout* pForm = new QFormLayout;
   //
-  //  m_pGroupBoxGpx = new QGroupBox(tr("GPX options :"));
+  //  m_pGroupBoxGpx = new QGroupBox(tr("GPX options"));
   //  m_pGroupBoxGpx->setEnabled(settings.getConvertGpx());
   //  m_pGroupBoxGpx->setLayout(pForm);
   //
@@ -128,7 +128,7 @@ void WndConvert::setupControls (void)
     pForm->addRow(tr("Line Width :"), m_pCboKmlLineWidth);
     pForm->addRow(tr("Aircraft Mode :"), m_pChkKmlAircraft);
 
-    m_pGroupBoxKml = new QGroupBox(tr("KML options :"));
+    m_pGroupBoxKml = new QGroupBox(tr("KML options"));
     m_pGroupBoxKml->setEnabled(settings.getConvertKml());
     m_pGroupBoxKml->setLayout(pForm);
 
@@ -140,7 +140,6 @@ void WndConvert::setupControls (void)
   {
     QScrollArea* pScrollArea = new QScrollArea;
     QWidget*     pScrollWidget = new QWidget();
-    QVBoxLayout* pRightLayout = new QVBoxLayout;
     QPushButton* pBtnConvert = new QPushButton(tr("Convert"));
 
     m_pChkCsv = new QCheckBox("CSV");
@@ -164,14 +163,11 @@ void WndConvert::setupControls (void)
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pScrollArea->setProperty("FingerScrollable", true);
 
-    pRightLayout->addWidget(m_pChkCsv);
-    pRightLayout->addWidget(m_pChkGpx);
-    pRightLayout->addWidget(m_pChkKml);
-    pRightLayout->addSpacing(5);
-    pRightLayout->addWidget(pBtnConvert);
-
-    pRootLayout->addWidget(pScrollArea);
-    pRootLayout->addLayout(pRightLayout);
+    pRootLayout->addWidget(pScrollArea, 0, 0, 4, 1);
+    pRootLayout->addWidget(m_pChkCsv,   0, 1);
+    pRootLayout->addWidget(m_pChkGpx,   1, 1);
+    pRootLayout->addWidget(m_pChkKml,   2, 1);
+    pRootLayout->addWidget(pBtnConvert, 3, 1);
   }
 
   // apply layout
