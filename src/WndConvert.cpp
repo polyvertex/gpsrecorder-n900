@@ -119,6 +119,7 @@ void WndConvert::setupControls (void)
     m_pCboKmlLineWidth = new QComboBox;
     for (int i = 1; i < 6; ++i)
       m_pCboKmlLineWidth->addItem(QString("%1").arg(i));
+    m_pCboKmlLineWidth->setCurrentIndex(settings.getKmlLineWidth() - 1);
 
     m_pChkKmlAircraft = new QCheckBox;
     m_pChkKmlAircraft->setCheckState(settings.getKmlAircraftMode() ? Qt::Checked : Qt::Unchecked);
