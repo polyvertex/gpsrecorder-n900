@@ -398,24 +398,26 @@ bool GPSRFile::readChunk (int nChunkIndex)
 
     // eof already reached ?
     if (m_bEOF)
-    {
-      if (!m_bDiscoveryRead)
-        emit sigReadEOF(this);
       return false;
-    }
 
     Q_ASSERT(nChunkIndex == m_nReadIndex + 1);
     ++m_nReadIndex;
 
-    if (m_bDiscoveryRead)
-      nChunkOffset = (int)ftell(m_pFile);
+    nChunkOffset = (int)ftell(m_pFile);
   }
   else
   {
     Q_ASSERT(m_bDiscoveryRead == false);
     Q_ASSERT(nChunkIndex >= 0);
     if (nChunkIndex < 0 || nChunkIndex >= m_vecReadChunks.count())
+    {
+      if (!m_bEOF && nChunkIndex >= m_vecReadChunks.count())
+      {
+        m_bEOF = true;
+        emit sigReadEOF(this);
+      }
       return false;
+    }
 
     if (fseek(m_pFile, (int)m_vecReadChunks[nChunkIndex].uiOffset, SEEK_SET) < 0)
     {
