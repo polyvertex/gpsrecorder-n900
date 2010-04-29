@@ -1,6 +1,6 @@
 TARGET = gpsrecorder
 
-CONFIG += precompile_header release
+CONFIG += warn_off precompile_header release
 #CONFIG += silent
 CONFIG += debug
 CONFIG(debug, debug|release) {
@@ -13,15 +13,20 @@ QT  = core gui
 #QT += maemo5
 
 INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
-LIBS        += -lglib-2.0 -llocation
+LIBS        += -lz -lglib-2.0 -llocation
 DEFINES     +=
 
-QMAKE_CFLAGS   += -fno-strict-aliasing -Werror
-QMAKE_CXXFLAGS += -fno-strict-aliasing -Werror
+QMAKE_CFLAGS   +=
+# -fno-strict-aliasing
+QMAKE_CXXFLAGS += -fno-strict-aliasing -Wall -Werror
 
 PRECOMPILED_HEADER = src/stable.h
 
 HEADERS += \
+  src/minizip/crypt.h \
+  src/minizip/ioapi.h \
+  src/minizip/unzip.h \
+  src/minizip/zip.h \
   src/App.h \
   src/AppSettings.h \
   src/Exporter.h \
@@ -39,6 +44,9 @@ HEADERS += \
   src/WndConvert.h \
   src/WndMain.h
 SOURCES += \
+  src/minizip/ioapi.c \
+  src/minizip/unzip.c \
+  src/minizip/zip.c \
   src/main.cpp \
   src/App.cpp \
   src/AppSettings.cpp \

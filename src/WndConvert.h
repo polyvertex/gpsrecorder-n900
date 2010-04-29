@@ -56,6 +56,7 @@ private :
   // kml
   QCheckBox*   m_pChkKml;
   QGroupBox*   m_pGroupBoxKml;
+  QCheckBox*   m_pChkKmlZipped;
   QPushButton* m_pBtnKmlLineColor;
   QColor       m_KmlLineColor;
   QComboBox*   m_pCboKmlLineWidth;

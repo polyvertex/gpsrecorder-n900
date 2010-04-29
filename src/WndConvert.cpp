@@ -109,6 +109,9 @@ void WndConvert::setupControls (void)
   {
     QFormLayout* pForm = new QFormLayout;
 
+    m_pChkKmlZipped = new QCheckBox;
+    m_pChkKmlZipped->setCheckState(settings.getKmlZipped() ? Qt::Checked : Qt::Unchecked);
+
     m_KmlLineColor = settings.getKmlLineColor();
     m_pBtnKmlLineColor = new QPushButton;
     //m_pBtnKmlLineColor->setFlat(true);
@@ -124,6 +127,7 @@ void WndConvert::setupControls (void)
     m_pChkKmlAircraft = new QCheckBox;
     m_pChkKmlAircraft->setCheckState(settings.getKmlAircraftMode() ? Qt::Checked : Qt::Unchecked);
 
+    pForm->addRow(tr("Zipped KML (KMZ) :"), m_pChkKmlZipped);
     pForm->addRow(tr("Line Color :"), m_pBtnKmlLineColor);
     pForm->addRow(tr("Line Width :"), m_pCboKmlLineWidth);
     pForm->addRow(tr("Aircraft Mode :"), m_pChkKmlAircraft);

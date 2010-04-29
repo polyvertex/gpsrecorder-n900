@@ -22,6 +22,7 @@ static const char* SETTINGNAME_CONVERT_KML = "ConvertKml";
 //
 static const char* SETTINGNAME_CSV_SEPARATOR = "CsvSeparator";
 //
+static const char* SETTINGNAME_KML_ZIPPED       = "KmlZipped";
 static const char* SETTINGNAME_KML_LINECOLOR    = "KmlLineColor";
 static const char* SETTINGNAME_KML_LINEWIDTH    = "KmlLineWidth";
 static const char* SETTINGNAME_KML_AIRCRAFTMODE = "KmlAircraftMode";
@@ -200,6 +201,23 @@ char AppSettings::getCsvSeparator (void)
   }
 
   return ExporterSinkCsv::defaultSeparator();
+}
+
+//---------------------------------------------------------------------------
+// KmlZipped
+//---------------------------------------------------------------------------
+void AppSettings::setKmlZipped (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_KML_ZIPPED, QVariant(bEnable));
+}
+
+bool AppSettings::getKmlZipped (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_KML_ZIPPED);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return ExporterSinkKml::defaultZipped();
 }
 
 //---------------------------------------------------------------------------

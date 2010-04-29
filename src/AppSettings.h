@@ -45,6 +45,9 @@ public :
   void setCsvSeparator (char cSep);
   char getCsvSeparator (void);
 
+  void setKmlZipped (bool bEnable);
+  bool getKmlZipped (void);
+
   void   setKmlLineColor (const QColor& lineColor);
   QColor getKmlLineColor (void);
 

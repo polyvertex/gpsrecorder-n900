@@ -40,6 +40,7 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
   {
     AppSettings& settings = *App::instance()->settings();
 
+    m_bZipped       = settings.getKmlZipped();
     m_strLineColor  = qPrintable(ExporterSinkKml::colorToString(settings.getKmlLineColor()));
     m_nLineWidth    = settings.getKmlLineWidth();
     m_bAircraftMode = settings.getKmlAircraftMode();
@@ -176,5 +177,12 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 //---------------------------------------------------------------------------
 void ExporterSinkKml::onEOF (void)
 {
+  QString strFilePath = m_strFilePath;
+
   this->close();
+
+  if (m_bZipped)
+  {
+    // TODO
+  }
 }

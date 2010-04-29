@@ -36,30 +36,51 @@
 //
 // INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
 // LIBS        += -lglib-2.0 -llocation
+#ifdef __cplusplus
 extern "C" {
+#endif
 #include <glib.h>
+#ifdef __cplusplus
 }
+#endif
 
 // maemo - location
 //
 // http://wiki.maemo.org/Documentation/Maemo_5_Developer_Guide/Using_Connectivity_Components/Using_Location_API
 // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDControl.html
 // http://maemo.org/api_refs/5.0/5.0-final/liblocation/LocationGPSDevice.html
+#ifdef __cplusplus
 extern "C" {
+#endif
 #include <location/location-gps-device.h>
 #include <location/location-gpsd-control.h>
 #include <location/location-distance-utils.h>
 #include <location/location-misc.h>
+#ifdef __cplusplus
 }
+#endif
+
+// minizip
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "minizip/zip.h"
+#ifdef __cplusplus
+}
+#endif
 
 // qt
+#ifdef __cplusplus
 #include <QObject>
 #include <QSettings>
 #include <QtGui>
+#endif
 
 // qt - maemo
 // requires 'libqt4-maemo5-maemo5' package into the device
+#ifdef __cplusplus
 //#include <QMaemo5InformationBox> // qt4.6+
+#endif
 
 
 //---------------------------------------------------------------------------
@@ -87,12 +108,16 @@ extern "C" {
 //---------------------------------------------------------------------------
 // Raw Types
 //---------------------------------------------------------------------------
+#ifdef __cplusplus
 class ExporterSink;
+#endif
 
 
 //---------------------------------------------------------------------------
 // Local Headers
 //---------------------------------------------------------------------------
+#ifdef __cplusplus
+
 #include "Util.h"
 #include "LocationFix.h"
 #include "Location.h"
@@ -110,6 +135,8 @@ class ExporterSink;
 #include "WndMain.h"
 #include "AppSettings.h"
 #include "App.h"
+
+#endif
 
 
 #endif // #ifndef __GPSRECORDER_STABLE_H__

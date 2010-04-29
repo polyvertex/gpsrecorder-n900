@@ -28,6 +28,7 @@ public :
   void close (void);
 
   // default settings
+  static bool           defaultZipped       (void) { return true; }
   static QColor         defaultLineColor    (void) { return QColor(0, 255, 0, 255); }
   static int            defaultLineWidth    (void) { return 2; }
   static QPair<int,int> lineWidthBounds     (void) { return QPair<int,int>(1, 5); }
@@ -46,6 +47,7 @@ public slots :
 
 private :
   // settings
+  bool       m_bZipped;
   QByteArray m_strLineColor;
   int        m_nLineWidth;
   bool       m_bAircraftMode;
