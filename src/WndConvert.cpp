@@ -319,6 +319,7 @@ void WndConvert::onClickedConvert (void)
 
     if (m_pChkKml->checkState() != Qt::Unchecked)
     {
+      settings.setKmlZipped(m_pChkKmlZipped->checkState() != Qt::Unchecked);
       settings.setKmlLineColor(m_KmlLineColor);
       settings.setKmlLineWidth(uint(m_pCboKmlLineWidth->currentIndex() + 1));
       settings.setKmlAircraftMode(m_pChkKmlAircraft->checkState() != Qt::Unchecked);

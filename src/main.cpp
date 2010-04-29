@@ -170,6 +170,14 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
   }
 
   fflush(hLogFile);
+
+  if (eMsgType == QtFatalMsg)
+  {
+    // exit to imitate default behavior
+    fclose(hLogFile);
+    fflush(NULL);
+    exit(1);
+  }
 }
 
 

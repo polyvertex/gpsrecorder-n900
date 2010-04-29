@@ -78,6 +78,8 @@ QString ExporterSinkKml::colorToString (const QColor& color)
 //---------------------------------------------------------------------------
 void ExporterSinkKml::close (void)
 {
+  QString strFilePathBak;
+
   // write footer
   if (m_pFile)
   {
@@ -86,9 +88,17 @@ void ExporterSinkKml::close (void)
       " </LineString>" KML_NL
       "</Placemark>" KML_NL
       "</kml>" KML_NL );
+
+    strFilePathBak = m_strFilePath;
   }
 
   ExporterSink::close();
+
+  if (m_bZipped && !strFilePathBak.isEmpty())
+  {
+    if (ExporterSinkKml::kmlToKmz(strFilePathBak))
+      QFile::remove(strFilePathBak);
+  }
 }
 
 
@@ -121,7 +131,7 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     " <name>GPS Track %s</name>" KML_NL
     " <description>" KML_NL
     "  <![CDATA[" KML_NL
-    "   %d waypoints.<br />" KML_NL
+    "   %d points.<br />" KML_NL
     "   <br />" KML_NL
     "   KML file created by %s v%s. Please visit %s for more info." KML_NL
     "  ]]>" KML_NL
@@ -177,12 +187,103 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 //---------------------------------------------------------------------------
 void ExporterSinkKml::onEOF (void)
 {
-  QString strFilePath = m_strFilePath;
-
   this->close();
+}
 
-  if (m_bZipped)
+
+
+//---------------------------------------------------------------------------
+// kmlToKmz
+//---------------------------------------------------------------------------
+bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
+{
+  QString   strDstFile;
+  QFileInfo fi(strSrcFile);
+  zipFile   hZip;
+
+  strDstFile  = strSrcFile.left(strSrcFile.length() - 1);
+  strDstFile += 'z';
+
+  hZip = zipOpen(qPrintable(strDstFile), APPEND_STATUS_CREATE);
+  if (!hZip)
   {
-    // TODO
+    qCritical("Could not create %s !", qPrintable(strDstFile));
+    return false;
   }
+
+  QDateTime    dt;
+  zip_fileinfo zfi;
+  int          nRes;
+
+  dt.setTimeSpec(Qt::LocalTime);
+  zfi.tmz_date.tm_sec  = dt.time().second();
+  zfi.tmz_date.tm_min  = dt.time().minute();
+  zfi.tmz_date.tm_hour = dt.time().hour();
+  zfi.tmz_date.tm_mday = dt.date().day();
+  zfi.tmz_date.tm_mon  = dt.date().month() - 1;
+  zfi.tmz_date.tm_year = dt.date().year();
+  zfi.dosDate          = 0;
+  zfi.internal_fa      = 0;
+  zfi.external_fa      = 0;
+
+  nRes = zipOpenNewFileInZip(hZip, qPrintable(fi.fileName()), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_BEST_COMPRESSION);
+  if (nRes != ZIP_OK)
+  {
+    qCritical("Could not create file in zip archive %s (code %d) !", qPrintable(strDstFile), nRes);
+
+    zipClose(hZip, NULL);
+    QFile::remove(strDstFile);
+    return false;
+  }
+
+  QFile f(strSrcFile);
+  if (!f.open(QIODevice::ReadOnly))
+  {
+    qCritical("Could not open KML source file %s !", qPrintable(strSrcFile));
+
+    zipCloseFileInZip(hZip);
+    zipClose(hZip, NULL);
+    QFile::remove(strDstFile);
+    return false;
+  }
+
+  while (!f.atEnd())
+  {
+    QByteArray block = f.read(0x8000); // 32K
+    if (block.size() <= 0)
+      continue;
+
+    nRes = zipWriteInFileInZip(hZip, block.constData(), (uint)block.size());
+    if (nRes != ZIP_OK)
+    {
+      qCritical("Error while writing to zip file %s (code %d) !", qPrintable(strDstFile), nRes);
+
+      zipCloseFileInZip(hZip);
+      zipClose(hZip, NULL);
+      QFile::remove(strDstFile);
+      return false;
+    }
+  }
+
+  nRes = zipCloseFileInZip(hZip);
+  if (nRes != ZIP_OK)
+  {
+    qCritical("Could not close zip in-file (code %d) !", nRes);
+
+    zipClose(hZip, NULL);
+    QFile::remove(strDstFile);
+    return false;
+  }
+
+  nRes = zipClose(hZip, NULL);
+  if (nRes != ZIP_OK)
+  {
+    qCritical("Could not close zip file %s (code %d) !", qPrintable(strDstFile), nRes);
+
+    zipClose(hZip, NULL);
+    QFile::remove(strDstFile);
+    return false;
+  }
+
+  return true;
 }

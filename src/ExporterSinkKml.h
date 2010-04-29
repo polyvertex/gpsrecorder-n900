@@ -39,6 +39,10 @@ public :
   static QString colorToString (const QColor& color);
 
 
+private :
+  static bool kmlToKmz (const QString& strSrcFile);
+
+
 public slots :
   void onSOF         (const char* pszFilePath, time_t uiTime);
   void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
