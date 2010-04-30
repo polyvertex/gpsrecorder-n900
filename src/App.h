@@ -59,7 +59,8 @@ public slots :
 
 
 private :
-  void closeGPSRFile (void);
+  QString askTrackName  (void);
+  void    closeGPSRFile (void);
 
 
 private :

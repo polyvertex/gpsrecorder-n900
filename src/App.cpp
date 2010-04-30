@@ -38,6 +38,7 @@ App::App (int& nArgc, char** ppszArgv)
 
   // create location driver
   m_pLocation = Location::createDevice();
+  m_pLocation->resetLastFix();
   this->connect(
     m_pLocation,
     SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
@@ -136,6 +137,7 @@ void App::setState (App::State eNewState)
   if (m_eState == STATE_STOPPED && eNewState == STATE_STARTED)
   {
     QByteArray strPath;
+    QString    strTrackName(this->askTrackName());
 
     m_bVirginOutput  = true;
     m_uiLastFixWrite = 0;
@@ -143,7 +145,13 @@ void App::setState (App::State eNewState)
     strPath  = App::outputDir().toAscii();
     strPath += "/gpstrack-";
     strPath += Util::timeString(true);
+    if (!strTrackName.isEmpty())
+    {
+      strPath += '-';
+      strPath += strTrackName.toAscii();
+    }
     strPath += ".gpsr";
+
     if (!m_GPSRFile.openWrite(strPath.constData(), true))
     {
       // TODO : warn user !!!
@@ -182,6 +190,24 @@ const char* App::getStateStr (void) const
 }
 
 
+
+//---------------------------------------------------------------------------
+// askTrackName
+//---------------------------------------------------------------------------
+QString App::askTrackName (void)
+{
+  QString strTrackName;
+
+  strTrackName = QInputDialog::getText(
+    m_pWndMain,
+    tr("Track name ?"),
+    tr("Please enter desired track name or leave blank :"),
+    QLineEdit::Normal).trimmed();
+
+  strTrackName.replace('.', '_');
+
+  return strTrackName;
+}
 
 //---------------------------------------------------------------------------
 // closeGPSRFile
