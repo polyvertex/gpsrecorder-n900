@@ -14,7 +14,8 @@
 //---------------------------------------------------------------------------
 // Local Variables
 //---------------------------------------------------------------------------
-static FILE* hLogFile = 0;
+static FILE*      hLogFile = 0;
+static QByteArray strLogStart;
 
 
 
@@ -106,6 +107,13 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
     strLogFile += qPrintable(QCoreApplication::applicationName());
     strLogFile += ".log";
 
+    // destroy previous log file if it is too big
+    {
+      QFileInfo fi(strLogFile);
+      if (fi.exists() && fi.size() >= 512000) // 500KB
+        QFile::remove(strLogFile);
+    }
+
     hLogFile = fopen(strLogFile.constData(), "a");
     if (!hLogFile)
     {
@@ -121,7 +129,7 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
       "* %s log started on %s\n"
       "%s\n"
       , qPrintable(str)
-      , qPrintable(QCoreApplication::applicationName()), Util::timeString()
+      , qPrintable(QCoreApplication::applicationName()), strLogStart.constData()
       , qPrintable(str) );
   }
 
@@ -210,8 +218,8 @@ int main (int nArgc, char** ppszArgv)
     qDebug("Output directory is %s", strOutDir.constData());
   }
 
+  strLogStart = Util::timeString();
   qInstallMsgHandler(_logHandler);
-  qDebug("\n"); // open log file now so we can track start time
 
   // run
   {
