@@ -17,6 +17,7 @@ Location::Location (QObject* pParent)
 : QObject(pParent)
 {
   // state
+  m_bAssisted = false;
   m_uiFixStep = 1;
   m_bStarted  = false;
 

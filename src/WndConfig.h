@@ -35,6 +35,7 @@ private slots :
 
 private :
   QComboBox* m_pCboLogStep;
+  QCheckBox* m_pChkGpsAssisted;
   QCheckBox* m_pChkGpsAlwaysConnected;
 };
 

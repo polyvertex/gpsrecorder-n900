@@ -14,6 +14,7 @@
 // Static Members
 //---------------------------------------------------------------------------
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
+static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
 //
 static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
@@ -109,6 +110,23 @@ uint AppSettings::getLogStep_Impl (void)
 
   m_uiLogStepClone = AppSettings::defaultLogStep();
   return AppSettings::defaultLogStep();
+}
+
+//---------------------------------------------------------------------------
+// GpsAssisted
+//---------------------------------------------------------------------------
+void AppSettings::setGpsAssisted (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_GPSASSISTED, QVariant(bEnable));
+}
+
+bool AppSettings::getGpsAssisted (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_GPSASSISTED);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultGpsAssisted();
 }
 
 //---------------------------------------------------------------------------

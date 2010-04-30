@@ -27,6 +27,8 @@ public :
   LocationMaemo (void);
   virtual ~LocationMaemo (void);
 
+  bool setAssisted (bool bAssisted);
+
   bool setFixStep (uint uiNewFixStepSeconds);
 
   void resetLastFix (void);
@@ -53,6 +55,7 @@ private :
 
 private :
   LocationGPSDControlInterval m_eGpsdControlInterval;
+  LocationGPSDControlMethod   m_eGpsdControlMethod;
 
   LocationGPSDevice*   m_pGpsDevice;
   LocationGPSDControl* m_pGpsdControl;

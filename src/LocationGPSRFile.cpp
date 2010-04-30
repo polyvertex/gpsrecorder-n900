@@ -76,6 +76,15 @@ bool LocationGPSRFile::readFix (uint uiFixIndex)
 
 
 //---------------------------------------------------------------------------
+// setAssisted
+//---------------------------------------------------------------------------
+bool LocationGPSRFile::setAssisted (bool bAssisted)
+{
+  m_bAssisted = bAssisted;
+  return true;
+}
+
+//---------------------------------------------------------------------------
 // setFixStep
 //---------------------------------------------------------------------------
 bool LocationGPSRFile::setFixStep (uint uiNewFixStepSeconds)

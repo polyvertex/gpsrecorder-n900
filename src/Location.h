@@ -31,6 +31,9 @@ public :
   static uint                 selectBestAllowedFixStep (uint uiDesiredFixStep);
 
 
+  virtual bool getAssisted (bool bAssisted) const { return m_bAssisted; }
+  virtual bool setAssisted (bool bAssisted) = 0;
+
   virtual uint getFixStep (void) const { return m_uiFixStep; }
   virtual bool setFixStep (uint uiNewFixStepSeconds) = 0;
 
@@ -54,6 +57,7 @@ signals :
 
 protected :
   // state
+  bool  m_bAssisted;
   uint  m_uiFixStep; // seconds
   bool  m_bStarted;
 

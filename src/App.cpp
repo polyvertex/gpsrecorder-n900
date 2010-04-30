@@ -48,14 +48,14 @@ App::App (int& nArgc, char** ppszArgv)
     SIGNAL(sigLocationFixLost(Location*, const LocationFixContainer*)),
     SLOT(onLocationFixLost(Location*, const LocationFixContainer*)) );
 
+  // apply stored settings
+  this->onSettingsWritten();
+
   // show up main window
   // everything must be initialized before creating the main window !
   m_pWndMain = new WndMain();
   Q_CHECK_PTR(m_pWndMain);
   m_pWndMain->show();
-
-
-  this->onSettingsWritten();
 }
 
 //---------------------------------------------------------------------------
@@ -245,23 +245,16 @@ void App::closeGPSRFile (void)
 //---------------------------------------------------------------------------
 void App::onSettingsWritten (void)
 {
-  // startup or shutdown location service if needed
-  if (m_Settings.getGpsAlwaysConnected())
-  {
-    if (!m_pLocation->isStarted())
-    {
-      m_pLocation->setFixStep(Location::selectBestAllowedFixStep(m_Settings.getLogStep()));
-      m_pLocation->start();
-    }
-  }
-  else
-  {
-    if ((m_eState == STATE_STOPPED) && m_pLocation->isStarted())
-      m_pLocation->stop();
-  }
-
-  // adjust fix step to desired log step
+  // adjust location settings
+  // but first, force stop() to avoid multiple calls to stop() while
+  // adjusting parameters.
+  m_pLocation->stop();
   m_pLocation->setFixStep(Location::selectBestAllowedFixStep(m_Settings.getLogStep()));
+  m_pLocation->setAssisted(m_Settings.getGpsAssisted());
+
+  // start location service if needed
+  if (m_Settings.getGpsAlwaysConnected() && !m_pLocation->isStarted())
+    m_pLocation->start();
 }
 
 

@@ -56,6 +56,9 @@ void WndConfig::setupControls (void)
         m_pCboLogStep->setCurrentIndex((int)uiIdx);
     }
 
+    m_pChkGpsAssisted = new QCheckBox;
+    m_pChkGpsAssisted->setCheckState(settings.getGpsAssisted() ? Qt::Checked : Qt::Unchecked);
+
     m_pChkGpsAlwaysConnected = new QCheckBox;
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
@@ -97,6 +100,7 @@ void WndConfig::onPushedDone (void)
   AppSettings& settings = *App::instance()->settings();
 
   settings.setLogStep(m_pCboLogStep->itemData(m_pCboLogStep->currentIndex()).toUInt());
+  settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
 
   settings.write();

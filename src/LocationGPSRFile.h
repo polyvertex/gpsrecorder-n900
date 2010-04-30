@@ -23,6 +23,8 @@ public :
   LocationGPSRFile (void);
   virtual ~LocationGPSRFile (void);
 
+  bool setAssisted (bool bAssisted);
+
   bool setFixStep (uint uiNewFixStepSeconds);
 
   void resetLastFix (void);
