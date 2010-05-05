@@ -50,7 +50,7 @@ public :
 
   struct Chunk
   {
-    quint8  aucMagic; // '@'
+    quint8  ucMagic;  // '@'
     quint16 uiId;     // chunk type id
     quint32 uiSize;   // total size of this chunk including this header
     quint32 uiTime;   // posix timestamp, utc

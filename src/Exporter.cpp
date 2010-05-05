@@ -216,7 +216,6 @@ void Exporter::onReadChunkUnknown (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk)
   Q_UNUSED(pChunk);
 
   // nothing to do for now...
-  qDebug("Exported received UNKNOWN CHUNK %u !", (uint)pChunk->uiId);
 }
 
 //---------------------------------------------------------------------------

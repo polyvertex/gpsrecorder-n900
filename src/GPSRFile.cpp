@@ -193,10 +193,10 @@ void GPSRFile::writeMessage (time_t uiTime, const char* pszMessage)
   m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->aucMagic = '@';
-  pChunk->uiId     = CHUNK_MESSAGE;
-  pChunk->uiSize   = uiChunkSize;
-  pChunk->uiTime   = uiTime ? uiTime : time(0);
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_MESSAGE;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
 
   memcpy(pChunk->aData, pszMessage, uiMsgSize);
   pChunk->aData[uiMsgSize - 1] = 0;
@@ -226,10 +226,10 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
   m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->aucMagic = '@';
-  pChunk->uiId     = CHUNK_LOCATIONFIX;
-  pChunk->uiSize   = uiChunkSize;
-  pChunk->uiTime   = uiTime ? uiTime : time(0);
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_LOCATIONFIX;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
 
   memcpy(pChunk->aData, fixCont.getFix(), fixCont.getFixSize());
 
@@ -254,10 +254,10 @@ void GPSRFile::writeLocationFixLost (time_t uiTime)
   m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->aucMagic = '@';
-  pChunk->uiId     = CHUNK_LOCATIONFIX_LOST;
-  pChunk->uiSize   = uiChunkSize;
-  pChunk->uiTime   = uiTime ? uiTime : time(0);
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_LOCATIONFIX_LOST;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
 
   this->writeData((char*)pChunk, uiChunkSize);
 }
@@ -280,10 +280,10 @@ void GPSRFile::writeSnap (time_t uiTime)
   m_Swap.reserve(uiChunkSize +1);
   pChunk = (Chunk*)m_Swap.data();
 
-  pChunk->aucMagic = '@';
-  pChunk->uiId     = CHUNK_SNAP;
-  pChunk->uiSize   = uiChunkSize;
-  pChunk->uiTime   = uiTime ? uiTime : time(0);
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_SNAP;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
 
   this->writeData((char*)pChunk, uiChunkSize);
 }
@@ -424,24 +424,26 @@ bool GPSRFile::readChunk (int nChunkIndex)
       this->signalReadError(ERROR_READ);
       return false;
     }
+    nChunkOffset = (int)ftell(m_pFile);
 
     m_nReadIndex = nChunkIndex;
   }
 
-  // read chunk
+  // read chunk header
   if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), &m_bEOF))
     return false;
-  if (chunkHeader.aucMagic != '@')
+  if (chunkHeader.ucMagic != '@')
   {
     this->signalReadError(ERROR_FORMAT);
     return false;
   }
-  if (chunkHeader.uiSize > sizeof(*pChunk))
-  {
-    m_Swap.reserve(chunkHeader.uiSize +1);
-    pChunk = (Chunk*)m_Swap.data();
-    memcpy(pChunk, &chunkHeader, sizeof(chunkHeader));
+  m_Swap.reserve(chunkHeader.uiSize +1);
+  pChunk = (Chunk*)m_Swap.data();
+  memcpy(pChunk, &chunkHeader, sizeof(chunkHeader));
 
+  // read chunk data if needed
+  if (chunkHeader.uiSize > sizeof(chunkHeader))
+  {
     if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), &m_bEOF))
       return false;
   }
@@ -482,6 +484,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
         emit sigReadChunkSnap(this, pChunk->uiTime);
         break;
       default :
+        qDebug("Unknown chunk #%u @ offset %d in file %s !", (uint)pChunk->uiId, nChunkOffset, m_strFilePath.constData());
         emit sigReadChunkUnknown(this, pChunk);
         break;
     }
