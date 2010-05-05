@@ -60,6 +60,17 @@ extern "C" {
 }
 #endif
 
+// maemo - clockd
+//
+// http://maemo.org/api_refs/5.0/5.0-final/libtime/libtime_8h.html
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <clockd/libtime.h>
+#ifdef __cplusplus
+}
+#endif
+
 // minizip
 #ifdef __cplusplus
 extern "C" {

@@ -238,6 +238,31 @@ void App::closeGPSRFile (void)
   m_bVirginOutput = true;
 }
 
+//---------------------------------------------------------------------------
+// setupGpsTime
+//---------------------------------------------------------------------------
+bool App::setupGpsTime (uint uiGpsTime)
+{
+  int nTimeDiff = 0;
+
+  if (Util::timeSetup(uiGpsTime, &nTimeDiff))
+  {
+    QString strInfo;
+
+    strInfo.sprintf(
+      "System time synchronized with GPS and is now %s (offset was %+d seconds).",
+      Util::timeString(false),
+      nTimeDiff);
+
+    // TODO : information popup
+    qDebug(qPrintable(strInfo));
+
+    return true;
+  }
+
+  return false;
+}
+
 
 
 //---------------------------------------------------------------------------
@@ -278,11 +303,35 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
 {
   Q_UNUSED(pLocation);
 
+  // setup system time if needed
+  if (!m_GPSRFile.isOpen() &&
+      pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
+      pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep() &&
+      Util::timeDiff(time(0), pFixCont->getFix()->uiTime, true) >= m_Settings.getLogStep())
+  {
+    this->setupGpsTime(pFixCont->getFix()->uiTime);
+  }
+
+  // write location fix
   if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
   {
     bool bCanLog =
       (m_Settings.getLogStep() == m_pLocation->getFixStep()) ||
       ((pFixCont->getFix()->uiTime - m_uiLastFixWrite) >= m_Settings.getLogStep());
+
+    if (bCanLog && m_bVirginOutput)
+    {
+      if (pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
+          pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep())
+      {
+        this->setupGpsTime(pFixCont->getFix()->uiTime);
+      }
+      else
+      {
+        // do not log until we actually get time from GPS device
+        bCanLog = false;
+      }
+    }
 
     if (bCanLog)
     {

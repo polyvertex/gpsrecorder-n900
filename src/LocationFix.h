@@ -116,8 +116,8 @@ struct LocationFix
   // gps fix info
   fxuint8  cFixMode;   // one of the FIXMODE_* values
   fxuint16 wFixFields; // one or several FIXFIELD_* flags
-  fxuint32 uiTime;
-  fxuint32 uiTimeEP;   // estimated time uncertainty
+  fxuint32 uiTime;     // posix timestamp
+  fxuint32 uiTimeEP;   // estimated time uncertainty (in seconds)
   fxint32  iLat;       // latitude ; quint32(lat * LOCFIX_MULTIPLIER_LATLONG)
   fxint32  iLong;      // longitude ; quint32(long * LOCFIX_MULTIPLIER_LATLONG)
   fxuint32 uiHorizEP;  // horizontal position uncertainty (cm) ; quint32(eph)

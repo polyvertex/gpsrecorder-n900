@@ -62,3 +62,35 @@ const char* Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/, 
 
   return (char*)&szDateTime;
 }
+
+//---------------------------------------------------------------------------
+// timeDiff
+//---------------------------------------------------------------------------
+int Util::timeDiff (uint uiOldTime, uint uiNewTime, bool bAbsolute/*=false*/)
+{
+  uint uiDiff = qMax(uiOldTime, uiNewTime) - qMin(uiOldTime, uiNewTime);
+  int  nSign  = !bAbsolute && (uiNewTime < uiOldTime) ? -1 : 1;
+
+  return nSign * int(uiDiff);
+}
+
+//---------------------------------------------------------------------------
+// timeSetup
+//---------------------------------------------------------------------------
+bool Util::timeSetup (uint uiNewTime, int* pnTimeDiff)
+{
+  uint uiOldTime = time(0);
+
+  // use nokia's libtime to setup time since settimeofday() requires to be suid
+  if (time_set_time(uiNewTime) != 0)
+  {
+    if (pnTimeDiff)
+      *pnTimeDiff = 0;
+    return false;
+  }
+
+  if (pnTimeDiff)
+    *pnTimeDiff = Util::timeDiff(uiOldTime, uiNewTime);
+
+  return true;
+}

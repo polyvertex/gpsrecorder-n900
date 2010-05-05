@@ -25,6 +25,8 @@ public :
 
   // time
   static const char* timeString (bool bForFilename=false, time_t uiTime=0, bool bUTC=false);
+  static int         timeDiff   (uint uiTimeOld, uint uiTimeNew, bool bAbsolute=false);
+  static bool        timeSetup  (uint uiNewTime, int* pnTimeDiff=0);
 };
 
 

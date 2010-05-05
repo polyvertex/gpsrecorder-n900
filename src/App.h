@@ -61,6 +61,7 @@ public slots :
 private :
   QString askTrackName  (void);
   void    closeGPSRFile (void);
+  bool    setupGpsTime  (uint uiGpsTime);
 
 
 private :
