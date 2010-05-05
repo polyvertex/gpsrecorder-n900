@@ -63,6 +63,7 @@ void WndConfig::setupControls (void)
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
     pForm->addRow(tr("Log Step :"), m_pCboLogStep);
+    pForm->addRow(tr("Assisted GPS :"), m_pChkGpsAssisted);
     pForm->addRow(tr("GPS always connected :"), m_pChkGpsAlwaysConnected);
     pLeftLayout->addLayout(pForm);
   }
