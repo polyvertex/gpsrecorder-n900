@@ -46,15 +46,31 @@ void WndConfig::setupControls (void)
   // options
   {
     QFormLayout* pForm = new QFormLayout;
-    uint uiConfiguredLogStep = settings.getLogStep();
+    uint uiConfiguredLogStep   = settings.getLogStep();
+    uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120 };
+    int  iDefaultLogStepIdx    = 4; // 5 seconds
 
     m_pCboLogStep = new QComboBox;
-    for (uint uiIdx=0, ui=AppSettings::logStepBounds().first; ui <= AppSettings::logStepBounds().second; ++ui, ++uiIdx)
+    for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
     {
-      m_pCboLogStep->addItem(QString("%1 seconds (%2)").arg(ui).arg(Location::selectBestAllowedFixStep(ui)), QVariant(ui));
-      if (ui == uiConfiguredLogStep)
-        m_pCboLogStep->setCurrentIndex((int)uiIdx);
+      if (auiProposedLogSteps[i] >= AppSettings::logStepBounds().first ||
+          auiProposedLogSteps[i] <= AppSettings::logStepBounds().second)
+      {
+        QString strItem;
+
+        strItem.sprintf(
+          "%u second%s (%u)",
+          auiProposedLogSteps[i],
+          (auiProposedLogSteps[i] == 1) ? "" : "s",
+          Location::selectBestAllowedFixStep(auiProposedLogSteps[i]));
+
+        m_pCboLogStep->addItem(strItem, QVariant(auiProposedLogSteps[i]));
+        if (auiProposedLogSteps[i] == uiConfiguredLogStep)
+          m_pCboLogStep->setCurrentIndex(i);
+      }
     }
+    if (m_pCboLogStep->currentIndex() < 0)
+      m_pCboLogStep->setCurrentIndex(iDefaultLogStepIdx);
 
     m_pChkGpsAssisted = new QCheckBox;
     m_pChkGpsAssisted->setCheckState(settings.getGpsAssisted() ? Qt::Checked : Qt::Unchecked);
