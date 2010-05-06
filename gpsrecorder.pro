@@ -17,7 +17,6 @@ LIBS        += -lrt -lz -lglib-2.0 -llocation -ltime
 DEFINES     +=
 
 QMAKE_CFLAGS   +=
-# -fno-strict-aliasing
 QMAKE_CXXFLAGS += -fno-strict-aliasing -Wall -Werror
 
 PRECOMPILED_HEADER = src/stable.h
@@ -25,7 +24,6 @@ PRECOMPILED_HEADER = src/stable.h
 HEADERS += \
   src/minizip/crypt.h \
   src/minizip/ioapi.h \
-  src/minizip/unzip.h \
   src/minizip/zip.h \
   src/App.h \
   src/AppSettings.h \
@@ -45,7 +43,6 @@ HEADERS += \
   src/WndMain.h
 SOURCES += \
   src/minizip/ioapi.c \
-  src/minizip/unzip.c \
   src/minizip/zip.c \
   src/main.cpp \
   src/App.cpp \

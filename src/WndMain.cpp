@@ -237,6 +237,8 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
 
   const LocationFix& fix = *pFixCont->getFix();
 
+  this->setUpdatesEnabled(false);
+
   // status
   str.sprintf("%s, %s",
     App::instance()->getStateStr(),
@@ -300,4 +302,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
     str.sprintf("MCC:%u MNC:%u UCID:%u", (uint)fix.sWCDMA.uiMCC, (uint)fix.sWCDMA.uiMNC, (uint)fix.sWCDMA.uiUCID);
   }
   m_pLblFixWcdma->setText(str);
+
+
+  this->setUpdatesEnabled(true);
 }
