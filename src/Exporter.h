@@ -38,10 +38,11 @@ private :
 private slots :
   void onReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
   void onReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion);
-  void onReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMsgLen);
+  void onReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
   void onReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void onReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
   void onReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
+  void onReadChunkNamedSnap       (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen);
   void onReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void onReadEOF                  (GPSRFile* pGPSRFile);
 

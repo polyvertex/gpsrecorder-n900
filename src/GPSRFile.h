@@ -28,7 +28,8 @@ public :
     CHUNK_MESSAGE          = 10, // asciiz message (usually a log message)
     CHUNK_LOCATIONFIX      = 20, // LocationFix structure (only its storage zone)
     CHUNK_LOCATIONFIX_LOST = 21, // Lost GPS fix
-    CHUNK_SNAP             = 30, // a 'snap' event (user pushed the 'snap' button while recording)
+    CHUNK_SNAP             = 30, // obsolete, write NAMEDSNAP chunk instead
+    CHUNK_NAMEDSNAP        = 31, // a 'named snap' event (user pushed the 'snap' button while recording)
   };
 
   enum Error
@@ -85,7 +86,8 @@ public :
   void writeMessage         (time_t uiTime, const char* pszMessage);
   void writeLocationFix     (time_t uiTime, const LocationFixContainer& fixCont);
   void writeLocationFixLost (time_t uiTime);
-  void writeSnap            (time_t uiTime);
+//void writeSnap            (time_t uiTime); // obsolete
+  void writeNamedSnap       (time_t uiTime, const char* pszName);
 
   bool seekFirst    (void); // causes a sigReadSOF or a sigReadError
   bool readNext     (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
@@ -103,10 +105,11 @@ public :
 signals :
   void sigReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
   void sigReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion);
-  void sigReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMsgLen);
+  void sigReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
   void sigReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void sigReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
   void sigReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
+  void sigReadChunkNamedSnap       (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
   void sigReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void sigReadEOF                  (GPSRFile* pGPSRFile);
 

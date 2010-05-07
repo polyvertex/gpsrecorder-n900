@@ -167,6 +167,8 @@ void WndMain::onPushedStartStop (void)
 void WndMain::onPushedSnap (void)
 {
   GPSRFile* pGPSRFile = App::instance()->outFile();
+  QString   strName;
+  time_t    uiTime = time(0);
 
   Q_ASSERT(pGPSRFile);
   Q_ASSERT(pGPSRFile->isOpen());
@@ -174,7 +176,15 @@ void WndMain::onPushedSnap (void)
   if (!pGPSRFile || !pGPSRFile->isOpen() || !pGPSRFile->isWriting())
     return;
 
-  pGPSRFile->writeSnap(time(0));
+  // ask for point name
+  strName = QInputDialog::getText(
+    this,
+    tr("Point name ?"),
+    tr("Please enter the name of the point to snap or leave blank :"),
+    QLineEdit::Normal).trimmed();
+
+  // snap point
+  pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
   // TODO : popup a message to inform user (no confirmation needed !)
 }

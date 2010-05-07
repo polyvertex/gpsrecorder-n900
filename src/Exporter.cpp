@@ -42,6 +42,10 @@ Exporter::Exporter (void)
     SLOT(onReadChunkSnap(GPSRFile*, time_t)) );
   this->connect(
     &m_GPSRFile,
+    SIGNAL(sigReadChunkNamedSnap(GPSRFile*, time_t, const char*, uint)),
+    SLOT(onReadChunkNamedSnap(GPSRFile*, time_t, const char*, uint)) );
+  this->connect(
+    &m_GPSRFile,
     SIGNAL(sigReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)),
     SLOT(onReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)) );
   this->connect(
@@ -163,12 +167,12 @@ void Exporter::onReadSOF (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVer
 //---------------------------------------------------------------------------
 // onReadChunkMessage
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkMessage (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMsgLen)
+void Exporter::onReadChunkMessage (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen)
 {
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiTime);
   Q_UNUSED(pszMessage);
-  Q_UNUSED(uiMsgLen);
+  Q_UNUSED(uiMessageLen);
 
   // nothing to do for now...
 }
@@ -203,6 +207,19 @@ void Exporter::onReadChunkSnap (GPSRFile* pGPSRFile, time_t uiTime)
 {
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiTime);
+
+  // nothing to do for now...
+}
+
+//---------------------------------------------------------------------------
+// onReadChunkNamedSnap
+//---------------------------------------------------------------------------
+void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen)
+{
+  Q_UNUSED(pGPSRFile);
+  Q_UNUSED(uiTime);
+  Q_UNUSED(pszPointName);
+  Q_UNUSED(uiPointNameLen);
 
   // nothing to do for now...
 }
