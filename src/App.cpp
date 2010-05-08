@@ -113,6 +113,7 @@ const QString& App::applicationUrl (void)
 //---------------------------------------------------------------------------
 void App::setOutputDir (const QString& strOutputDir)
 {
+  AppSettings::writeOutputDirectory(qPrintable(strOutputDir));
   ms_strOutputDir = strOutputDir;
 }
 
@@ -121,6 +122,40 @@ void App::setOutputDir (const QString& strOutputDir)
 //---------------------------------------------------------------------------
 const QString& App::outputDir (void)
 {
+  if (ms_strOutputDir.isEmpty())
+  {
+    QByteArray strOutDir(AppSettings::readOutputDirectory());
+
+    // if output directory is not stored yet in configuration hive,
+    // define a default one
+    if (strOutDir.isEmpty())
+    {
+      strOutDir = Util::maemoFindMyDocsDir();
+      if (strOutDir.isEmpty())
+        qFatal("Failed to find MyDocs directory (usually /home/user/MyDocs and defined by MYDOCSDIR env var on Maemo) !");
+
+      if (!strOutDir.endsWith('/'))
+        strOutDir += '/';
+      strOutDir += qPrintable(QCoreApplication::applicationName());
+    }
+
+    if (Util::fileIsWritableDir(strOutDir.constData()))
+      goto __Ok;
+
+    if (Util::fileExists(strOutDir.constData()))
+      goto __Failed; // maybe a file ?
+
+    if (mkdir(strOutDir.constData(), 0777) == 0)
+      goto __Ok;
+
+    __Failed :
+    qFatal("Unable to setup output directory !");
+    exit(1);
+
+    __Ok :
+    App::setOutputDir(strOutDir);
+  }
+
   return ms_strOutputDir;
 }
 

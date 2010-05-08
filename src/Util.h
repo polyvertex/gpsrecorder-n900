@@ -19,9 +19,14 @@ class Util
 public :
 
   // file system
-  static bool               fileExists      (const char* pszFile);
-  static bool               fileIsDir       (const char* pszFile);
-  static QFile::Permissions filePermissions (const char* pszFile);
+  static bool               fileExists        (const char* pszFile);
+  static bool               fileIsDir         (const char* pszFile);
+  static bool               fileIsWritableDir (const char* pszFile);
+  static QFile::Permissions filePermissions   (const char* pszFile);
+
+  // maemo file system
+  static QByteArray maemoFindHomeDir   (void);
+  static QByteArray maemoFindMyDocsDir (void);
 
   // time
   static const char* timeString (bool bForFilename=false, time_t uiTime=0, bool bUTC=false);

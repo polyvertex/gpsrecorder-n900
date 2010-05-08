@@ -13,6 +13,8 @@
 //---------------------------------------------------------------------------
 // Static Members
 //---------------------------------------------------------------------------
+static const char* SETTINGNAME_OUTPUTDIR = "OutputDir";
+//
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
 static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
@@ -41,7 +43,7 @@ AppSettings::AppSettings (QObject* pParent/*=0*/)
   Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
-  // refresh 'clone' log step value
+  // refresh cloned log step value
   this->getLogStep_Impl();
 }
 
@@ -70,7 +72,7 @@ QSettings::Status AppSettings::write (void)
     return eStatus;
   }
 
-  // refresh 'clone' log step value
+  // refresh cloned log step value
   this->getLogStep_Impl();
 
   emit sigSettingsWritten();
@@ -79,6 +81,34 @@ QSettings::Status AppSettings::write (void)
 }
 
 
+
+//---------------------------------------------------------------------------
+// OutputDirectory
+//---------------------------------------------------------------------------
+QByteArray AppSettings::readOutputDirectory (void)
+{
+  // ensure the QSettings default constructor has loaded *our* settings
+  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
+  Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
+
+  QSettings settings;
+
+  QVariant var = settings.value(SETTINGNAME_OUTPUTDIR);
+  if (var.type() == QVariant::String)
+    return qPrintable(var.toString());
+
+  return QByteArray();
+}
+
+void AppSettings::writeOutputDirectory (const QByteArray& strOutputDir)
+{
+  // ensure the QSettings default constructor has loaded *our* settings
+  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
+  Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
+
+  QSettings settings;
+  settings.setValue(SETTINGNAME_OUTPUTDIR, QVariant(QLatin1String(strOutputDir.constData())));
+}
 
 //---------------------------------------------------------------------------
 // LogStep

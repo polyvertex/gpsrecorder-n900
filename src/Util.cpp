@@ -34,6 +34,18 @@ bool Util::fileIsDir (const char* pszFile)
 }
 
 //---------------------------------------------------------------------------
+// fileIsWritableDir
+//---------------------------------------------------------------------------
+bool Util::fileIsWritableDir (const char* pszFile)
+{
+  QFileInfo fi(pszFile);
+
+  return
+    fi.isDir() &&
+    (fi.permissions() & QFile::WriteUser) != 0;
+}
+
+//---------------------------------------------------------------------------
 // filePermissions
 //---------------------------------------------------------------------------
 QFile::Permissions Util::filePermissions (const char* pszFile)
@@ -43,6 +55,58 @@ QFile::Permissions Util::filePermissions (const char* pszFile)
 }
 
 
+
+//---------------------------------------------------------------------------
+// maemoFindHomeDir
+//---------------------------------------------------------------------------
+QByteArray Util::maemoFindHomeDir (void)
+{
+  // according to the Qt documentation, the QDir::homePath() utility does not
+  // seem to use the getpwuid() function...
+
+  QByteArray strHomeDir;
+  char* psz;
+
+  psz = getenv("HOME");
+  if (psz && Util::fileIsWritableDir(psz))
+    return psz;
+
+  struct passwd* ps_passwd = getpwuid(getuid());
+  if (ps_passwd && ps_passwd->pw_dir && ps_passwd->pw_dir[0] &&
+      Util::fileIsWritableDir(ps_passwd->pw_dir))
+  {
+    return ps_passwd->pw_dir;
+  }
+
+  strHomeDir = "~/";
+  if (Util::fileIsWritableDir(strHomeDir.constData()))
+    return strHomeDir;
+
+  strHomeDir = "/";
+  if (Util::fileIsWritableDir(strHomeDir.constData()))
+    return strHomeDir;
+
+  return QByteArray();
+}
+
+//---------------------------------------------------------------------------
+// maemoFindMyDocsDir
+//---------------------------------------------------------------------------
+QByteArray Util::maemoFindMyDocsDir (void)
+{
+  QByteArray strMyDocsDir;
+  char* psz;
+
+  psz = getenv("MYDOCSDIR");
+  if (psz)
+    strMyDocsDir = psz;
+  else // sudo gainroot does not give MYDOCSDIR env var
+    strMyDocsDir = "/home/user/MyDocs";
+  if (Util::fileIsWritableDir(strMyDocsDir.constData()))
+    return strMyDocsDir;
+
+  return QByteArray();
+}
 
 //---------------------------------------------------------------------------
 // timeString

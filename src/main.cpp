@@ -20,79 +20,6 @@ static QByteArray strLogStart;
 
 
 //---------------------------------------------------------------------------
-// _isWritableDir
-//---------------------------------------------------------------------------
-static bool _isWritableDir (const char* pszPath)
-{
-  return
-    Util::fileIsDir(pszPath) &&
-    (Util::filePermissions(pszPath) & QFile::WriteUser) != 0;
-}
-
-//---------------------------------------------------------------------------
-// _findHomeDir
-//---------------------------------------------------------------------------
-static void _findHomeDir (QByteArray& strOutPath)
-{
-  // according to the Qt documentation, the QDir::homePath() utility does not
-  // seem to use the getpwuid() function...
-
-  char* psz;
-
-  psz = getenv("MYDOCSDIR");
-  if (psz)
-    strOutPath = psz;
-  else // sudo gainroot does not give MYDOCSDIR env var
-    strOutPath = "/home/user/MyDocs";
-  if (_isWritableDir(strOutPath.constData()))
-    return;
-
-  psz = getenv("HOME");
-  if (psz && _isWritableDir(psz))
-  {
-    strOutPath = psz;
-    return;
-  }
-
-  struct passwd* ps_passwd = getpwuid(getuid());
-  if (ps_passwd && ps_passwd->pw_dir && ps_passwd->pw_dir[0] && _isWritableDir(ps_passwd->pw_dir))
-  {
-    strOutPath = ps_passwd->pw_dir;
-    return;
-  }
-
-  strOutPath = "~/";
-  if (_isWritableDir(strOutPath.constData()))
-    return;
-
-  strOutPath = "/";
-}
-
-//---------------------------------------------------------------------------
-// _findOutputDir
-//---------------------------------------------------------------------------
-static bool _findOutputDir (QByteArray& strOutPath)
-{
-  _findHomeDir(strOutPath);
-  if (!strOutPath.endsWith('/'))
-    strOutPath += '/';
-  strOutPath += qPrintable(QCoreApplication::applicationName());
-
-  if (_isWritableDir(strOutPath.constData()))
-    return true;
-
-  if (Util::fileExists(strOutPath.constData()))
-    goto __Failed; // maybe a file ?
-
-  if (mkdir(strOutPath.constData(), 0777) == 0)
-    return true;
-
-__Failed :
-  strOutPath = qPrintable(QCoreApplication::applicationName());
-  return false;
-}
-
-//---------------------------------------------------------------------------
 // _logHandler
 //---------------------------------------------------------------------------
 static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
@@ -102,8 +29,9 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
     QByteArray strLogFile;
     QString str;
 
-    _findOutputDir(strLogFile);
-    strLogFile += "/";
+    strLogFile = qPrintable(App::outputDir());
+    if (!strLogFile.endsWith('/'))
+      strLogFile += '/';
     strLogFile += qPrintable(QCoreApplication::applicationName());
     strLogFile += ".log";
 
@@ -188,8 +116,6 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
   }
 }
 
-
-
 //---------------------------------------------------------------------------
 // m a i n
 //---------------------------------------------------------------------------
@@ -208,15 +134,8 @@ int main (int nArgc, char** ppszArgv)
     qPrintable(QCoreApplication::applicationName()),
     qPrintable(QCoreApplication::applicationVersion()));
 
-  {
-    QByteArray strOutDir;
-
-    if (!_findOutputDir(strOutDir))
-      qFatal("Failed to choose output directory !");
-
-    App::setOutputDir(strOutDir);
-    qDebug("Output directory is %s", strOutDir.constData());
-  }
+  (void)App::outputDir(); // force outputDir to be setup by App now !
+  printf("Output directory is %s\n", qPrintable(App::outputDir()));
 
   strLogStart = Util::timeString();
   qInstallMsgHandler(_logHandler);
@@ -227,6 +146,9 @@ int main (int nArgc, char** ppszArgv)
     nRes = app.exec();
   }
 
+  // close log file
+  // at this point, App instance must be destroyed !
+  qInstallMsgHandler(0);
   if (hLogFile)
   {
     fputs("\n", hLogFile);

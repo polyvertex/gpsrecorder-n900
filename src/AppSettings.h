@@ -29,6 +29,10 @@ public :
   QSettings::Status write (void);
 
 
+  static QByteArray readOutputDirectory  (void);
+  static void       writeOutputDirectory (const QByteArray& strOutputDir);
+
+
   void setLogStep (uint uiLogStepSeconds);
   uint getLogStep (void) { return m_uiLogStepClone; }
 
