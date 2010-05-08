@@ -29,12 +29,15 @@ public :
 
 
 public slots :
-  void onSOF         (const char* pszFilePath, time_t uiTime);
-  void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
-  void onEOF         (void);
+  void onSOF          (const char* pszFilePath, time_t uiTime);
+  void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
+  void onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
+  void onEOF          (void);
 
 
 private :
+  // runtime
+  uint m_uiSnapCount;
 };
 
 

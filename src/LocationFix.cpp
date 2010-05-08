@@ -145,9 +145,9 @@ void LocationFixContainer::setFix (const LocationFix& fix)
 void LocationFixContainer::setFix (const LocationFixContainer& fixCont)
 {
   if (fixCont.hasFix())
-    m_uiFixSize = 0;
-  else
     this->setFix(*fixCont.getFix());
+  else
+    m_uiFixSize = 0;
 }
 
 //---------------------------------------------------------------------------

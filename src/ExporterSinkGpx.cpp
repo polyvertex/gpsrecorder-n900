@@ -33,6 +33,10 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
     SLOT(onLocationFix(time_t, const LocationFixContainer&)) );
   this->connect(
     pParent,
+    SIGNAL(sigSnappedPoint(const Exporter::SnappedPoint*)),
+    SLOT(onSnappedPoint(const Exporter::SnappedPoint*)) );
+  this->connect(
+    pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
 }
@@ -62,6 +66,8 @@ void ExporterSinkGpx::close (void)
   }
 
   ExporterSink::close();
+
+  m_uiSnapCount = 1;
 }
 
 
@@ -96,7 +102,7 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
 
     fprintf(m_pFile,
       "<?xml version=\"1.0\" ?>" GPX_NL
-      "<gpx version=\"1.0\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/0\">" GPX_NL
+      "<gpx version=\"1.1\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/1\">" GPX_NL
       "<metadata>" GPX_NL
       " <time>%s</time>" GPX_NL
       "</metadata>" GPX_NL
@@ -157,6 +163,44 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
     strFixMode.constData(),
     fix.iAlt,
     (int)fix.cSatUse );
+}
+
+//---------------------------------------------------------------------------
+// onSnap
+//---------------------------------------------------------------------------
+void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
+{
+  QString   strEle;
+  QString   strName(QString("Snap #%1").arg(m_uiSnapCount++));
+  QDateTime dt;
+
+  Q_UNUSED(pSnappedPoint);
+
+  dt.setTimeSpec(Qt::UTC);
+  dt.setTime_t(pSnappedPoint->uiTime);
+
+  if (pSnappedPoint->bHasAlt)
+  {
+    strEle = " <ele>%1</ele>" GPX_NL;
+    strEle.arg(pSnappedPoint->iAltM);
+  }
+
+  if (!pSnappedPoint->strPointName.isEmpty())
+  {
+    strName += " : ";
+    strName += pSnappedPoint->strPointName;
+  }
+
+  fprintf(m_pFile,
+    "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
+    " <time>%s</time>" GPX_NL
+    "%s"
+    " <name>%s</name>" GPX_NL
+    "</trkpt>" GPX_NL,
+    pSnappedPoint->rLatDeg, pSnappedPoint->rLongDeg,
+    qPrintable(dt.toString(Qt::ISODate)),
+    qPrintable(strEle),
+    qPrintable(strName) );
 }
 
 //---------------------------------------------------------------------------

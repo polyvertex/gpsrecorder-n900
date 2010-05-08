@@ -21,6 +21,18 @@ class Exporter : public QObject
   Q_OBJECT
 
 public :
+  struct SnappedPoint
+  {
+    time_t     uiTime;
+    QByteArray strPointName;
+    double     rLatDeg;
+    double     rLongDeg;
+    bool       bHasAlt;
+    qint32     iAltM;
+  };
+
+
+public :
   Exporter (void);
   virtual ~Exporter (void);
 
@@ -33,6 +45,8 @@ public :
 
 private :
   void clear (void);
+
+  void emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA, const LocationFix* pFixB);
 
 
 private slots :
@@ -48,18 +62,17 @@ private slots :
 
 
 signals :
-  // TODO : implement Message, FixLost and Snap signals
-  void sigSOF         (const char* pszFilePath, time_t uiTime);
-  void sigLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
-  void sigEOF         (void);
+  void sigSOF          (const char* pszFilePath, time_t uiTime);
+  void sigLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
+  void sigSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
+  void sigEOF          (void);
 
 
 private :
-  //QVector<ExporterSink*> m_vecSinks;
-
-  QString              m_strOutputBasePath;
-  GPSRFile             m_GPSRFile;
-  LocationFixContainer m_FixCont;
+  QString               m_strOutputBasePath;
+  GPSRFile              m_GPSRFile;
+  LocationFixContainer  m_FixCont;
+  QVector<SnappedPoint> m_vecSnappedPoints;
 };
 
 

@@ -33,6 +33,10 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     SLOT(onLocationFix(time_t, const LocationFixContainer&)) );
   this->connect(
     pParent,
+    SIGNAL(sigSnappedPoint(const Exporter::SnappedPoint*)),
+    SLOT(onSnappedPoint(const Exporter::SnappedPoint*)) );
+  this->connect(
+    pParent,
     SIGNAL(sigEOF(void)),
     SLOT(onEOF(void)) );
 
@@ -45,6 +49,9 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     m_nLineWidth    = settings.getKmlLineWidth();
     m_bAircraftMode = settings.getKmlAircraftMode();
   }
+
+  //m_dtBegin.setTimeSpec(Qt::UTC);
+  //m_dtEnd.setTimeSpec(Qt::UTC);
 }
 
 //---------------------------------------------------------------------------
@@ -74,6 +81,117 @@ QString ExporterSinkKml::colorToString (const QColor& color)
 
 
 //---------------------------------------------------------------------------
+// writeEOF
+//---------------------------------------------------------------------------
+void ExporterSinkKml::writeEOF (void)
+{
+  Q_ASSERT(m_pFile);
+
+  // terminate track line
+  fputs(
+    "  </coordinates>" KML_NL
+    " </LineString>" KML_NL,
+    m_pFile);
+  //if (m_dtBegin.isValid() && m_dtEnd.isValid() && m_dtEnd > m_dtBegin)
+  //{
+  //  fprintf(m_pFile,
+  //    " <TimeSpan>" KML_NL
+  //    "  <begin>%s</begin>" KML_NL
+  //    "  <end>%s</end>" KML_NL
+  //    " </TimeSpan>" KML_NL,
+  //    qPrintable(m_dtBegin.toString(Qt::ISODate)),
+  //    qPrintable(m_dtEnd.toString(Qt::ISODate)) );
+  //}
+  //m_dtBegin = QDateTime();
+  //m_dtEnd   = QDateTime();
+  fputs("</Placemark>" KML_NL, m_pFile);
+
+  // snap the beginning of the track
+  if (m_FixContBegin.hasFix())
+  {
+    const LocationFix& fix = *m_FixContBegin.getFix();
+    fprintf(m_pFile,
+      "<Placemark>" KML_NL
+      " <name>Track Begin</name>" KML_NL
+      " <visibility>1</visibility>" KML_NL
+      " <styleUrl>#track-begin</styleUrl>" KML_NL
+      " <Point>" KML_NL
+      "  <extrude>1</extrude>" KML_NL
+      "  <altitudeMode>%s</altitudeMode>" KML_NL
+      "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
+      " </Point>" KML_NL
+      "</Placemark>" KML_NL,
+      (m_bAircraftMode ? "absolute" : "clampToGround"),
+      fix.getLongDeg(),
+      fix.getLatDeg(),
+      (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0) );
+  }
+
+  // snap the end of the track
+  if (m_FixContEnd.hasFix())
+  {
+    const LocationFix& fix = *m_FixContEnd.getFix();
+    fprintf(m_pFile,
+      "<Placemark>" KML_NL
+      " <name>Track End</name>" KML_NL
+      " <visibility>1</visibility>" KML_NL
+      " <styleUrl>#track-end</styleUrl>" KML_NL
+      " <Point>" KML_NL
+      "  <extrude>1</extrude>" KML_NL
+      "  <altitudeMode>%s</altitudeMode>" KML_NL
+      "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
+      " </Point>" KML_NL
+      "</Placemark>" KML_NL,
+      (m_bAircraftMode ? "absolute" : "clampToGround"),
+      fix.getLongDeg(),
+      fix.getLatDeg(),
+      (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0) );
+  }
+
+  // write snapped points if there is any
+  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
+  {
+    const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
+    QString strName(QString("Snap #%1").arg(i + 1));
+    //QDateTime dt;
+
+    if (!snapPt.strPointName.isEmpty())
+    {
+      strName += " : ";
+      strName += snapPt.strPointName;
+    }
+
+    //dt.setTimeSpec(Qt::UTC);
+    //dt.setTime_t(snapPt.uiTime);
+
+    fprintf(m_pFile,
+      "<Placemark>" KML_NL
+      " <name>%s</name>" KML_NL
+      " <visibility>1</visibility>" KML_NL
+    //" <TimeStamp>" KML_NL
+    //"  <when>%s</when>" KML_NL
+    //" </TimeStamp>" KML_NL
+      " <Point>" KML_NL
+      "  <extrude>1</extrude>" KML_NL
+      "  <altitudeMode>%s</altitudeMode>" KML_NL
+      "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
+      " </Point>" KML_NL
+      "</Placemark>" KML_NL,
+      qPrintable(strName),
+      //qPrintable(dt.toString(Qt::ISODate)),
+      (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
+      snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );
+  }
+  m_vecSnappedPoints.clear();
+
+  // write end of file
+  fputs(
+    "</Document>" KML_NL
+    "</kml>" KML_NL,
+    m_pFile);
+}
+
+//---------------------------------------------------------------------------
 // close
 //---------------------------------------------------------------------------
 void ExporterSinkKml::close (void)
@@ -83,14 +201,13 @@ void ExporterSinkKml::close (void)
   // write footer
   if (m_pFile)
   {
-    fprintf(m_pFile,
-      "  </coordinates>" KML_NL
-      " </LineString>" KML_NL
-      "</Placemark>" KML_NL
-      "</kml>" KML_NL );
-
+    this->writeEOF();
     strFilePathBak = m_strFilePath;
   }
+
+  m_FixContBegin.reset();
+  m_FixContEnd.reset();
+  m_vecSnappedPoints.clear();
 
   ExporterSink::close();
 
@@ -127,28 +244,45 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
   fprintf(m_pFile,
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" KML_NL
     "<kml xmlns=\"http://www.opengis.net/kml/2.2\">" KML_NL
-    "<Placemark>" KML_NL
+    "<Document>" KML_NL
     " <name>GPS Track %s</name>" KML_NL
     " <description>" KML_NL
-    "  <![CDATA[" KML_NL
-    "   %d points.<br />" KML_NL
-    "   <br />" KML_NL
-    "   KML file created by %s v%s. Please visit %s for more info." KML_NL
+    "  <![CDATA[%d points.<br />" KML_NL
+    "<br />" KML_NL
+    "KML file created by %s v%s. Please visit %s for more info." KML_NL
     "  ]]>" KML_NL
     " </description>" KML_NL
     " <visibility>1</visibility>" KML_NL
     " <open>1</open>" KML_NL
-    " <Style>" KML_NL
+    " <Style id=\"track-begin\">" KML_NL
+    "  <IconStyle>" KML_NL
+    "   <Icon>" KML_NL
+    "    <href>http://maps.google.com/mapfiles/kml/paddle/A.png</href>" KML_NL
+    "   </Icon>" KML_NL
+    "  </IconStyle>" KML_NL
+    " </Style>" KML_NL
+    " <Style id=\"track-end\">" KML_NL
+    "  <IconStyle>" KML_NL
+    "   <Icon>" KML_NL
+    "    <href>http://maps.google.com/mapfiles/kml/paddle/B.png</href>" KML_NL
+    "   </Icon>" KML_NL
+    "  </IconStyle>" KML_NL
+    " </Style>" KML_NL
+    " <Style id=\"track-line\">" KML_NL
     "  <LineStyle>" KML_NL
     "   <color>%s</color>" KML_NL
     "   <width>%d</width>" KML_NL
     "  </LineStyle>" KML_NL
     " </Style>" KML_NL
-    " <LineString>" KML_NL
-    "  <extrude>1</extrude>" KML_NL
-    "  <tesselate>1</tesselate>" KML_NL
-    "  <altitudeMode>%s</altitudeMode>" KML_NL
-    "  <coordinates>" KML_NL,
+    " <Placemark>" KML_NL
+    "  <name>Track</name>" KML_NL
+    "  <visibility>1</visibility>" KML_NL
+    "  <styleUrl>#track-line</styleUrl>" KML_NL
+    "  <LineString>" KML_NL
+    "   <extrude>1</extrude>" KML_NL
+    "   <tesselate>1</tesselate>" KML_NL
+    "   <altitudeMode>%s</altitudeMode>" KML_NL
+    "   <coordinates>" KML_NL,
     Util::timeString(false, uiTime),
     this->parent()->gpsrFile().getReadChunksCount(GPSRFile::CHUNK_LOCATIONFIX),
     qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()), qPrintable(App::applicationUrl()),
@@ -172,14 +306,34 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  if (!fix.hasFields(FIXFIELD_LATLONG | FIXFIELD_ALT)) //if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG | FIXFIELD_ALT | FIXFIELD_TRACK | FIXFIELD_SPEED))
+  //if (fix.hasFields(FIXFIELD_TIME))
+  //{
+  //  if (!m_dtBegin.isValid())
+  //    m_dtBegin.setTime_t(fix.uiTime);
+  //  m_dtEnd.setTime_t(fix.uiTime);
+  //}
+
+  if (!fix.hasFields(FIXFIELD_LATLONG))
     return;
+
+  if (!m_FixContBegin.hasFix())
+    m_FixContBegin.setFix(fixCont);
+  m_FixContEnd.setFix(fixCont);
 
   fprintf(m_pFile,
     "%.6lf,%.6lf,%d\n",
     fix.getLongDeg(),
     fix.getLatDeg(),
-    fix.iAlt);
+    fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0);
+}
+
+//---------------------------------------------------------------------------
+// onSnap
+//---------------------------------------------------------------------------
+void ExporterSinkKml::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
+{
+  //m_dtEnd.setTime_t(pSnappedPoint->uiTime);
+  m_vecSnappedPoints.append(*pSnappedPoint);
 }
 
 //---------------------------------------------------------------------------
@@ -204,6 +358,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
   strDstFile  = strSrcFile.left(strSrcFile.length() - 1);
   strDstFile += 'z';
 
+  // create zip archive
   hZip = zipOpen(qPrintable(strDstFile), APPEND_STATUS_CREATE);
   if (!hZip)
   {
@@ -215,6 +370,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
   zip_fileinfo zfi;
   int          nRes;
 
+  // prepare zip entry info
   dt.setTimeSpec(Qt::LocalTime);
   zfi.tmz_date.tm_sec  = dt.time().second();
   zfi.tmz_date.tm_min  = dt.time().minute();
@@ -226,6 +382,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
   zfi.internal_fa      = 0;
   zfi.external_fa      = 0;
 
+  // open zip file entry
   nRes = zipOpenNewFileInZip(hZip, qPrintable(fi.fileName()), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_BEST_COMPRESSION);
   if (nRes != ZIP_OK)
   {
@@ -236,6 +393,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
     return false;
   }
 
+  // open kml source file
   QFile f(strSrcFile);
   if (!f.open(QIODevice::ReadOnly))
   {
@@ -247,6 +405,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
     return false;
   }
 
+  // read, compress and write source file into zip archive
   while (!f.atEnd())
   {
     QByteArray block = f.read(0x8000); // 32K
@@ -265,6 +424,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
     }
   }
 
+  // close zip file entry
   nRes = zipCloseFileInZip(hZip);
   if (nRes != ZIP_OK)
   {
@@ -275,6 +435,7 @@ bool ExporterSinkKml::kmlToKmz (const QString& strSrcFile)
     return false;
   }
 
+  // close zip archive
   nRes = zipClose(hZip, NULL);
   if (nRes != ZIP_OK)
   {

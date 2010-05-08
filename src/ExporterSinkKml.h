@@ -40,13 +40,16 @@ public :
 
 
 private :
+  void writeEOF (void);
+
   static bool kmlToKmz (const QString& strSrcFile);
 
 
 public slots :
-  void onSOF         (const char* pszFilePath, time_t uiTime);
-  void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
-  void onEOF         (void);
+  void onSOF          (const char* pszFilePath, time_t uiTime);
+  void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
+  void onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
+  void onEOF          (void);
 
 
 private :
@@ -55,6 +58,13 @@ private :
   QByteArray m_strLineColor;
   int        m_nLineWidth;
   bool       m_bAircraftMode;
+
+  // runtime
+  LocationFixContainer m_FixContBegin;
+  LocationFixContainer m_FixContEnd;
+  //QDateTime m_dtBegin;
+  //QDateTime m_dtEnd;
+  QVector<Exporter::SnappedPoint> m_vecSnappedPoints;
 };
 
 
