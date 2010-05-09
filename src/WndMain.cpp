@@ -31,6 +31,30 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     m_pMenuSnap->setEnabled(false);
   }
 
+  this->createWidgets();
+  this->clearFixFields();
+  this->showHome();
+
+  this->connect(
+    App::instance()->location(),
+    SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
+    SLOT(onLocationFix(Location*, const LocationFixContainer*, bool)) );
+}
+
+//---------------------------------------------------------------------------
+// ~WndMain
+//---------------------------------------------------------------------------
+WndMain::~WndMain (void)
+{
+}
+
+
+
+//---------------------------------------------------------------------------
+// createWidgets
+//---------------------------------------------------------------------------
+void WndMain::createWidgets (void)
+{
   m_pLblStatus = new QLabel();
   m_pLblStatus->setDisabled(true);
 
@@ -66,25 +90,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   m_pLblFixWcdma = new QLabel();
   m_pLblFixWcdma->setDisabled(true);
-
-  this->clearFixFields();
-
-  this->showHome();
-
-  this->connect(
-    App::instance()->location(),
-    SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
-    SLOT(onLocationFix(Location*, const LocationFixContainer*, bool)) );
 }
-
-//---------------------------------------------------------------------------
-// ~WndMain
-//---------------------------------------------------------------------------
-WndMain::~WndMain (void)
-{
-}
-
-
 
 //---------------------------------------------------------------------------
 // showHome
@@ -241,11 +247,8 @@ void WndMain::clearFixFields (void)
 //---------------------------------------------------------------------------
 void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
-  QString str;
-
-  Q_UNUSED(pLocation);
-
   const LocationFix& fix = *pFixCont->getFix();
+  QString str;
 
   this->setUpdatesEnabled(false);
 
@@ -280,7 +283,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   // fix time
   str.clear();
   if (fix.uiTime > 0)
-    str.sprintf("%s (%u)", Util::timeString(false, fix.uiTime), fix.uiTime);
+    str = Util::timeString(false, fix.uiTime);
   m_pLblFixTime->setText(str);
 
   // fix properties

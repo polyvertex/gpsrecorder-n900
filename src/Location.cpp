@@ -22,7 +22,6 @@ Location::Location (QObject* pParent)
   m_bStarted  = false;
 
   // last fix
-  m_uiFixTime  = 0;
   m_bAcquiring = true;
 }
 
@@ -120,6 +119,5 @@ uint Location::selectBestAllowedFixStep (uint uiDesiredFixStep)
 //---------------------------------------------------------------------------
 void Location::resetLastFix (void)
 {
-  m_uiFixTime  = 0;
   m_bAcquiring = true;
 }

@@ -26,6 +26,8 @@ public :
 
 
 private :
+  void createWidgets (void);
+
   void showHome (void);
   void showFix  (void);
 
@@ -48,7 +50,6 @@ private :
   QAction* m_pMenuConvert;
 
   QLabel* m_pLblStatus;
-
   QLabel* m_pLblFixFields;
   QLabel* m_pLblFixMode;
   QLabel* m_pLblFixTime;

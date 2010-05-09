@@ -46,7 +46,6 @@ public :
   virtual bool isAcquiring (void) const { return m_bAcquiring; }
 
   virtual const LocationFixContainer& getLastFixCont (void) const { return m_FixCont; }
-  virtual time_t                      getLastFixTime (void) const { return m_uiFixTime; }
 
 
 signals :
@@ -63,7 +62,6 @@ protected :
 
   // last fix
   LocationFixContainer m_FixCont;
-  time_t               m_uiFixTime;
   bool                 m_bAcquiring;
 };
 

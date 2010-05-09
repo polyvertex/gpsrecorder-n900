@@ -23,9 +23,9 @@ public :
   LocationGPSRFile (void);
   virtual ~LocationGPSRFile (void);
 
-  bool setAssisted (bool bAssisted);
+  bool setAssisted (bool bAssisted); // unused
 
-  bool setFixStep (uint uiNewFixStepSeconds);
+  bool setFixStep (uint uiNewFixStepSeconds); // unused
 
   void resetLastFix (void);
 

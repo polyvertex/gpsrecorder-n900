@@ -391,7 +391,6 @@ void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointe
   {
     bAccurate = true;
 
-    pThis->m_uiFixTime = time(0);
     LocationMaemo::fixSetup(pThis->m_FixCont, *pGpsDevice);
 
     if (pThis->m_bAcquiring)
@@ -410,7 +409,6 @@ void LocationMaemo::locationOnDevChanged (LocationGPSDevice* pGpsDevice, gpointe
       emit pThis->sigLocationFixLost(pThis, &pThis->m_FixCont);
     }
 
-    pThis->m_uiFixTime = time(0);
     LocationMaemo::fixSetup(pThis->m_FixCont, *pGpsDevice);
   }
 

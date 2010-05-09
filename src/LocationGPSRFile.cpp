@@ -177,6 +177,5 @@ void LocationGPSRFile::onReadChunkLocationFix (GPSRFile* pGPSRFile, time_t uiTim
   Q_UNUSED(pGPSRFile);
 
   m_FixCont.setFix(fix);
-  m_uiFixTime  = uiTime;
   m_bAcquiring = false;
 }
