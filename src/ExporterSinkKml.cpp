@@ -114,9 +114,9 @@ void ExporterSinkKml::writeEOF (void)
       "<Placemark>" KML_NL
       " <name>Track Begin</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[UTC Time : %s<br />" KML_NL
-      "Local Time : %s" KML_NL
+      "  <![CDATA[%s (UTC)<br />" KML_NL
       "]]>" KML_NL
+      " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
       " <styleUrl>#track-begin</styleUrl>" KML_NL
       " <Point>" KML_NL
@@ -125,8 +125,7 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, true).constData() : "?"),
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, false).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, true).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
@@ -141,9 +140,9 @@ void ExporterSinkKml::writeEOF (void)
       "<Placemark>" KML_NL
       " <name>Track End</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[UTC Time : %s<br />" KML_NL
-      "Local Time : %s" KML_NL
+      "  <![CDATA[%s (UTC)<br />" KML_NL
       "]]>" KML_NL
+      " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
       " <styleUrl>#track-end</styleUrl>" KML_NL
       " <Point>" KML_NL
@@ -152,8 +151,7 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, true).constData() : "?"),
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, false).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, true).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
@@ -164,7 +162,7 @@ void ExporterSinkKml::writeEOF (void)
   for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
   {
     const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
-    QString   strName(QString("Snap #%1").arg(i + 1));
+    QString   strName(QString("Snap %1").arg(i + 1));
     //QDateTime dtUTC;
 
     if (!snapPt.strPointName.isEmpty())
@@ -180,8 +178,7 @@ void ExporterSinkKml::writeEOF (void)
       "<Placemark>" KML_NL
       " <name>%s</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[UTC Time : %s<br />" KML_NL
-      "Local Time : %s" KML_NL
+      "  <![CDATA[%s (UTC)<br />" KML_NL
       "]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
@@ -196,7 +193,6 @@ void ExporterSinkKml::writeEOF (void)
       "</Placemark>" KML_NL,
       qPrintable(strName),
       Util::timeString(false, snapPt.uiTime, true).constData(),
-      Util::timeString(false, snapPt.uiTime, false).constData(),
       //qPrintable(dtUTC.toString(Qt::ISODate)),
       (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
       snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );

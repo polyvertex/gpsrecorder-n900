@@ -171,7 +171,7 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
 {
   QString   strEle;
-  QString   strName(QString("Snap #%1").arg(m_uiSnapCount++));
+  QString   strName(QString("Snap %1").arg(m_uiSnapCount++));
   QDateTime dt;
 
   Q_UNUSED(pSnappedPoint);
