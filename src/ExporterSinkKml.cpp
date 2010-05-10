@@ -183,8 +183,8 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       qPrintable(strName),
-      Util::timeString(false, snapPt.uiTime, true),
-      Util::timeString(false, snapPt.uiTime, false),
+      Util::timeString(false, snapPt.uiTime, true).constData(),
+      Util::timeString(false, snapPt.uiTime, false).constData(),
       //qPrintable(dtUTC.toString(Qt::ISODate)),
       (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
       snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );
@@ -290,12 +290,12 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     "   <tesselate>1</tesselate>" KML_NL
     "   <altitudeMode>%s</altitudeMode>" KML_NL
     "   <coordinates>" KML_NL,
-    Util::timeString(false, uiTime),
+    Util::timeString(false, uiTime).constData(),
     this->parent()->gpsrFile().getReadChunksCount(GPSRFile::CHUNK_LOCATIONFIX),
     qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()), qPrintable(App::applicationUrl()),
     m_strLineColor.constData(),
     m_nLineWidth,
-    Util::timeString(false, uiTime),
+    Util::timeString(false, uiTime).constData(),
     (m_bAircraftMode ? "absolute" : "clampToGround") );
 
   // TODO : add a snap with the time to mark the beginning of the track

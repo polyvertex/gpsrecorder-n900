@@ -286,7 +286,7 @@ bool App::setupGpsTime (uint uiGpsTime)
 
     strInfo.sprintf(
       "System time synchronized with GPS and is now %s (offset was %+d seconds).",
-      Util::timeString(false),
+      Util::timeString(false).constData(),
       nTimeDiff);
 
     // TODO : information popup

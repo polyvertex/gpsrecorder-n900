@@ -97,7 +97,7 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
       {
         fprintf((i == 0) ? hLogFile : stderr,
           "%s [%c] %s%s",
-          Util::timeString(),
+          Util::timeString().constData(),
           cLevel,
           (pszMessage ? pszMessage : ""),
           (bHasNewLine ? "" : "\n") );

@@ -111,20 +111,15 @@ QByteArray Util::maemoFindMyDocsDir (void)
 //---------------------------------------------------------------------------
 // timeString
 //---------------------------------------------------------------------------
-const char* Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/, bool bUTC/*=false*/)
+QByteArray Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/, bool bUTC/*=false*/)
 {
-  static char szDateTime[32];
-
   QDateTime dt;
-  QString strFormat;
 
   dt.setTimeSpec(bUTC ? Qt::UTC : Qt::LocalTime);
   dt.setTime_t((uiTime > 0) ? uiTime : time(0));
-  strFormat = bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss";
+  dt.setTimeSpec(bUTC ? Qt::UTC : Qt::LocalTime);
 
-  strcpy((char*)&szDateTime, qPrintable(dt.toString(strFormat)));
-
-  return (char*)&szDateTime;
+  return QByteArray(qPrintable(dt.toString(bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss")));
 }
 
 //---------------------------------------------------------------------------
