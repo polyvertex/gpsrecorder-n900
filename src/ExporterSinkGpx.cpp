@@ -25,8 +25,8 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
 {
   this->connect(
     pParent,
-    SIGNAL(sigSOF(const char*, time_t)),
-    SLOT(onSOF(const char*, time_t)) );
+    SIGNAL(sigSOF(const char*, time_t, qint32)),
+    SLOT(onSOF(const char*, time_t, qint32)) );
   this->connect(
     pParent,
     SIGNAL(sigLocationFix(time_t, const LocationFixContainer&)),
@@ -75,9 +75,9 @@ void ExporterSinkGpx::close (void)
 //---------------------------------------------------------------------------
 // onSOF
 //---------------------------------------------------------------------------
-void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
+void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset)
 {
-  Q_UNUSED(uiTime);
+  Q_UNUSED(iTimeZoneOffset);
 
   Q_ASSERT(pszFilePath);
   Q_ASSERT(pszFilePath[0]);
@@ -95,22 +95,16 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
   }
 
   // write header
-  {
-    QDateTime dt;
-    dt.setTimeSpec(Qt::UTC);
-    dt.setTime_t(uiTime);
-
-    fprintf(m_pFile,
-      "<?xml version=\"1.0\" ?>" GPX_NL
-      "<gpx version=\"1.1\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/1\">" GPX_NL
-      "<metadata>" GPX_NL
-      " <time>%sZ</time>" GPX_NL
-      "</metadata>" GPX_NL
-      "<trk>" GPX_NL
-      "<trkseg>" GPX_NL,
-      qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()),
-      qPrintable(dt.toString(Qt::ISODate)) );
-  }
+  fprintf(m_pFile,
+    "<?xml version=\"1.0\" ?>" GPX_NL
+    "<gpx version=\"1.1\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/1\">" GPX_NL
+    "<metadata>" GPX_NL
+    " <time>%s</time>" GPX_NL
+    "</metadata>" GPX_NL
+    "<trk>" GPX_NL
+    "<trkseg>" GPX_NL,
+    qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()),
+    Util::timeStringIso8601(true, uiTime).constData() );
 }
 
 //---------------------------------------------------------------------------
@@ -118,7 +112,9 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
 //---------------------------------------------------------------------------
 void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& fixCont)
 {
-  Q_UNUSED(uiTime);
+  QByteArray strFixMode;
+  QByteArray strTime;
+  QByteArray strEle;
 
   Q_ASSERT(fixCont.hasFix());
   if (!m_pFile || !fixCont.hasFix())
@@ -126,14 +122,9 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG | FIXFIELD_ALT))
+  if (!fix.hasFields(FIXFIELD_LATLONG))
     return;
 
-  QDateTime dt;
-  dt.setTimeSpec(Qt::UTC);
-  dt.setTime_t(uiTime);
-
-  QByteArray strFixMode;
   switch (fix.cFixMode)
   {
     case FIXMODE_NOFIX :
@@ -151,17 +142,35 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
       break;
   }
 
+  if (fix.hasFields(FIXFIELD_TIME))
+  {
+    strTime.clear();
+    strTime += " <time>";
+    strTime += Util::timeStringIso8601(true, uiTime);
+    strTime += "</time>";
+    strTime += GPX_NL;
+  }
+
+  if (fix.hasFields(FIXFIELD_ALT))
+  {
+    strEle.clear();
+    strEle += " <ele>";
+    strEle += QByteArray::number(fix.iAlt);
+    strEle += "</ele>";
+    strEle += GPX_NL;
+  }
+
   fprintf(m_pFile,
     "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
-    " <time>%sZ</time>" GPX_NL
     "%s"
-    " <ele>%i</ele>" GPX_NL
+    "%s"
+    "%s"
     " <sat>%i</sat>" GPX_NL
     "</trkpt>" GPX_NL,
     fix.getLatDeg(), fix.getLongDeg(),
-    qPrintable(dt.toString(Qt::ISODate)),
+    strTime.constData(),
     strFixMode.constData(),
-    fix.iAlt,
+    strEle.constData(),
     (int)fix.cSatUse );
 }
 
@@ -170,14 +179,8 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 //---------------------------------------------------------------------------
 void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
 {
-  QString   strEle;
-  QString   strName(QString("Snap %1").arg(m_uiSnapCount++));
-  QDateTime dt;
-
-  Q_UNUSED(pSnappedPoint);
-
-  dt.setTimeSpec(Qt::UTC);
-  dt.setTime_t(pSnappedPoint->uiTime);
+  QString strEle;
+  QString strName(QString("Snap %1").arg(m_uiSnapCount++));
 
   if (pSnappedPoint->bHasAlt)
     strEle.sprintf(" <ele>%d</ele>" GPX_NL, pSnappedPoint->iAltM);
@@ -190,12 +193,12 @@ void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoin
 
   fprintf(m_pFile,
     "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
-    " <time>%sZ</time>" GPX_NL
+    " <time>%s</time>" GPX_NL
     "%s"
     " <name>%s</name>" GPX_NL
     "</trkpt>" GPX_NL,
     pSnappedPoint->rLatDeg, pSnappedPoint->rLongDeg,
-    qPrintable(dt.toString(Qt::ISODate)),
+    Util::timeStringIso8601(true, pSnappedPoint->uiTime).constData(),
     qPrintable(strEle),
     qPrintable(strName) );
 }

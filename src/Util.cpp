@@ -57,6 +57,135 @@ QFile::Permissions Util::filePermissions (const char* pszFile)
 
 
 //---------------------------------------------------------------------------
+// timeString
+//---------------------------------------------------------------------------
+QByteArray Util::timeString (bool bUTC/*=false*/, time_t uiTime/*=0*/, int iSecondsOffset/*=0*/)
+{
+  QDateTime dt;
+  int       iAppliedOffset = 0;
+
+  uiTime = Util::timeApplyOffset(iSecondsOffset, (uiTime > 0) ? uiTime : time(0), &iAppliedOffset);
+  if (iSecondsOffset != iAppliedOffset)
+    iSecondsOffset = iAppliedOffset;
+
+  dt.setTimeSpec(bUTC || iSecondsOffset ? Qt::UTC : Qt::LocalTime);
+  dt.setTime_t(uiTime);
+
+  return QByteArray(dt.toString("yyyy-MM-dd hh:mm:ss").toLatin1());
+}
+
+//---------------------------------------------------------------------------
+// timeStringIso8601
+//---------------------------------------------------------------------------
+QByteArray Util::timeStringIso8601 (bool bUTC/*=false*/, time_t uiTime/*=0*/, int iSecondsOffset/*=0*/)
+{
+  QDateTime  dt;
+  QByteArray strDateTime;
+  int        iAppliedOffset = 0;
+
+  uiTime = Util::timeApplyOffset(iSecondsOffset, (uiTime > 0) ? uiTime : time(0), &iAppliedOffset);
+  if (iSecondsOffset != iAppliedOffset)
+    iSecondsOffset = iAppliedOffset;
+
+  dt.setTimeSpec(bUTC || iSecondsOffset ? Qt::UTC : Qt::LocalTime);
+  dt.setTime_t(uiTime);
+
+  strDateTime = dt.toString(Qt::ISODate).toLatin1();
+  if (bUTC && !iSecondsOffset && !strDateTime.endsWith("Z"))
+    strDateTime += 'Z';
+
+  return strDateTime;
+}
+
+//---------------------------------------------------------------------------
+// timeStringForFileName
+//---------------------------------------------------------------------------
+QByteArray Util::timeStringForFileName (time_t uiTime/*=0*/)
+{
+  QDateTime dt;
+
+  dt.setTime_t((uiTime > 0) ? uiTime : time(0));
+  return QByteArray(dt.toString("yyyyMMdd-hhmmss").toLatin1());
+}
+
+//---------------------------------------------------------------------------
+// timeDiff
+//---------------------------------------------------------------------------
+int Util::timeDiff (uint uiOldTime, uint uiNewTime, bool bAbsolute/*=false*/)
+{
+  uint uiDiff = qMax(uiOldTime, uiNewTime) - qMin(uiOldTime, uiNewTime);
+  int  nSign  = !bAbsolute && (uiNewTime < uiOldTime) ? -1 : 1;
+
+  return nSign * int(uiDiff);
+}
+
+//---------------------------------------------------------------------------
+// timeApplyOffset
+//---------------------------------------------------------------------------
+time_t Util::timeApplyOffset (int iSecondsOffset, time_t uiTime/*=0*/, int* piAppliedOffset/*=0*/)
+{
+  if (uiTime <= 0)
+    uiTime = time(0);
+
+  if (!iSecondsOffset)
+  {
+    // nothing to do
+  }
+  else if (iSecondsOffset > 0)
+  {
+    uiTime += (time_t)iSecondsOffset;
+  }
+  else if (iSecondsOffset < 0)
+  {
+    if (time_t(-iSecondsOffset) > uiTime)
+    {
+      Q_ASSERT(0);
+      iSecondsOffset = 0;
+    }
+    else
+    {
+      uiTime -= time_t(-iSecondsOffset);
+    }
+  }
+
+  if (piAppliedOffset)
+    *piAppliedOffset = iSecondsOffset;
+
+  return uiTime;
+}
+
+//---------------------------------------------------------------------------
+// timeSetup
+//---------------------------------------------------------------------------
+bool Util::timeSetup (uint uiNewTime, int* pnTimeDiff)
+{
+  uint uiOldTime = time(0);
+
+  // use nokia's libtime to setup time since settimeofday() requires to be suid
+  if (time_set_time(uiNewTime) != 0)
+  {
+    if (pnTimeDiff)
+      *pnTimeDiff = 0;
+    return false;
+  }
+
+  if (pnTimeDiff)
+    *pnTimeDiff = Util::timeDiff(uiOldTime, uiNewTime);
+
+  return true;
+}
+
+//---------------------------------------------------------------------------
+// timeZoneOffset
+//---------------------------------------------------------------------------
+int Util::timeZoneOffset (void)
+{
+  return -time_get_utc_offset(0); // nokia's libtime
+}
+
+
+
+//---------------------------------------------------------------------------
 // maemoFindHomeDir
 //---------------------------------------------------------------------------
 QByteArray Util::maemoFindHomeDir (void)
@@ -106,50 +235,4 @@ QByteArray Util::maemoFindMyDocsDir (void)
     return strMyDocsDir;
 
   return QByteArray();
-}
-
-//---------------------------------------------------------------------------
-// timeString
-//---------------------------------------------------------------------------
-QByteArray Util::timeString (bool bForFilename/*=false*/, time_t uiTime/*=0*/, bool bUTC/*=false*/)
-{
-  QDateTime dt;
-
-  dt.setTimeSpec(bUTC ? Qt::UTC : Qt::LocalTime);
-  dt.setTime_t((uiTime > 0) ? uiTime : time(0));
-  dt.setTimeSpec(bUTC ? Qt::UTC : Qt::LocalTime);
-
-  return QByteArray(qPrintable(dt.toString(bForFilename ? "yyyyMMdd-hhmmss" : "yyyy-MM-dd hh:mm:ss")));
-}
-
-//---------------------------------------------------------------------------
-// timeDiff
-//---------------------------------------------------------------------------
-int Util::timeDiff (uint uiOldTime, uint uiNewTime, bool bAbsolute/*=false*/)
-{
-  uint uiDiff = qMax(uiOldTime, uiNewTime) - qMin(uiOldTime, uiNewTime);
-  int  nSign  = !bAbsolute && (uiNewTime < uiOldTime) ? -1 : 1;
-
-  return nSign * int(uiDiff);
-}
-
-//---------------------------------------------------------------------------
-// timeSetup
-//---------------------------------------------------------------------------
-bool Util::timeSetup (uint uiNewTime, int* pnTimeDiff)
-{
-  uint uiOldTime = time(0);
-
-  // use nokia's libtime to setup time since settimeofday() requires to be suid
-  if (time_set_time(uiNewTime) != 0)
-  {
-    if (pnTimeDiff)
-      *pnTimeDiff = 0;
-    return false;
-  }
-
-  if (pnTimeDiff)
-    *pnTimeDiff = Util::timeDiff(uiOldTime, uiNewTime);
-
-  return true;
 }

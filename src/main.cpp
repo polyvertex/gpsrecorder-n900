@@ -137,6 +137,8 @@ int main (int nArgc, char** ppszArgv)
   (void)App::outputDir(); // force outputDir to be setup by App now !
   printf("Output directory is %s\n", qPrintable(App::outputDir()));
 
+  fflush(NULL);
+
   strLogStart = Util::timeString();
   qInstallMsgHandler(_logHandler);
 

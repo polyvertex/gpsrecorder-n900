@@ -22,8 +22,8 @@ Exporter::Exporter (void)
     SLOT(onReadError(GPSRFile*, GPSRFile::Error)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadSOF(GPSRFile*, time_t, quint8)),
-    SLOT(onReadSOF(GPSRFile*, time_t, quint8)) );
+    SIGNAL(sigReadSOF(GPSRFile*, time_t, quint8, qint32)),
+    SLOT(onReadSOF(GPSRFile*, time_t, quint8, qint32)) );
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadChunkMessage(GPSRFile*, time_t, const char*, uint)),
@@ -162,13 +162,13 @@ void Exporter::onReadError (GPSRFile* pGPSRFile, GPSRFile::Error eError)
 //---------------------------------------------------------------------------
 // onReadSOF
 //---------------------------------------------------------------------------
-void Exporter::onReadSOF (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion)
+void Exporter::onReadSOF (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset)
 {
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiTime);
   Q_UNUSED(ucFormatVersion);
 
-  emit this->sigSOF(qPrintable(m_strOutputBasePath), uiTime);
+  emit this->sigSOF(qPrintable(m_strOutputBasePath), uiTime, iTimeZoneOffset);
 }
 
 //---------------------------------------------------------------------------

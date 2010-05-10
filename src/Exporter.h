@@ -51,7 +51,7 @@ private :
 
 private slots :
   void onReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
-  void onReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion);
+  void onReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset);
   void onReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
   void onReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void onReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
@@ -62,7 +62,7 @@ private slots :
 
 
 signals :
-  void sigSOF          (const char* pszFilePath, time_t uiTime);
+  void sigSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
   void sigLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
   void sigSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
   void sigEOF          (void);

@@ -100,12 +100,13 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
     m_Swap.reserve(sizeof(*pHeader) +1);
     pHeader = (Header*)m_Swap.data();
 
-    pHeader->aucMagic[0] = 'G';
-    pHeader->aucMagic[1] = 'P';
-    pHeader->aucMagic[2] = 'S';
-    pHeader->aucMagic[3] = 'R';
-    pHeader->ucFormat    = FORMAT_VERSION;
-    pHeader->uiTime      = time(0);
+    pHeader->aucMagic[0]     = 'G';
+    pHeader->aucMagic[1]     = 'P';
+    pHeader->aucMagic[2]     = 'S';
+    pHeader->aucMagic[3]     = 'R';
+    pHeader->ucFormat        = FORMAT_VERSION;
+    pHeader->uiTime          = time(0);
+    pHeader->iTimeZoneOffset = Util::timeZoneOffset();
 
     this->writeData((char*)pHeader, sizeof(*pHeader));
   }
@@ -380,7 +381,7 @@ bool GPSRFile::seekFirst (void)
   }
 
   if (!m_bDiscoveryRead)
-    emit sigReadSOF(this, pHeader->uiTime, pHeader->ucFormat);
+    emit sigReadSOF(this, pHeader->uiTime, pHeader->ucFormat, pHeader->iTimeZoneOffset);
 
   return true;
 }

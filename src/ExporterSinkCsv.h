@@ -35,7 +35,7 @@ public :
 
 
 public slots :
-  void onSOF         (const char* pszFilePath, time_t uiTime);
+  void onSOF         (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
   void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
   void onEOF         (void);
 

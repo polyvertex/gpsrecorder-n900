@@ -15,6 +15,8 @@
 //---------------------------------------------------------------------------
 #define KML_NL  "\r\n"
 
+//#define KML_TIMESPAN
+
 
 
 //---------------------------------------------------------------------------
@@ -25,8 +27,8 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
 {
   this->connect(
     pParent,
-    SIGNAL(sigSOF(const char*, time_t)),
-    SLOT(onSOF(const char*, time_t)) );
+    SIGNAL(sigSOF(const char*, time_t, qint32)),
+    SLOT(onSOF(const char*, time_t, qint32)) );
   this->connect(
     pParent,
     SIGNAL(sigLocationFix(time_t, const LocationFixContainer&)),
@@ -49,9 +51,6 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     m_nLineWidth    = settings.getKmlLineWidth();
     m_bAircraftMode = settings.getKmlAircraftMode();
   }
-
-  //m_dtBegin.setTimeSpec(Qt::UTC);
-  //m_dtEnd.setTimeSpec(Qt::UTC);
 }
 
 //---------------------------------------------------------------------------
@@ -92,18 +91,20 @@ void ExporterSinkKml::writeEOF (void)
     "  </coordinates>" KML_NL
     " </LineString>" KML_NL,
     m_pFile);
-  //if (m_dtBegin.isValid() && m_dtEnd.isValid() && m_dtEnd > m_dtBegin)
-  //{
-  //  fprintf(m_pFile,
-  //    " <TimeSpan>" KML_NL
-  //    "  <begin>%sZ</begin>" KML_NL
-  //    "  <end>%sZ</end>" KML_NL
-  //    " </TimeSpan>" KML_NL,
-  //    qPrintable(m_dtBegin.toString(Qt::ISODate)),
-  //    qPrintable(m_dtEnd.toString(Qt::ISODate)) );
-  //}
-  //m_dtBegin = QDateTime();
-  //m_dtEnd   = QDateTime();
+#ifdef KML_TIMESPAN
+  if (m_uiTimeBegin && m_uiTimeEnd && m_uiTimeEnd > m_uiTimeBegin)
+  {
+    fprintf(m_pFile,
+      " <TimeSpan>" KML_NL
+      "  <begin>%s</begin>" KML_NL
+      "  <end>%s</end>" KML_NL
+      " </TimeSpan>" KML_NL,
+      Util::timeStringIso8601(false, m_uiTimeBegin, m_iTimeZoneOffset).constData(),
+      Util::timeStringIso8601(false, m_uiTimeEnd, m_iTimeZoneOffset).constData() );
+  }
+#endif
+  m_uiTimeBegin = 0;
+  m_uiTimeEnd   = 0;
   fputs("</Placemark>" KML_NL, m_pFile);
 
   // snap the beginning of the track
@@ -114,7 +115,7 @@ void ExporterSinkKml::writeEOF (void)
       "<Placemark>" KML_NL
       " <name>Track Begin</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[%s (UTC)<br />" KML_NL
+      "  <![CDATA[Time : %s<br />" KML_NL
       "]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
@@ -125,7 +126,7 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, true).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, m_iTimeZoneOffset).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
@@ -140,7 +141,7 @@ void ExporterSinkKml::writeEOF (void)
       "<Placemark>" KML_NL
       " <name>Track End</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[%s (UTC)<br />" KML_NL
+      "  <![CDATA[Time : %s<br />" KML_NL
       "]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
@@ -151,7 +152,7 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
-      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, true).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, m_iTimeZoneOffset).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
@@ -163,7 +164,6 @@ void ExporterSinkKml::writeEOF (void)
   {
     const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
     QString   strName(QString("Snap %1").arg(i + 1));
-    //QDateTime dtUTC;
 
     if (!snapPt.strPointName.isEmpty())
     {
@@ -171,20 +171,19 @@ void ExporterSinkKml::writeEOF (void)
       strName += snapPt.strPointName;
     }
 
-    //dtUTC.setTimeSpec(Qt::UTC);
-    //dtUTC.setTime_t(snapPt.uiTime);
-
     fprintf(m_pFile,
       "<Placemark>" KML_NL
       " <name>%s</name>" KML_NL
       " <description>" KML_NL
-      "  <![CDATA[%s (UTC)<br />" KML_NL
+      "  <![CDATA[Time : %s<br />" KML_NL
       "]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
-    //" <TimeStamp>" KML_NL
-    //"  <when>%sZ</when>" KML_NL
-    //" </TimeStamp>" KML_NL
+#ifdef KML_TIMESPAN
+      " <TimeStamp>" KML_NL
+      "  <when>%s</when>" KML_NL
+      " </TimeStamp>" KML_NL
+#endif
       " <Point>" KML_NL
       "  <extrude>1</extrude>" KML_NL
       "  <altitudeMode>%s</altitudeMode>" KML_NL
@@ -192,8 +191,10 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       qPrintable(strName),
-      Util::timeString(false, snapPt.uiTime, true).constData(),
-      //qPrintable(dtUTC.toString(Qt::ISODate)),
+      Util::timeString(false, snapPt.uiTime, m_iTimeZoneOffset).constData(),
+#ifdef KML_TIMESPAN
+      Util::timeString(false, snapPt.uiTime, m_iTimeZoneOffset).constData(),
+#endif
       (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
       snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );
   }
@@ -220,6 +221,9 @@ void ExporterSinkKml::close (void)
     strFilePathBak = m_strFilePath;
   }
 
+  m_iTimeZoneOffset = 0;
+  m_uiTimeBegin     = 0;
+  m_uiTimeEnd       = 0;
   m_FixContBegin.reset();
   m_FixContEnd.reset();
   m_vecSnappedPoints.clear();
@@ -238,7 +242,7 @@ void ExporterSinkKml::close (void)
 //---------------------------------------------------------------------------
 // onSOF
 //---------------------------------------------------------------------------
-void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
+void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset)
 {
   Q_ASSERT(pszFilePath);
   Q_ASSERT(pszFilePath[0]);
@@ -247,6 +251,8 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
   m_strFilePath  = pszFilePath;
   m_strFilePath += '.';
   m_strFilePath += this->extension();
+
+  m_iTimeZoneOffset = iTimeZoneOffset;
 
   m_pFile = fopen(qPrintable(m_strFilePath), "wb");
   if (!m_pFile)
@@ -298,15 +304,13 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     "   <tesselate>1</tesselate>" KML_NL
     "   <altitudeMode>%s</altitudeMode>" KML_NL
     "   <coordinates>" KML_NL,
-    Util::timeString(false, uiTime).constData(),
+    Util::timeString(false, uiTime, m_iTimeZoneOffset).constData(),
     this->parent()->gpsrFile().getReadChunksCount(GPSRFile::CHUNK_LOCATIONFIX),
     qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()), qPrintable(App::applicationUrl()),
     m_strLineColor.constData(),
     m_nLineWidth,
-    Util::timeString(false, uiTime).constData(),
+    Util::timeString(false, uiTime, m_iTimeZoneOffset).constData(),
     (m_bAircraftMode ? "absolute" : "clampToGround") );
-
-  // TODO : add a snap with the time to mark the beginning of the track
 }
 
 //---------------------------------------------------------------------------
@@ -322,12 +326,14 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  //if (fix.hasFields(FIXFIELD_TIME))
-  //{
-  //  if (!m_dtBegin.isValid())
-  //    m_dtBegin.setTime_t(fix.uiTime);
-  //  m_dtEnd.setTime_t(fix.uiTime);
-  //}
+#ifdef KML_TIMESPAN
+  if (fix.hasFields(FIXFIELD_TIME))
+  {
+    if (!m_uiTimeBegin)
+      m_uiTimeBegin = fix.uiTime;
+    m_uiTimeEnd = fix.uiTime;
+  }
+#endif
 
   if (!fix.hasFields(FIXFIELD_LATLONG))
     return;
@@ -348,7 +354,7 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 //---------------------------------------------------------------------------
 void ExporterSinkKml::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
 {
-  //m_dtEnd.setTime_t(pSnappedPoint->uiTime);
+  m_uiTimeEnd = pSnappedPoint->uiTime;
   m_vecSnappedPoints.append(*pSnappedPoint);
 }
 

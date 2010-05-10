@@ -20,8 +20,8 @@ ExporterSinkCsv::ExporterSinkCsv (Exporter* pParent)
 
   this->connect(
     pParent,
-    SIGNAL(sigSOF(const char*, time_t)),
-    SLOT(onSOF(const char*, time_t)) );
+    SIGNAL(sigSOF(const char*, time_t, qint32)),
+    SLOT(onSOF(const char*, time_t, qint32)) );
   this->connect(
     pParent,
     SIGNAL(sigLocationFix(time_t, const LocationFixContainer&)),
@@ -71,9 +71,10 @@ int ExporterSinkCsv::separatorIndex (char cSep)
 //---------------------------------------------------------------------------
 // onSOF
 //---------------------------------------------------------------------------
-void ExporterSinkCsv::onSOF (const char* pszFilePath, time_t uiTime)
+void ExporterSinkCsv::onSOF (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset)
 {
   Q_UNUSED(uiTime);
+  Q_UNUSED(iTimeZoneOffset);
 
   Q_ASSERT(pszFilePath);
   Q_ASSERT(pszFilePath[0]);

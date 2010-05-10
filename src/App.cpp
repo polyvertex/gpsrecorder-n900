@@ -179,7 +179,7 @@ void App::setState (App::State eNewState)
 
     strPath  = App::outputDir().toAscii();
     strPath += "/gpstrack-";
-    strPath += Util::timeString(true);
+    strPath += Util::timeStringForFileName();
     if (!strTrackName.isEmpty())
     {
       strPath += '-';
@@ -286,7 +286,7 @@ bool App::setupGpsTime (uint uiGpsTime)
 
     strInfo.sprintf(
       "System time synchronized with GPS and is now %s (offset was %+d seconds).",
-      Util::timeString(false).constData(),
+      Util::timeString().constData(),
       nTimeDiff);
 
     // TODO : information popup

@@ -15,6 +15,12 @@
 
 //---------------------------------------------------------------------------
 // GPSRFile
+//
+// Format V0 :
+// * Initial version.
+//
+// Format V1 :
+// * Appended iTimeZoneOffset field to the Header structure.
 //---------------------------------------------------------------------------
 class GPSRFile : public QObject
 {
@@ -23,7 +29,9 @@ class GPSRFile : public QObject
 public :
   enum
   {
-    FORMAT_VERSION = 0x00,
+    FORMAT_VERSION_V0 = 0x00,
+    FORMAT_VERSION_V1 = 0x01,
+    FORMAT_VERSION    = FORMAT_VERSION_V1, // current format version
 
     CHUNK_MESSAGE          = 10, // asciiz message (usually a log message)
     CHUNK_LOCATIONFIX      = 20, // LocationFix structure (only its storage zone)
@@ -43,9 +51,10 @@ public :
 
   struct Header
   {
-    quint8  aucMagic[4]; // 'G','P','S','R'
-    quint8  ucFormat;    // format version
-    quint32 uiTime;      // start time (posix timestamp, utc)
+    quint8  aucMagic[4];     // 'G','P','S','R'
+    quint8  ucFormat;        // format version
+    quint32 uiTime;          // start time (posix timestamp, utc)
+    qint32  iTimeZoneOffset; // (v1+) time zone offset in seconds
   }
   __attribute__((packed));
 
@@ -104,7 +113,7 @@ public :
 
 signals :
   void sigReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
-  void sigReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion);
+  void sigReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset);
   void sigReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
   void sigReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void sigReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);

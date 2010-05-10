@@ -34,7 +34,7 @@ public :
 
 
 public slots :
-  virtual void onSOF          (const char* pszFilePath, time_t uiTime) = 0;
+  virtual void onSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset) = 0;
   virtual void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont) = 0;
   virtual void onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint) { }
   virtual void onEOF          (void) = 0;

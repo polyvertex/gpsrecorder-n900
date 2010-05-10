@@ -46,7 +46,7 @@ private :
 
 
 public slots :
-  void onSOF          (const char* pszFilePath, time_t uiTime);
+  void onSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
   void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
   void onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
   void onEOF          (void);
@@ -60,10 +60,11 @@ private :
   bool       m_bAircraftMode;
 
   // runtime
+  int                  m_iTimeZoneOffset;
+  time_t               m_uiTimeBegin;
+  time_t               m_uiTimeEnd;
   LocationFixContainer m_FixContBegin;
   LocationFixContainer m_FixContEnd;
-  //QDateTime m_dtBegin;
-  //QDateTime m_dtEnd;
   QVector<Exporter::SnappedPoint> m_vecSnappedPoints;
 };
 
