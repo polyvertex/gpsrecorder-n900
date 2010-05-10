@@ -96,8 +96,8 @@ void ExporterSinkKml::writeEOF (void)
   //{
   //  fprintf(m_pFile,
   //    " <TimeSpan>" KML_NL
-  //    "  <begin>%s</begin>" KML_NL
-  //    "  <end>%s</end>" KML_NL
+  //    "  <begin>%sZ</begin>" KML_NL
+  //    "  <end>%sZ</end>" KML_NL
   //    " </TimeSpan>" KML_NL,
   //    qPrintable(m_dtBegin.toString(Qt::ISODate)),
   //    qPrintable(m_dtEnd.toString(Qt::ISODate)) );
@@ -153,8 +153,7 @@ void ExporterSinkKml::writeEOF (void)
   {
     const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
     QString   strName(QString("Snap #%1").arg(i + 1));
-    QDateTime dtUTC;
-    QDateTime dtLocal;
+    //QDateTime dtUTC;
 
     if (!snapPt.strPointName.isEmpty())
     {
@@ -162,10 +161,8 @@ void ExporterSinkKml::writeEOF (void)
       strName += snapPt.strPointName;
     }
 
-    dtUTC.setTimeSpec(Qt::UTC);
-    dtUTC.setTime_t(snapPt.uiTime);
-    dtLocal.setTimeSpec(Qt::LocalTime);
-    dtLocal.setTime_t(snapPt.uiTime);
+    //dtUTC.setTimeSpec(Qt::UTC);
+    //dtUTC.setTime_t(snapPt.uiTime);
 
     fprintf(m_pFile,
       "<Placemark>" KML_NL
@@ -177,7 +174,7 @@ void ExporterSinkKml::writeEOF (void)
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
     //" <TimeStamp>" KML_NL
-    //"  <when>%s</when>" KML_NL
+    //"  <when>%sZ</when>" KML_NL
     //" </TimeStamp>" KML_NL
       " <Point>" KML_NL
       "  <extrude>1</extrude>" KML_NL
@@ -186,8 +183,8 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       qPrintable(strName),
-      qPrintable(dtUTC.toString(Qt::ISODate)),
-      qPrintable(dtLocal.toString(Qt::ISODate)),
+      Util::timeString(false, snapPt.uiTime, true),
+      Util::timeString(false, snapPt.uiTime, false),
       //qPrintable(dtUTC.toString(Qt::ISODate)),
       (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
       snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );

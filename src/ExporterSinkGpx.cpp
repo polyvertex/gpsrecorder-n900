@@ -104,7 +104,7 @@ void ExporterSinkGpx::onSOF (const char* pszFilePath, time_t uiTime)
       "<?xml version=\"1.0\" ?>" GPX_NL
       "<gpx version=\"1.1\" creator=\"%s v%s\" xmlns=\"http://www.topografix.com/GPX/1/1\">" GPX_NL
       "<metadata>" GPX_NL
-      " <time>%s</time>" GPX_NL
+      " <time>%sZ</time>" GPX_NL
       "</metadata>" GPX_NL
       "<trk>" GPX_NL
       "<trkseg>" GPX_NL,
@@ -153,7 +153,7 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   fprintf(m_pFile,
     "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
-    " <time>%s</time>" GPX_NL
+    " <time>%sZ</time>" GPX_NL
     "%s"
     " <ele>%i</ele>" GPX_NL
     " <sat>%i</sat>" GPX_NL
@@ -190,7 +190,7 @@ void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoin
 
   fprintf(m_pFile,
     "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
-    " <time>%s</time>" GPX_NL
+    " <time>%sZ</time>" GPX_NL
     "%s"
     " <name>%s</name>" GPX_NL
     "</trkpt>" GPX_NL,
