@@ -152,8 +152,9 @@ void ExporterSinkKml::writeEOF (void)
   for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
   {
     const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
-    QString strName(QString("Snap #%1").arg(i + 1));
-    //QDateTime dt;
+    QString   strName(QString("Snap #%1").arg(i + 1));
+    QDateTime dtUTC;
+    QDateTime dtLocal;
 
     if (!snapPt.strPointName.isEmpty())
     {
@@ -161,12 +162,18 @@ void ExporterSinkKml::writeEOF (void)
       strName += snapPt.strPointName;
     }
 
-    //dt.setTimeSpec(Qt::UTC);
-    //dt.setTime_t(snapPt.uiTime);
+    dtUTC.setTimeSpec(Qt::UTC);
+    dtUTC.setTime_t(snapPt.uiTime);
+    dtLocal.setTimeSpec(Qt::LocalTime);
+    dtLocal.setTime_t(snapPt.uiTime);
 
     fprintf(m_pFile,
       "<Placemark>" KML_NL
       " <name>%s</name>" KML_NL
+      " <description>" KML_NL
+      "  <![CDATA[UTC Time : %s<br />" KML_NL
+      "Local Time : %s" KML_NL
+      "  ]]>" KML_NL
       " <visibility>1</visibility>" KML_NL
     //" <TimeStamp>" KML_NL
     //"  <when>%s</when>" KML_NL
@@ -178,7 +185,9 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       qPrintable(strName),
-      //qPrintable(dt.toString(Qt::ISODate)),
+      qPrintable(dtUTC.toString(Qt::ISODate)),
+      qPrintable(dtLocal.toString(Qt::ISODate)),
+      //qPrintable(dtUTC.toString(Qt::ISODate)),
       (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
       snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );
   }
@@ -275,7 +284,7 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     "  </LineStyle>" KML_NL
     " </Style>" KML_NL
     " <Placemark>" KML_NL
-    "  <name>Track</name>" KML_NL
+    "  <name>Track %s</name>" KML_NL
     "  <visibility>1</visibility>" KML_NL
     "  <styleUrl>#track-line</styleUrl>" KML_NL
     "  <LineString>" KML_NL
@@ -288,6 +297,7 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     qPrintable(App::applicationLabel()), qPrintable(QCoreApplication::applicationVersion()), qPrintable(App::applicationUrl()),
     m_strLineColor.constData(),
     m_nLineWidth,
+    Util::timeString(false, uiTime),
     (m_bAircraftMode ? "absolute" : "clampToGround") );
 
   // TODO : add a snap with the time to mark the beginning of the track
