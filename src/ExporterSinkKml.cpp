@@ -113,6 +113,10 @@ void ExporterSinkKml::writeEOF (void)
     fprintf(m_pFile,
       "<Placemark>" KML_NL
       " <name>Track Begin</name>" KML_NL
+      " <description>" KML_NL
+      "  <![CDATA[UTC Time : %s<br />" KML_NL
+      "Local Time : %s" KML_NL
+      "]]>" KML_NL
       " <visibility>1</visibility>" KML_NL
       " <styleUrl>#track-begin</styleUrl>" KML_NL
       " <Point>" KML_NL
@@ -121,6 +125,8 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, true).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, false).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
@@ -134,6 +140,10 @@ void ExporterSinkKml::writeEOF (void)
     fprintf(m_pFile,
       "<Placemark>" KML_NL
       " <name>Track End</name>" KML_NL
+      " <description>" KML_NL
+      "  <![CDATA[UTC Time : %s<br />" KML_NL
+      "Local Time : %s" KML_NL
+      "]]>" KML_NL
       " <visibility>1</visibility>" KML_NL
       " <styleUrl>#track-end</styleUrl>" KML_NL
       " <Point>" KML_NL
@@ -142,6 +152,8 @@ void ExporterSinkKml::writeEOF (void)
       "  <coordinates>%.6lf,%.6lf,%d</coordinates>" KML_NL
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, true).constData() : "?"),
+      (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, snapPt.uiTime, false).constData() : "?"),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
