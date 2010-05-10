@@ -180,10 +180,7 @@ void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoin
   dt.setTime_t(pSnappedPoint->uiTime);
 
   if (pSnappedPoint->bHasAlt)
-  {
-    strEle = " <ele>%1</ele>" GPX_NL;
-    strEle.arg(pSnappedPoint->iAltM);
-  }
+    strEle.sprintf(" <ele>%d</ele>" GPX_NL, pSnappedPoint->iAltM);
 
   if (!pSnappedPoint->strPointName.isEmpty())
   {

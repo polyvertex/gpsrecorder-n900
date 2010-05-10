@@ -173,7 +173,8 @@ void ExporterSinkKml::writeEOF (void)
       " <description>" KML_NL
       "  <![CDATA[UTC Time : %s<br />" KML_NL
       "Local Time : %s" KML_NL
-      "  ]]>" KML_NL
+      "]]>" KML_NL
+      " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
     //" <TimeStamp>" KML_NL
     //"  <when>%s</when>" KML_NL
@@ -259,7 +260,7 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime)
     "  <![CDATA[%d points.<br />" KML_NL
     "<br />" KML_NL
     "KML file created by %s v%s. Please visit %s for more info." KML_NL
-    "  ]]>" KML_NL
+    "]]>" KML_NL
     " </description>" KML_NL
     " <visibility>1</visibility>" KML_NL
     " <open>1</open>" KML_NL
