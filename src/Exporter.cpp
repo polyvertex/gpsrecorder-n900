@@ -16,6 +16,8 @@
 Exporter::Exporter (void)
 : QObject(0)
 {
+  this->clear();
+
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadError(GPSRFile*, GPSRFile::Error)),

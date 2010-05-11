@@ -21,9 +21,10 @@ GPSRFile::GPSRFile (void)
 {
   m_pFile = 0;
 
-  m_bWriting = false;
-  m_bError   = false;
-  m_bEOF     = false;
+  m_bWriting    = false;
+  m_bError      = false;
+  m_bEOF        = false;
+  m_bIncomplete = false;
 
   m_bDiscoveryRead = false;
   m_nReadIndex     = -1;
@@ -54,9 +55,10 @@ void GPSRFile::close (void)
 
   m_strFilePath.clear();
 
-  m_bWriting = false;
-  m_bError   = false;
-  m_bEOF     = false;
+  m_bWriting    = false;
+  m_bError      = false;
+  m_bEOF        = false;
+  m_bIncomplete = false;
 
   m_bDiscoveryRead = false;
   m_nReadIndex     = -1;
@@ -136,6 +138,7 @@ bool GPSRFile::openRead (const char* pszFile)
     qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
+  qDebug("Opened  GPSR file %s.", pszFile);
 
   // setup members
   m_strFilePath = pszFile;
@@ -161,8 +164,6 @@ bool GPSRFile::openRead (const char* pszFile)
 
     m_bDiscoveryRead = false;
   }
-
-  qDebug("Opened  GPSR file %s (%d chunks).", pszFile, m_vecReadChunks.count());
 
   return this->seekFirst();
 }
@@ -359,7 +360,7 @@ bool GPSRFile::seekFirst (void)
   pHeader = (Header*)m_Swap.data();
 
   // read file header
-  if (!readSize((char*)pHeader, sizeof(*pHeader), &m_bEOF))
+  if (!this->readSize((char*)pHeader, sizeof(*pHeader), true, &m_bEOF))
     return false;
 
   // validate header
@@ -448,6 +449,8 @@ bool GPSRFile::readChunk (int nChunkIndex)
       if (!m_bEOF && nChunkIndex >= m_vecReadChunks.count())
       {
         m_bEOF = true;
+        if (m_bIncomplete)
+          this->signalReadError(ERROR_TRUNCATED);
         emit sigReadEOF(this);
       }
       return false;
@@ -464,7 +467,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
   }
 
   // read chunk header
-  if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), &m_bEOF))
+  if (!this->readSize((char*)&chunkHeader, sizeof(chunkHeader), false, &m_bEOF))
     return false;
   if (chunkHeader.ucMagic != '@')
   {
@@ -478,7 +481,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
   // read chunk data if needed
   if (chunkHeader.uiSize > sizeof(chunkHeader))
   {
-    if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), &m_bEOF))
+    if (!this->readSize((char*)pChunk + sizeof(chunkHeader), pChunk->uiSize - sizeof(chunkHeader), false, &m_bEOF))
       return false;
   }
 
@@ -583,7 +586,7 @@ void GPSRFile::writeData (const char* pData, uint uiSize)
 //---------------------------------------------------------------------------
 // readSize
 //---------------------------------------------------------------------------
-bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
+bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF)
 {
   uint uiRead = 0;
   uint uiRes;
@@ -621,7 +624,19 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool* pbGotEOF)
         }
         else
         {
-          this->signalReadError(ERROR_TRUNCATED);
+          m_bIncomplete = true;
+          qWarning("Incomplete GPSR file %s !", m_strFilePath.constData());
+
+          if (bIsFileHeader)
+          {
+            // we should never get here in non-discovery mode since the
+            // purpose of the discovery mode is to have a first reading pass
+            // to count available and complete chunks from the file.
+            // thus, readChunk() will never try to read a chunk with an
+            // index greater or equal than count of discovered chunks.
+            Q_ASSERT(m_bDiscoveryRead == true);
+            this->signalReadError(ERROR_TRUNCATED);
+          }
         }
 
         return false;

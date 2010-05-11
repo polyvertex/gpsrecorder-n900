@@ -46,7 +46,7 @@ public :
     ERROR_READ           = 2, // system error occurred while reading file
     ERROR_FORMAT         = 3, // file or chunk header does not match
     ERROR_FORMAT_VERSION = 4, // format version does not match
-    ERROR_TRUNCATED      = 5, // file is not complete
+    ERROR_TRUNCATED      = 5, // file is incomplete
   };
 
   struct Header
@@ -105,6 +105,7 @@ public :
 
   // read mode properties
   bool                          isReadDiscovery    (void) const { return m_bDiscoveryRead; }
+  bool                          isIncomplete       (void) const { return m_bIncomplete; }
   int                           getReadChunkIndex  (void) const { return m_nReadIndex; }
   int                           getReadChunksCount (void) const { return m_vecReadChunks.count(); }
   int                           getReadChunksCount (quint16 uiChunkId) const;
@@ -126,7 +127,7 @@ signals :
 private :
   uint maxChunkDataSize (void) const { return sizeof(m_Swap) - sizeof(Chunk); }
   void writeData        (const char* pData, uint uiSize);
-  bool readSize         (char* pOutData, uint uiExpectedSize, bool* pbGotEOF);
+  bool readSize         (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
   void signalReadError  (Error eError);
 
 
@@ -135,7 +136,8 @@ private :
   QByteArray m_strFilePath;
   bool       m_bWriting;
   bool       m_bError;
-  bool       m_bEOF; // only used in 'read' mode
+  bool       m_bEOF;        // only used in 'read' mode
+  bool       m_bIncomplete; // only used in 'read' mode
   QByteArray m_Swap;
 
   // 'read' mode state

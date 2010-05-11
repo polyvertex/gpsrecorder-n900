@@ -40,7 +40,8 @@ public :
   uint exportFiles (const QStringList& filesList);
   uint exportDir   (const QString& strDirectory, const QString& strSuffix=".gpsr");
 
-  GPSRFile& gpsrFile (void) { return m_GPSRFile; }
+  GPSRFile& gpsrFile         (void) { return m_GPSRFile; }
+  bool      isIncompleteFile (void) const { return m_GPSRFile.isIncomplete(); }
 
 
 private :

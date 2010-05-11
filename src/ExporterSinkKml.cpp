@@ -137,12 +137,21 @@ void ExporterSinkKml::writeEOF (void)
   if (m_FixContEnd.hasFix())
   {
     const LocationFix& fix = *m_FixContEnd.getFix();
+    QByteArray strMessage;
+
+    if (this->parent()->isIncompleteFile())
+    {
+      strMessage  = "<strong>";
+      strMessage += QT_TR_NOOP("WARNING : Source file was incomplete !");
+      strMessage += "</strong><br />" KML_NL;
+    }
+
     fprintf(m_pFile,
       "<Placemark>" KML_NL
       " <name>Track End</name>" KML_NL
       " <description>" KML_NL
       "  <![CDATA[Time : %s<br />" KML_NL
-      "]]>" KML_NL
+      "%s]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
       " <styleUrl>#track-end</styleUrl>" KML_NL
@@ -153,6 +162,7 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       (fix.hasFields(FIXFIELD_TIME) ? Util::timeString(false, fix.uiTime, m_iTimeZoneOffset).constData() : "?"),
+      strMessage.constData(),
       (m_bAircraftMode ? "absolute" : "clampToGround"),
       fix.getLongDeg(),
       fix.getLatDeg(),
