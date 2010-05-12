@@ -110,12 +110,12 @@ void ExporterSinkCsv::onLocationFix (time_t uiTime, const LocationFixContainer& 
 
   const LocationFix& fix = *fixCont.getFix();
 
-  if (!fix.hasFields(FIXFIELD_TIME | FIXFIELD_LATLONG))
+  if (!fix.hasFields(FIXFIELD_LATLONG))
     return;
 
   fprintf(m_pFile,
     "%u%c" "%.6lf%c" "%.6lf%c" "%i%c" "%.2lf%c" "%.2lf\n",
-    fix.uiTime, m_cSeparator,
+    (fix.hasFields(FIXFIELD_TIME) ? fix.uiTime : 0), m_cSeparator,
     fix.getLatDeg(), m_cSeparator,
     fix.getLongDeg(), m_cSeparator,
     (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0), m_cSeparator,
