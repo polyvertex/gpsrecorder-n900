@@ -341,7 +341,7 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   // setup system time if needed
   if (!m_GPSRFile.isOpen() &&
       pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
-      pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep() &&
+      pFixCont->getFix()->uiTimeEP == 0 && // <= m_Settings.getLogStep() &&
       Util::timeDiff(time(0), pFixCont->getFix()->uiTime, true) >= m_Settings.getLogStep())
   {
     this->setupGpsTime(pFixCont->getFix()->uiTime);
