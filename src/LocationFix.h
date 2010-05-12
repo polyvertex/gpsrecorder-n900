@@ -103,15 +103,15 @@ struct LocationFix
 
   bool hasFields (fxuint16 wWantedFields) const { return (wFixFields & wWantedFields) != 0; }
 
-  double getLatDeg     (void) const { return double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG); }
-  double getLongDeg    (void) const { return double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG); }
-  double getHorizEpM   (void) const { return double(uiHorizEP) / 100.0; }
-  double getTrackDeg   (void) const { return double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK); }
-  double getTrackEpDeg (void) const { return double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK); }
-  double getSpeedKmh   (void) const { return double(uiSpeed)   / double(LOCFIX_MULTIPLIER_SPEED); }
-  double getSpeedKmhEp (void) const { return double(uiSpeedEP) / double(LOCFIX_MULTIPLIER_SPEED); }
-  double getClimbM     (void) const { return double(iClimb)    / double(LOCFIX_MULTIPLIER_CLIMB); }
-  double getClimbMEp   (void) const { return double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB); }
+  double getLatDeg     (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
+  double getLongDeg    (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
+  double getHorizEpM   (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(uiHorizEP) / 100.0) : NAN; }
+  double getTrackDeg   (void) const { return this->hasFields(FIXFIELD_TRACK)   ? (double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
+  double getTrackEpDeg (void) const { return this->hasFields(FIXFIELD_TRACK)   ? (double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
+  double getSpeedKmh   (void) const { return this->hasFields(FIXFIELD_SPEED)   ? (double(uiSpeed)   / double(LOCFIX_MULTIPLIER_SPEED)) : NAN; }
+  double getSpeedKmhEp (void) const { return this->hasFields(FIXFIELD_SPEED)   ? (double(uiSpeedEP) / double(LOCFIX_MULTIPLIER_SPEED)) : NAN; }
+  double getClimbM     (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(iClimb)    / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
+  double getClimbMEp   (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
 
   // gps fix info
   fxuint8  cFixMode;   // one of the FIXMODE_* values
