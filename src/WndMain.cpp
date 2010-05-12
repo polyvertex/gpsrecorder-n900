@@ -18,8 +18,12 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 {
   Q_ASSERT(App::instance());
   Q_ASSERT(App::instance()->location());
+  Q_ASSERT(App::instance()->wndSat());
 
   this->setWindowTitle(App::applicationLabel());
+#if QT_VERSION > 0x040503
+  this->setAttribute(Qt::WA_Maemo5StackedWindow);
+#endif
 
   {
     this->menuBar()->clear();
@@ -27,6 +31,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
     m_pMenuConfig    = this->menuBar()->addAction(tr("Config"), this, SLOT(onPushedConfig()));
     m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
+    m_pMenuSat       = this->menuBar()->addAction(tr("Satellites"), this, SLOT(onPushedSat()));
 
     m_pMenuSnap->setEnabled(false);
   }
@@ -216,6 +221,13 @@ void WndMain::onPushedConvert (void)
     this->clearFixFields();
 }
 
+//---------------------------------------------------------------------------
+// onPushedSat
+//---------------------------------------------------------------------------
+void WndMain::onPushedSat (void)
+{
+  App::instance()->wndSat()->show();
+}
 
 
 

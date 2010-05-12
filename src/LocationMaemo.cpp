@@ -327,7 +327,7 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
     {
       for (quint8 cIdx = 0; cIdx < pFix->cSatCount; ++cIdx)
       {
-        LocationFixSat* pFixSat = &pFix->pFixSat[cIdx];
+        LocationFixSat* pFixSat = &pFix->aFixSat[cIdx];
         LocationGPSDeviceSatellite* pDevSat = (LocationGPSDeviceSatellite*)g_ptr_array_index(gpsdev.satellites, (uint)cIdx);
 
         pFixSat->bInUse          = pDevSat->in_use ? 1 : 0;

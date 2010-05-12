@@ -113,6 +113,8 @@ struct LocationFix
   double getClimbM     (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(iClimb)    / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
   double getClimbMEp   (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
 
+  const LocationFixSat* getSat (fxuint8 cSatIndex) const;
+
   // gps fix info
   fxuint8  cFixMode;   // one of the FIXMODE_* values
   fxuint16 wFixFields; // one or several FIXFIELD_* flags
@@ -139,7 +141,7 @@ struct LocationFix
   fxuint8 cSatUse;   // number of satellites actually used to calculate this fix
 
   // ... satellites (cSatCount * LocationFixSat)
-  LocationFixSat pFixSat[0];
+  LocationFixSat aFixSat[0];
 }
 __attribute__((packed));
 

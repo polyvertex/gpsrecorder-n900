@@ -51,10 +51,15 @@ App::App (int& nArgc, char** ppszArgv)
   // apply stored settings
   this->onSettingsWritten();
 
-  // show up main window
-  // everything must be initialized before creating the main window !
+  // create main window
   m_pWndMain = new WndMain();
   Q_CHECK_PTR(m_pWndMain);
+
+  // create satellites window
+  m_pWndSat = new WndSat(m_pWndMain);
+  Q_CHECK_PTR(m_pWndSat);
+
+  // show up main window
   m_pWndMain->show();
 }
 
@@ -65,6 +70,8 @@ App::~App (void)
 {
   m_Settings.disconnect();
 
+  if (m_pWndSat)
+    delete m_pWndSat;
   if (m_pWndMain)
     delete m_pWndMain;
 

@@ -45,6 +45,7 @@ public :
   bool         writeSettings (void);
   Location*    location      (void) { return m_pLocation; }
   WndMain*     wndMain       (void) { return m_pWndMain; }
+  WndSat*      wndSat        (void) { return m_pWndSat; }
   GPSRFile*    outFile       (void) { return &m_GPSRFile; }
 
   void        setState    (State eNewState);
@@ -74,6 +75,7 @@ private :
   AppSettings m_Settings;
   Location*   m_pLocation;
   WndMain*    m_pWndMain;
+  WndSat*     m_pWndSat;
 
   State m_eState;
 

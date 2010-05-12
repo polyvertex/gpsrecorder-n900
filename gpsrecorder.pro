@@ -40,7 +40,8 @@ HEADERS += \
   src/Util.h \
   src/WndConfig.h \
   src/WndConvert.h \
-  src/WndMain.h
+  src/WndMain.h \
+  src/WndSat.h
 SOURCES += \
   src/minizip/ioapi.c \
   src/minizip/zip.c \
@@ -60,7 +61,8 @@ SOURCES += \
   src/Util.cpp \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
-  src/WndMain.cpp
+  src/WndMain.cpp \
+  src/WndSat.cpp
 
 FORMS       +=
 LEXSOURCES  += #LEXS#

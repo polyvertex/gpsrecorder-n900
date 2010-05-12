@@ -31,6 +31,15 @@ const char* LocationFix::getModeStr (void) const
   }
 }
 
+//---------------------------------------------------------------------------
+// getSat
+//---------------------------------------------------------------------------
+const LocationFixSat* LocationFix::getSat (fxuint8 cSatIndex) const
+{
+  Q_ASSERT(cSatIndex < cSatCount);
+  return (cSatIndex < cSatCount) ? &aFixSat[cSatIndex] : 0;
+}
+
 
 
 
