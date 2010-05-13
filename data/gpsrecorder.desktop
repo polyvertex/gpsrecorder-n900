@@ -1,12 +1,14 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=0.1
+Version=1.0
 Type=Application
-Name=Mad Qt example
+Terminal=false
+Name=GPS Recorder
 Exec=/usr/bin/gpsrecorder
 Icon=gpsrecorder
 X-HildonDesk-ShowInToolbar=true
 X-Window-Icon=gpsrecorder
 X-Window-Icon-Dimmed=gpsrecorder
 X-Osso-Type=application/x-executable
-X-Osso-Service=com.nokia.gpsrecorder
+X-Osso-Service=name.jcl.gpsrecorder
+Categories=Utility;Qt;

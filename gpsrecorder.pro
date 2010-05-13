@@ -1,4 +1,7 @@
+
 TARGET = gpsrecorder
+
+TEMPLATE = app
 
 CONFIG += warn_off precompile_header release
 #CONFIG += silent
@@ -8,7 +11,6 @@ CONFIG(debug, debug|release) {
   message(This is a DEBUG build !)
 }
 
-# http://qt.nokia.com/doc/4.5/qmake-variable-reference.html#qt
 QT  = core gui
 #QT += maemo5
 
@@ -64,20 +66,25 @@ SOURCES += \
   src/WndMain.cpp \
   src/WndSat.cpp
 
-FORMS       +=
-LEXSOURCES  += #LEXS#
-YACCSOURCES += #YACCS#
+RESOURCES +=
 
-# All generated files goes same directory
-OBJECTS_DIR = build
-MOC_DIR     = build
-UI_DIR      = build
 
+# all generated files goes same directory
 DESTDIR     = build
-TEMPLATE    = app
-DEPENDPATH +=
-VPATH      += src uis
+OBJECTS_DIR = $$DESTDIR
+MOC_DIR     = $$DESTDIR
+UI_DIR      = $$DESTDIR
 
+
+# build revision.h header
+PRE_TARGETDEPS          += src/revision.h
+build-revision.target    = src/revision.h
+build-revision.commands  = scripts/revision2c.sh src/revision.h
+build-revision.depends   = FORCE
+QMAKE_EXTRA_TARGETS     += build-revision
+
+
+# define install target
 INSTALLS    += target
 target.path  = /usr/bin/
 
@@ -85,31 +92,22 @@ INSTALLS      += desktop
 desktop.path   = /usr/share/applications/hildon
 desktop.files  = data/gpsrecorder.desktop
 
-INSTALLS      += service
-service.path   = /usr/share/dbus-1/services
-service.files  = data/gpsrecorder.service
+#INSTALLS      += service
+#service.path   = /usr/share/dbus-1/services
+#service.files  = data/gpsrecorder.service
 
 INSTALLS     += icon64
 icon64.path   = /usr/share/icons/hicolor/64x64/apps
 icon64.files  = data/64x64/gpsrecorder.png
 
 
-PRE_TARGETDEPS          += src/revision.h
-build-revision.target    = src/revision.h
-build-revision.commands  = scripts/revision2c.sh src/revision.h
-build-revision.depends   = FORCE
-QMAKE_EXTRA_TARGETS     += build-revision
+# targets for debian source and binary package creation
+debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d
+debian-bin.commands  = dpkg-buildpackage -b -r -uc -d
+debian-all.depends   = debian-src debian-bin
+QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin
 
-#
-# Targets for debian source and binary package creation
-#
-debian-src.commands = dpkg-buildpackage -S -r -us -uc -d
-debian-bin.commands = dpkg-buildpackage -b -r -uc -d
-debian-all.depends  = debian-src debian-bin
 
-#
-# Clean all but Makefile
-#
-compiler_clean.commands = -$(DEL_FILE) $(TARGET) src/revision.h
-
-QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin compiler_clean
+# clean all but Makefile
+compiler_clean.commands  = -$(DEL_FILE) $(TARGET) src/revision.h
+QMAKE_EXTRA_TARGETS     +=  compiler_clean
