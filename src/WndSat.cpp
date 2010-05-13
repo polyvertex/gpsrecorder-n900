@@ -27,7 +27,6 @@ WndSat::WndSat (QMainWindow* pParent/*=0*/)
   Q_ASSERT(App::instance());
   Q_ASSERT(App::instance()->location());
 
-  this->setWindowTitle(App::applicationLabel() + tr(" - Satellites"));
 #if QT_VERSION > 0x040503
   this->setAttribute(Qt::WA_Maemo5StackedWindow);
 #endif
@@ -90,13 +89,14 @@ void WndSat::onLocationFix (Location* pLocation, const LocationFixContainer* pFi
 
   const LocationFix& fix = *pFixCont->getFix();
 
+  this->setUpdatesEnabled(false);
+  this->setWindowTitle(App::applicationLabel() + QString(" - %1/%2 sat").arg((int)fix.cSatUse).arg((int)fix.cSatCount));
+
   while ((int)fix.cSatCount > m_vecSats.count())
   {
     m_vecSats.append(LocationFixSat());
     memset(&m_vecSats.last(), 0, sizeof(m_vecSats.last()));
   }
-
-  this->setUpdatesEnabled(false);
 
   for (quint8 cSatIdx = 0; cSatIdx < fix.cSatCount; ++cSatIdx)
   {

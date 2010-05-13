@@ -72,6 +72,9 @@ void WndMain::createWidgets (void)
   m_pLblFixTime = new QLabel();
   m_pLblFixTime->setDisabled(true);
 
+  m_pLblFixSatUse = new QLabel();
+  m_pLblFixSatUse->setDisabled(true);
+
   m_pLblFixLat = new QLabel();
   m_pLblFixLat->setDisabled(true);
 
@@ -86,9 +89,6 @@ void WndMain::createWidgets (void)
 
   m_pLblFixSpeed = new QLabel();
   m_pLblFixSpeed->setDisabled(true);
-
-  m_pLblFixSatUse = new QLabel();
-  m_pLblFixSatUse->setDisabled(true);
 
   m_pLblFixGsm = new QLabel();
   m_pLblFixGsm->setDisabled(true);
@@ -111,32 +111,36 @@ void WndMain::showHome (void)
 //---------------------------------------------------------------------------
 void WndMain::showFix (void)
 {
-  QWidget* pWidget = new QWidget();
-  QFormLayout* pForm = new QFormLayout();
+  QWidget*     pWidget = new QWidget();
+  QGridLayout* pGrid   = new QGridLayout();
+  QFormLayout* pForm1  = new QFormLayout();
+  QFormLayout* pForm2  = new QFormLayout();
+  QFormLayout* pForm3  = new QFormLayout();
+  QWidget*     pDummy  = new QWidget();
 
-  pForm->addRow(tr("Status :"), m_pLblStatus);
-  pForm->addRow(tr("Fields :"), m_pLblFixFields);
-  pForm->addRow(tr("Mode :"),   m_pLblFixMode);
-  pForm->addRow(tr("Time :"),   m_pLblFixTime);
-  pForm->addRow(tr("Lat :"),    m_pLblFixLat);
-  pForm->addRow(tr("Long :"),   m_pLblFixLong);
-  pForm->addRow(tr("Alt :"),    m_pLblFixAlt);
-  pForm->addRow(tr("Track :"),  m_pLblFixTrack);
-  pForm->addRow(tr("Speed :"),  m_pLblFixSpeed);
-  pForm->addRow(tr("SatUse :"), m_pLblFixSatUse);
-  pForm->addRow(tr("GSM :"),    m_pLblFixGsm);
-  pForm->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
+  pForm1->addRow(tr("Status :"), m_pLblStatus);
+  pForm1->addRow(tr("Fields :"), m_pLblFixFields);
+  pForm1->addRow(tr("Mode :"),   m_pLblFixMode);
+  pForm1->addRow(tr("Time :"),   m_pLblFixTime);
+  pForm1->addRow(tr("SatUse :"), m_pLblFixSatUse);
 
-  pWidget->setLayout(pForm);
+  pForm2->addRow(tr("Lat :"),    m_pLblFixLat);
+  pForm2->addRow(tr("Long :"),   m_pLblFixLong);
+  pForm2->addRow(tr("Alt :"),    m_pLblFixAlt);
+  pForm2->addRow(tr("Track :"),  m_pLblFixTrack);
+  pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
+
+  pForm3->addRow(tr("GSM :"),    m_pLblFixGsm);
+  pForm3->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
+
+  pGrid->setHorizontalSpacing(5);
+  pGrid->addLayout(pForm1, 0, 0);
+  pGrid->addLayout(pForm2, 0, 1);
+  pGrid->addLayout(pForm3, 1, 0, 1, 2, Qt::AlignTop);
+  pGrid->addWidget(pDummy, 2, 0, 5, 2);
+
+  pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
-
-  /*
-  QWidget* pRoot = new QWidget();
-  QGridLayout* pGrid = new QGridLayout;
-  // ...
-  pRoot->setLayout(pGrid);
-  this->setCentralWidget(pRoot);
-  */
 }
 
 
@@ -299,12 +303,12 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblFixTime->setText(str);
 
   // fix properties
-  m_pLblFixLat->setText(QString::number(fix.getLatDeg(), 'f', 6));
-  m_pLblFixLong->setText(QString::number(fix.getLongDeg(), 'f', 6));
-  m_pLblFixAlt->setText(QString::number(fix.iAlt));
+  m_pLblFixSatUse->setText(QString::number(fix.cSatUse) + " / " + QString::number(fix.cSatCount));
+  m_pLblFixLat->setText(QString::number(fix.getLatDeg(), 'f', 6) + QChar(L'\x00b0'));
+  m_pLblFixLong->setText(QString::number(fix.getLongDeg(), 'f', 6) + QChar(L'\x00b0'));
+  m_pLblFixAlt->setText(QString::number(fix.iAlt) + " m");
   m_pLblFixTrack->setText(QString::number(fix.getTrackDeg(), 'f', 1));
   m_pLblFixSpeed->setText(QString::number(fix.getSpeedKmh(), 'f', 2));
-  m_pLblFixSatUse->setText(QString::number(fix.cSatUse) + "/" + QString::number(fix.cSatCount));
 
   // gsm cell info
   str.clear();

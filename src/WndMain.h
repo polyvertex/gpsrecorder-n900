@@ -55,12 +55,12 @@ private :
   QLabel* m_pLblFixFields;
   QLabel* m_pLblFixMode;
   QLabel* m_pLblFixTime;
+  QLabel* m_pLblFixSatUse;
   QLabel* m_pLblFixLat;
   QLabel* m_pLblFixLong;
   QLabel* m_pLblFixAlt;
   QLabel* m_pLblFixTrack;
   QLabel* m_pLblFixSpeed;
-  QLabel* m_pLblFixSatUse;
   QLabel* m_pLblFixGsm;
   QLabel* m_pLblFixWcdma;
 
