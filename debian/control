@@ -10,7 +10,7 @@ XSBC-Bugtracker: mailto:gpsrecorder@jcl.name
 Package: gpsrecorder
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Log and convert your GPS tracks
+Description: GPS track logger to KML, GPX and/or CSV formats
  Yet another GPS track logger.
  Main features :
  * Gathers as much information as possible from the GPS subsystem at a desired frequency (time, satellites, fix loss, etc...).

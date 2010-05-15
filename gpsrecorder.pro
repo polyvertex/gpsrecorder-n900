@@ -110,29 +110,33 @@ QMAKE_EXTRA_TARGETS     += build-revision
 
 
 # define install target
-#INSTALLS    += target
-#target.path  = /usr/bin/
+target.path  = /usr/bin/
+INSTALLS    += target
 
-#INSTALLS      += desktop
-#desktop.path   = /usr/share/applications/hildon
-#desktop.files  = data/gpsrecorder.desktop
+desktop.path   = /usr/share/applications/hildon
+desktop.files  = data/gpsrecorder.desktop
+INSTALLS      += desktop
 
-#INSTALLS      += service
 #service.path   = /usr/share/dbus-1/services
 #service.files  = data/gpsrecorder.service
+#INSTALLS      += service
 
-#INSTALLS     += icon64
-#icon64.path   = /usr/share/icons/hicolor/64x64/apps
-#icon64.files  = data/64x64/gpsrecorder.png
+icon48.path   = /usr/share/icons/hicolor/48x48/apps
+icon48.files  = data/48x48/gpsrecorder.png
+INSTALLS     += icon48
+
+icon64.path   = /usr/share/icons/hicolor/64x64/apps
+icon64.files  = data/64x64/gpsrecorder.png
+INSTALLS     += icon64
 
 
 # targets for debian source and binary package creation
-debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d
+debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d -i -I.svn
 debian-bin.commands  = dpkg-buildpackage -b -r -uc -d
 debian-all.depends   = debian-src debian-bin
 QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin
 
 
 # clean all but Makefile
-compiler_clean.commands  = -$(DEL_FILE) $(TARGET) src/revision.h ; $(DEL_DIR) $$DESTDIR
+compiler_clean.commands  = -$(DEL_FILE) $(TARGET) src/revision.h ; $(DEL_FILE) -rf $$DESTDIR
 QMAKE_EXTRA_TARGETS     +=  compiler_clean
