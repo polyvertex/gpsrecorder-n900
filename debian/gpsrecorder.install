@@ -1,0 +1,4 @@
+data/*.desktop usr/share/applications/hildon
+data/*.service usr/share/dbus-1/services
+data/64x64/gpsrecorder.png usr/share/icons/hicolor/64x64/apps
+build/gpsrecorder usr/bin

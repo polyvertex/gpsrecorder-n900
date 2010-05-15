@@ -1,6 +1,14 @@
-The Debian Package gpsrecorder
-------------------------------
+GPS Recorder for Maemo
 
-Comments regarding the Package
+GPS Recorder is an application to log and convert GPS track data.
+It is written in C++, over the Qt framework and gets GPS data from Maemo's
+liblocation.
 
- -- root <root@unknown>  Sun, 14 Mar 2010 21:37:08 +0100
+Main features :
+* Gather as much information as possible from the GPS subsystem at a desired
+  frequency (time, satellites, fix loss, etc...).
+* Export your saved tracks to KML/KMZ, GPX and/or CSV files in a single
+  operation.
+* Snap and name a point (POI) while recording to see it later on a map.
+* Automatically update system time according to GPS time when it is accurate
+  enough.

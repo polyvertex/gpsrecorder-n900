@@ -1,3 +1,3 @@
 [D-BUS Service]
-Name=name.jcl.gpsrecorder
+Name=com.nokia.gpsrecorder
 Exec=/usr/bin/gpsrecorder
