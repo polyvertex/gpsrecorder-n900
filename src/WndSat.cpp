@@ -46,6 +46,7 @@ WndSat::WndSat (QMainWindow* pParent/*=0*/)
   Q_ASSERT(App::instance());
   Q_ASSERT(App::instance()->location());
 
+  this->setWindowTitle(App::applicationLabel());
 #if QT_VERSION > 0x040503
   this->setAttribute(Qt::WA_Maemo5StackedWindow);
 #endif
