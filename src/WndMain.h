@@ -1,7 +1,7 @@
 //***************************************************************************
 //
 // GPS Recorder
-// Show, log and convert GPS data from Maemo's GPS subsystem.
+// Show, log and convert location data from Maemo's GPS subsystem.
 //
 // Copyright (C) 2010 Jean-Charles Lefebvre <gpsrecorder [AT] jcl [DOT] name>
 //
