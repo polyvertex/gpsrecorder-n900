@@ -4,6 +4,6 @@
 # see: dh_installdeb(1)
 
 gtk-update-icon-cache -f /usr/share/icons/hicolor
-#maemo-select-menu-location ecoach.desktop
+#maemo-select-menu-location gpsrecorder.desktop
 
 exit 0

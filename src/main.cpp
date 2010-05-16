@@ -27,7 +27,7 @@
 //***************************************************************************
 
 #include "stable.h"
-#include "revision.h"
+#include "version.h"
 
 
 //---------------------------------------------------------------------------
@@ -145,7 +145,7 @@ int main (int nArgc, char** ppszArgv)
   //QCoreApplication::setOrganizationName("");
   //QCoreApplication::setOrganizationDomain("");
   QCoreApplication::setApplicationName("gpsrecorder");
-  QCoreApplication::setApplicationVersion(QString("0.0.") + SVN_REVISION_STR);
+  QCoreApplication::setApplicationVersion(APP_VERSION_STR);
   App::setApplicationLabel("GPS Recorder");
   App::setApplicationUrl("http://gpsrecorder.jcl.name/");
 

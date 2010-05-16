@@ -102,11 +102,11 @@ UI_DIR      = $$DESTDIR
 
 
 # build revision.h header
-PRE_TARGETDEPS          += src/revision.h
-build-revision.target    = src/revision.h
-build-revision.commands  = scripts/revision2c.sh src/revision.h
-build-revision.depends   = FORCE
-QMAKE_EXTRA_TARGETS     += build-revision
+PRE_TARGETDEPS         += version.txt
+build-version.target    = version.txt
+build-version.commands  = scripts/buildversion.sh
+build-version.depends   = FORCE
+QMAKE_EXTRA_TARGETS    += build-version
 
 
 # define install target
@@ -138,5 +138,5 @@ QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin
 
 
 # clean all but Makefile
-compiler_clean.commands  = -$(DEL_FILE) $(TARGET) src/revision.h ; $(DEL_FILE) -rf $$DESTDIR
+compiler_clean.commands  = -$(DEL_FILE) $(TARGET) version.txt src/version.h ; $(DEL_FILE) -rf $$DESTDIR
 QMAKE_EXTRA_TARGETS     +=  compiler_clean

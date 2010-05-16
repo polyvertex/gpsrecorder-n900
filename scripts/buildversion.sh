@@ -24,13 +24,28 @@
 #
 #****************************************************************************
 
-OUTFILE=$1
+TOPDIR="$(dirname $0)/.."
+OUTFILE_TXT="$TOPDIR/version.txt"
+OUTFILE_H="$TOPDIR/src/version.h"
+VERSION=""
+REVISION=""
 
-VERSION=$(svnversion -n "$(dirname $0)/..")
-VERSION_C_STR="static const char SVN_REVISION_STR[] = \"${VERSION}\";"
-
-if [ -z "$OUTFILE" ]; then
-  echo "$VERSION_C_STR"
-else
-  echo "$VERSION_C_STR" > "$OUTFILE"
+# get version number
+if [ ! -f "$TOPDIR/VERSION" ]; then
+  echo "*** VERSION file does not exist or is not readable !"
+  exit 1
 fi
+VERSION=$(cat "$TOPDIR/VERSION")
+
+# if .svn is not here, we assume this is a released version and the revision
+# number is already included into the VERSION file
+if [ -d "$TOPDIR/.svn" ]; then
+  REVISION=$(svnversion -n "$TOPDIR")
+  VERSION="${VERSION}.${REVISION}"
+fi
+
+# create output files
+echo -n "$VERSION" > "$OUTFILE_TXT"
+echo "static const char APP_VERSION_STR[] = \"${VERSION}\";" > "$OUTFILE_H"
+
+exit 0
