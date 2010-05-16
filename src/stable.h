@@ -162,6 +162,7 @@ class ExporterSink;
 
 #include "WndConfig.h"
 #include "WndConvert.h"
+#include "WndAbout.h"
 #include "WndSat.h"
 #include "WndMain.h"
 #include "AppSettings.h"

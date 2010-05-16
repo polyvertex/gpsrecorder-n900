@@ -51,6 +51,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     m_pMenuConfig    = this->menuBar()->addAction(tr("Config"), this, SLOT(onPushedConfig()));
     m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
     m_pMenuSat       = this->menuBar()->addAction(tr("Satellites"), this, SLOT(onPushedSat()));
+    m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onPushedAbout()));
 
     m_pMenuSnap->setEnabled(false);
   }
@@ -250,6 +251,14 @@ void WndMain::onPushedConvert (void)
 void WndMain::onPushedSat (void)
 {
   App::instance()->wndSat()->show();
+}
+
+//---------------------------------------------------------------------------
+// onPushedAbout
+//---------------------------------------------------------------------------
+void WndMain::onPushedAbout (void)
+{
+  App::instance()->wndAbout()->show();
 }
 
 

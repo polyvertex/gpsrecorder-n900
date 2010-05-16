@@ -64,6 +64,7 @@ HEADERS += \
   src/LocationGPSRFile.h \
   src/LocationMaemo.h \
   src/Util.h \
+  src/WndAbout.h \
   src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h \
@@ -86,12 +87,13 @@ SOURCES += \
   src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
   src/Util.cpp \
+  src/WndAbout.cpp \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp \
   src/WndSat.cpp
 
-RESOURCES +=
+RESOURCES += src/resources.qrc
 
 
 # all generated files goes same directory

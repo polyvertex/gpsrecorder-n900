@@ -65,6 +65,7 @@ public :
   Location*    location      (void) { return m_pLocation; }
   WndMain*     wndMain       (void) { return m_pWndMain; }
   WndSat*      wndSat        (void) { return m_pWndSat; }
+  WndAbout*    wndAbout      (void) { return m_pWndAbout; }
   GPSRFile*    outFile       (void) { return &m_GPSRFile; }
 
   void        setState    (State eNewState);
@@ -95,6 +96,7 @@ private :
   Location*   m_pLocation;
   WndMain*    m_pWndMain;
   WndSat*     m_pWndSat;
+  WndAbout*   m_pWndAbout;
 
   State m_eState;
 

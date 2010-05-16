@@ -20,76 +20,36 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-03-25 14:53:21
+// Created On : 2010-05-16 11:45:17
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDMAIN_H__
-#define __WNDMAIN_H__
+#ifndef __WNDABOUT_H__
+#define __WNDABOUT_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndMain
+// WndAbout
 //---------------------------------------------------------------------------
-class WndMain : public QMainWindow
+class WndAbout : public QMainWindow
 {
   Q_OBJECT
 
 public :
-  WndMain (QMainWindow* pParent=0);
-  virtual ~WndMain (void);
+  WndAbout (QMainWindow* pParent=0);
+  virtual ~WndAbout (void);
 
 
 private :
   void createWidgets (void);
 
-  void showHome (void);
-  void showFix  (void);
-
-  void clearFixFields (void);
-
-
-private slots :
-  void onPushedStartStop (void);
-  void onPushedSnap      (void);
-  void onPushedConfig    (void);
-  void onPushedConvert   (void);
-  void onPushedSat       (void);
-  void onPushedAbout     (void);
-
-  void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
-
 
 private :
-  QAction* m_pMenuStartStop;
-  QAction* m_pMenuSnap;
-  QAction* m_pMenuConfig;
-  QAction* m_pMenuConvert;
-  QAction* m_pMenuSat;
-  QAction* m_pMenuAbout;
-
-  QLabel* m_pLblStatus;
-  QLabel* m_pLblFixFields;
-  QLabel* m_pLblFixMode;
-  QLabel* m_pLblFixTime;
-  QLabel* m_pLblFixSatUse;
-  QLabel* m_pLblFixLat;
-  QLabel* m_pLblFixLong;
-  QLabel* m_pLblFixAlt;
-  QLabel* m_pLblFixTrack;
-  QLabel* m_pLblFixSpeed;
-  QLabel* m_pLblFixGsm;
-  QLabel* m_pLblFixWcdma;
-
-  LocationFixCellInfoGsm   m_CellInfoGsm;
-  time_t                   m_uiCellInfoGsmTime;
-  LocationFixCellInfoWcdma m_CellInfoWcdma;
-  time_t                   m_uiCellInfoWcdmaTime;
 };
 
 
-#endif // #ifndef __WNDMAIN_H__
+#endif // #ifndef __WNDSAT_H__

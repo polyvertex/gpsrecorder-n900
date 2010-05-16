@@ -142,8 +142,8 @@ int main (int nArgc, char** ppszArgv)
 {
   int nRes;
 
-  //QCoreApplication::setOrganizationName("");
-  //QCoreApplication::setOrganizationDomain("");
+  QCoreApplication::setOrganizationName("jcl");
+  //QCoreApplication::setOrganizationDomain("jcl.name");
   QCoreApplication::setApplicationName("gpsrecorder");
   QCoreApplication::setApplicationVersion(APP_VERSION_STR);
   App::setApplicationLabel("GPS Recorder");

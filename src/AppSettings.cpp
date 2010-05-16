@@ -59,6 +59,7 @@ AppSettings::AppSettings (QObject* pParent/*=0*/)
 : QObject(pParent)
 {
   // ensure the QSettings default constructor has loaded *our* settings
+  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
   // refresh cloned log step value
@@ -106,6 +107,7 @@ QSettings::Status AppSettings::write (void)
 QByteArray AppSettings::readOutputDirectory (void)
 {
   // ensure the QSettings default constructor has loaded *our* settings
+  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
   QSettings settings;
@@ -120,6 +122,7 @@ QByteArray AppSettings::readOutputDirectory (void)
 void AppSettings::writeOutputDirectory (const QByteArray& strOutputDir)
 {
   // ensure the QSettings default constructor has loaded *our* settings
+  Q_ASSERT(QCoreApplication::organizationName().isEmpty() == false);
   Q_ASSERT(QCoreApplication::applicationName().isEmpty() == false);
 
   QSettings settings;

@@ -78,6 +78,10 @@ App::App (int& nArgc, char** ppszArgv)
   m_pWndSat = new WndSat(m_pWndMain);
   Q_CHECK_PTR(m_pWndSat);
 
+  // create about window
+  m_pWndAbout = new WndAbout(m_pWndMain);
+  Q_CHECK_PTR(m_pWndAbout);
+
   // show up main window
   m_pWndMain->show();
 }
@@ -89,6 +93,8 @@ App::~App (void)
 {
   m_Settings.disconnect();
 
+  if (m_pWndAbout)
+    delete m_pWndAbout;
   if (m_pWndSat)
     delete m_pWndSat;
   if (m_pWndMain)

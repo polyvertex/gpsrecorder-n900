@@ -87,7 +87,7 @@ public :
   static uint             defaultLogStep            (void) { return 5; }
   static QPair<uint,uint> logStepBounds             (void) { return QPair<uint,uint>(1, 120); }
   static bool             defaultGpsAssisted        (void) { return false; }
-  static bool             defaultGpsAlwaysConnected (void) { return false; }
+  static bool             defaultGpsAlwaysConnected (void) { return true; }
 
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }
