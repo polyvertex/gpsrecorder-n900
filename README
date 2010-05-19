@@ -1,6 +1,8 @@
 GPS Recorder for Maemo
 
-GPS Recorder is an application to log and convert GPS track data.
+GPS Recorder is an application to log and convert GPS track data at a desired
+frequency.
+
 It is written in C++, over the Qt framework and gets GPS data from Maemo's
 liblocation.
 
