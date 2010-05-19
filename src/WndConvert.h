@@ -45,7 +45,8 @@ public :
 
 
 private :
-  void setupControls (void);
+  void setupControls            (void);
+  void refreshInputFilesControl (void);
 
 
 private slots :

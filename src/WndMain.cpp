@@ -48,7 +48,7 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     this->menuBar()->clear();
     m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onPushedStartStop()));
     m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
-    m_pMenuConfig    = this->menuBar()->addAction(tr("Config"), this, SLOT(onPushedConfig()));
+    m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onPushedConfig()));
     m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
     m_pMenuSat       = this->menuBar()->addAction(tr("Satellites"), this, SLOT(onPushedSat()));
     m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onPushedAbout()));

@@ -30,13 +30,6 @@
 
 
 //---------------------------------------------------------------------------
-// Constants
-//---------------------------------------------------------------------------
-static const char SUPPORTED_CSV_SEPARATORS[] = ",;\t";
-
-
-
-//---------------------------------------------------------------------------
 // WndConvert
 //---------------------------------------------------------------------------
 WndConvert::WndConvert (QWidget* pParent/*=0*/)
@@ -48,7 +41,9 @@ WndConvert::WndConvert (QWidget* pParent/*=0*/)
   this->setModal(true);
   this->setWindowTitle(tr("Convert"));
 
+  m_InputFiles.append(App::outputDir());
   this->setupControls();
+  this->refreshInputFilesControl();
 }
 
 //---------------------------------------------------------------------------
@@ -197,19 +192,11 @@ void WndConvert::setupControls (void)
   this->setLayout(pRootLayout);
 }
 
-
-
 //---------------------------------------------------------------------------
-// onClickedBrowseFiles
+// refreshInputFilesControl
 //---------------------------------------------------------------------------
-void WndConvert::onClickedBrowseFiles (void)
+void WndConvert::refreshInputFilesControl (void)
 {
-  m_InputFiles = QFileDialog::getOpenFileNames(
-    this,
-    tr("Select one or more files to convert"),
-    App::outputDir(),
-    "GPSR Files (*.gpsr)");
-
   if (m_InputFiles.isEmpty())
   {
     m_pTxtBrowse->clear();
@@ -225,6 +212,22 @@ void WndConvert::onClickedBrowseFiles (void)
     str.sprintf(QT_TR_NOOP("%d files selected"), m_InputFiles.count());
     m_pTxtBrowse->setText(str);
   }
+}
+
+
+
+//---------------------------------------------------------------------------
+// onClickedBrowseFiles
+//---------------------------------------------------------------------------
+void WndConvert::onClickedBrowseFiles (void)
+{
+  m_InputFiles = QFileDialog::getOpenFileNames(
+    this,
+    tr("Select one or more files to convert"),
+    App::outputDir(),
+    "GPSR Files (*.gpsr)");
+
+  this->refreshInputFilesControl();
 }
 
 //---------------------------------------------------------------------------

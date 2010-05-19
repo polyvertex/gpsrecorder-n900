@@ -39,7 +39,7 @@ WndConfig::WndConfig (QWidget* pParent/*=0*/)
   Q_ASSERT(pParent);
 
   this->setModal(true);
-  this->setWindowTitle(tr("Configuration"));
+  this->setWindowTitle(tr("Settings"));
 
   this->setupControls();
 }
