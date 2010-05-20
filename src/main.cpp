@@ -73,10 +73,12 @@ static void _logHandler (QtMsgType eMsgType, const char* pszMessage)
     fprintf(hLogFile,
       "\n"
       "%s\n"
-      "* %s log started on %s\n"
+      "* %s v%s log started on %s\n"
       "%s\n"
       , qPrintable(str)
-      , qPrintable(QCoreApplication::applicationName()), strLogStart.constData()
+      , qPrintable(QCoreApplication::applicationName())
+      , qPrintable(QCoreApplication::applicationVersion())
+      , strLogStart.constData()
       , qPrintable(str) );
   }
 
