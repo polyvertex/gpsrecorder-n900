@@ -44,6 +44,10 @@ public :
   virtual ~WndMain (void);
 
 
+protected :
+  void closeEvent (QCloseEvent* pEvent);
+
+
 private :
   void createWidgets (void);
 

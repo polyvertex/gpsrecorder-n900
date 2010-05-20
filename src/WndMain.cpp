@@ -76,6 +76,36 @@ WndMain::~WndMain (void)
 
 
 //---------------------------------------------------------------------------
+// closeEvent
+//---------------------------------------------------------------------------
+void WndMain::closeEvent (QCloseEvent* pEvent)
+{
+  if (App::instance() && App::instance()->getState() == App::STATE_STARTED)
+  {
+    QMessageBox::StandardButton eBtn = QMessageBox::question(
+      this,
+      tr("Quit ?"),
+      tr("You are about to stop recording a track by closing this application ! Is it what you want ?"),
+      QMessageBox::Yes | QMessageBox::Cancel,
+      QMessageBox::Cancel);
+
+    if (eBtn != QMessageBox::Yes && eBtn != QMessageBox::Ok)
+    {
+      pEvent->ignore();
+      return;
+    }
+    else
+    {
+      this->onPushedStartStop();
+    }
+  }
+
+  pEvent->accept();
+}
+
+
+
+//---------------------------------------------------------------------------
 // createWidgets
 //---------------------------------------------------------------------------
 void WndMain::createWidgets (void)
