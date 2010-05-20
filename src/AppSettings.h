@@ -61,6 +61,9 @@ public :
   void setGpsAlwaysConnected (bool bEnable);
   bool getGpsAlwaysConnected (void);
 
+  void setAskTrackName (bool bEnable);
+  bool getAskTrackName (void);
+
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);
@@ -88,6 +91,7 @@ public :
   static QPair<uint,uint> logStepBounds             (void) { return QPair<uint,uint>(1, 120); }
   static bool             defaultGpsAssisted        (void) { return false; }
   static bool             defaultGpsAlwaysConnected (void) { return true; }
+  static bool             defaultAskTrackName       (void) { return true; }
 
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }

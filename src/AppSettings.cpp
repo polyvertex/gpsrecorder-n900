@@ -37,6 +37,7 @@ static const char* SETTINGNAME_OUTPUTDIR = "OutputDir";
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
 static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
+static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName";
 //
 static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX = "ConvertGpx";
@@ -193,6 +194,23 @@ bool AppSettings::getGpsAlwaysConnected (void)
     return var.toBool();
 
   return AppSettings::defaultGpsAlwaysConnected();
+}
+
+//---------------------------------------------------------------------------
+// AskTrackName
+//---------------------------------------------------------------------------
+void AppSettings::setAskTrackName (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_ASKTRACKNAME, QVariant(bEnable));
+}
+
+bool AppSettings::getAskTrackName (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_ASKTRACKNAME);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultAskTrackName();
 }
 
 //---------------------------------------------------------------------------

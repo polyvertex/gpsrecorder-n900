@@ -97,9 +97,13 @@ void WndConfig::setupControls (void)
     m_pChkGpsAlwaysConnected = new QCheckBox;
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
+    m_pChkAskTrackName = new QCheckBox;
+    m_pChkAskTrackName->setCheckState(settings.getAskTrackName() ? Qt::Checked : Qt::Unchecked);
+
     pForm->addRow(tr("Log Step :"), m_pCboLogStep);
     pForm->addRow(tr("Assisted GPS :"), m_pChkGpsAssisted);
     pForm->addRow(tr("GPS always connected :"), m_pChkGpsAlwaysConnected);
+    pForm->addRow(tr("Ask for track name before create :"), m_pChkAskTrackName);
     pLeftLayout->addLayout(pForm);
   }
 
@@ -138,6 +142,7 @@ void WndConfig::onPushedDone (void)
   settings.setLogStep(m_pCboLogStep->itemData(m_pCboLogStep->currentIndex()).toUInt());
   settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
+  settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);
 
   settings.write();
   this->done(0);

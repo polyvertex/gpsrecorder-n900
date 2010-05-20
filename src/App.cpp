@@ -204,10 +204,13 @@ void App::setState (App::State eNewState)
   if (m_eState == STATE_STOPPED && eNewState == STATE_STARTED)
   {
     QByteArray strPath;
-    QString    strTrackName(this->askTrackName());
+    QString    strTrackName;
 
     m_bVirginOutput  = true;
     m_uiLastFixWrite = 0;
+
+    if (m_Settings.getAskTrackName())
+      strTrackName = this->askTrackName();
 
     strPath  = App::outputDir().toAscii();
     strPath += "/gpstrack-";
@@ -296,6 +299,7 @@ void App::closeGPSRFile (void)
 
       if (m_bVirginOutput)
       {
+        // TODO : information popup
         qDebug("Deleting %s because nothing was written in it.", strPath.constData());
         QFile::remove(strPath);
       }
@@ -306,9 +310,9 @@ void App::closeGPSRFile (void)
 }
 
 //---------------------------------------------------------------------------
-// setupGpsTime
+// applyGpsTime
 //---------------------------------------------------------------------------
-bool App::setupGpsTime (uint uiGpsTime)
+bool App::applyGpsTime (uint uiGpsTime)
 {
   int nTimeDiff = 0;
 
@@ -376,7 +380,7 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
       pFixCont->getFix()->uiTimeEP == 0 && // <= m_Settings.getLogStep() &&
       Util::timeDiff(time(0), pFixCont->getFix()->uiTime, true) >= m_Settings.getLogStep())
   {
-    this->setupGpsTime(pFixCont->getFix()->uiTime);
+    this->applyGpsTime(pFixCont->getFix()->uiTime);
   }
 
   // write location fix
@@ -391,7 +395,7 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
       if (pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
           pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep())
       {
-        this->setupGpsTime(pFixCont->getFix()->uiTime);
+        this->applyGpsTime(pFixCont->getFix()->uiTime);
       }
       else
       {
