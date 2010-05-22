@@ -38,6 +38,8 @@ WndSpeed::WndSpeed (QMainWindow* pParent/*=0*/)
   Q_ASSERT(App::instance());
   Q_ASSERT(App::instance()->location());
 
+  m_uiSpeedLastUpdate = 0;
+
   this->setWindowTitle(App::applicationLabel() + QString(" - ") + tr("Speed"));
 #if QT_VERSION > 0x040503
   this->setAttribute(Qt::WA_Maemo5StackedWindow);
@@ -65,11 +67,8 @@ WndSpeed::~WndSpeed (void)
 void WndSpeed::createWidgets (void)
 {
   QWidget*     pWidget  = new QWidget();
-  QVBoxLayout* pVBox    = new QVBoxLayout();
+  QGridLayout* pGrid    = new QGridLayout();
   QLabel*      pLblUnit;
-
-  pLblUnit = new QLabel("km/h");
-  pLblUnit->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
   {
     QFont font;
@@ -78,13 +77,21 @@ void WndSpeed::createWidgets (void)
     font.setBold(true);
 
     m_pLblSpeed = new QLabel("0.00");
+    m_pLblSpeed->setEnabled(false);
     m_pLblSpeed->setAlignment(Qt::AlignCenter);
     m_pLblSpeed->setFont(font);
   }
 
-  pVBox->addWidget(m_pLblSpeed);
-  pVBox->addWidget(pLblUnit);
-  pWidget->setLayout(pVBox);
+  m_pLblSpeedUpdate = new QLabel();
+  m_pLblSpeedUpdate->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
+
+  pLblUnit = new QLabel("km/h");
+  pLblUnit->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+
+  pGrid->addWidget(m_pLblSpeed,       0, 0, 1, 2);
+  pGrid->addWidget(m_pLblSpeedUpdate, 1, 0);
+  pGrid->addWidget(pLblUnit,          1, 1);
+  pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
 }
 
@@ -96,8 +103,35 @@ void WndSpeed::createWidgets (void)
 void WndSpeed::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
   Q_UNUSED(pLocation);
-  Q_UNUSED(bAccurate);
 
   const LocationFix& fix = *pFixCont->getFix();
-  m_pLblSpeed->setText(QString::number((fix.hasFields(FIXFIELD_SPEED) ? fix.getSpeedKmh() : 0.0), 'f', 2));
+  time_t uiNow = time(0);
+
+  // update label only if necessary
+  if (bAccurate && fix.hasFields(FIXFIELD_SPEED))
+  {
+    QDateTime dt;
+    QString str;
+
+    m_uiSpeedLastUpdate = uiNow;
+    dt.setTime_t(uiNow);
+
+    m_pLblSpeed->setEnabled(true);
+    m_pLblSpeed->setText(QString::number(fix.getSpeedKmh(), 'f', 2));
+    m_pLblSpeedUpdate->setText(
+      QString("%1%2    %3%4")
+      .arg(tr("Updated at "))
+      .arg(dt.toString("hh:mm:ss"))
+      .arg(QChar(L'\x00b1'))
+      .arg(QString::number(fix.getSpeedKmhEp(), 'f', 2)) );
+  }
+  else if (m_uiSpeedLastUpdate)
+  {
+    // here, data is too old
+
+    m_pLblSpeed->setEnabled(false);
+    m_pLblSpeedUpdate->setText(tr("LOST at ") + QDateTime::currentDateTime().toString("hh:mm:ss"));
+
+    m_uiSpeedLastUpdate = 0;
+  }
 }

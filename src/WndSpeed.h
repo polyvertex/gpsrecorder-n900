@@ -53,7 +53,10 @@ private slots :
 
 
 private :
+  time_t m_uiSpeedLastUpdate;
+
   QLabel* m_pLblSpeed;
+  QLabel* m_pLblSpeedUpdate;
 };
 
 
