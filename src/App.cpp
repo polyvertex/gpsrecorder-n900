@@ -34,6 +34,7 @@
 //---------------------------------------------------------------------------
 QString App::ms_strApplicationLabel;
 QString App::ms_strApplicationUrl;
+QString App::ms_strApplicationEMail;
 QString App::ms_strOutputDir;
 
 
@@ -138,6 +139,22 @@ void App::setApplicationUrl (const QString& strUrl)
 const QString& App::applicationUrl (void)
 {
   return ms_strApplicationUrl;
+}
+
+//---------------------------------------------------------------------------
+// setApplicationEMail
+//---------------------------------------------------------------------------
+void App::setApplicationEMail (const QString& strEMail)
+{
+  ms_strApplicationEMail = strEMail;
+}
+
+//---------------------------------------------------------------------------
+// applicationEMail
+//---------------------------------------------------------------------------
+const QString& App::applicationEMail (void)
+{
+  return ms_strApplicationEMail;
 }
 
 //---------------------------------------------------------------------------

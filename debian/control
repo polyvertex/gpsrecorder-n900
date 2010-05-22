@@ -15,7 +15,7 @@ Description: GPS track logger to KML, GPX and/or CSV formats
  Main features :
  * Gathers as much information as possible from the GPS subsystem at a desired frequency (time, satellites, fix loss, etc...).
  * Exports your saved tracks to KML/KMZ, GPX and/or CSV files in a single operation.
- * Snap and name a point (POI) while recording to see it later on a map.
+ * Snap and name a position (POI) while recording to see it later on a map.
  * Automatically updates system time according to GPS time.
 XB-Maemo-Display-Name: GPS Recorder
 XB-Maemo-Icon-26:

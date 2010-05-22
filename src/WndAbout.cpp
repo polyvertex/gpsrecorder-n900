@@ -73,16 +73,19 @@ void WndAbout::createWidgets (void)
     "<h1>%1</h1>"
     "version <b>%2</b><br>"
     "<br>"
+    "<a href=\"%3\">%3</a><br>"
+    "<br>"
+    "<a href=\"mailto:%4\">%4</a><br>"
+    "<br>"
     "Copyright (c) 2010 Jean-Charles Lefebvre<br>"
     "Licensed under the terms of the GNU Public License.<br>"
     "<br>"
-    "Visit <a href=\"%3\">%3</a> for more information.<br>"
-    "<br>"
-    "Current output directory is %4<br>"
+    "Current output directory is %5<br>"
     )
     .arg(App::applicationLabel())
     .arg(App::applicationVersion())
     .arg(App::applicationUrl())
+    .arg(App::applicationEMail())
     .arg(App::outputDir())
   );
 

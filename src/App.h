@@ -55,6 +55,8 @@ public :
   static const QString& applicationLabel    (void);
   static void           setApplicationUrl   (const QString& strUrl);
   static const QString& applicationUrl      (void);
+  static void           setApplicationEMail (const QString& strEMail);
+  static const QString& applicationEMail    (void);
   static void           setOutputDir        (const QString& strOutputDir);
   static const QString& outputDir           (void);
 
@@ -88,6 +90,7 @@ private :
 private :
   static QString ms_strApplicationLabel;
   static QString ms_strApplicationUrl;
+  static QString ms_strApplicationEMail;
   static QString ms_strOutputDir;
 
 

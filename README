@@ -11,6 +11,6 @@ Main features :
   frequency (time, satellites, fix loss, etc...).
 * Export your saved tracks to KML/KMZ, GPX and/or CSV files in a single
   operation.
-* Snap and name a point (POI) while recording to see it later on a map.
+* Snap and name a position (POI) while recording to see it later on a map.
 * Automatically update system time according to GPS time when it is accurate
   enough.
