@@ -79,6 +79,10 @@ App::App (int& nArgc, char** ppszArgv)
   m_pWndSat = new WndSat(m_pWndMain);
   Q_CHECK_PTR(m_pWndSat);
 
+  // create speed window
+  m_pWndSpeed = new WndSpeed(m_pWndMain);
+  Q_CHECK_PTR(m_pWndSpeed);
+
   // create about window
   m_pWndAbout = new WndAbout(m_pWndMain);
   Q_CHECK_PTR(m_pWndAbout);
@@ -96,6 +100,8 @@ App::~App (void)
 
   if (m_pWndAbout)
     delete m_pWndAbout;
+  if (m_pWndSpeed)
+    delete m_pWndSpeed;
   if (m_pWndSat)
     delete m_pWndSat;
   if (m_pWndMain)

@@ -50,7 +50,6 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
     m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onPushedConfig()));
     m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
-    m_pMenuSat       = this->menuBar()->addAction(tr("Satellites"), this, SLOT(onPushedSat()));
     m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onPushedAbout()));
 
     m_pMenuSnap->setEnabled(false);
@@ -161,12 +160,13 @@ void WndMain::showHome (void)
 //---------------------------------------------------------------------------
 void WndMain::showFix (void)
 {
-  QWidget*     pWidget = new QWidget();
-  QGridLayout* pGrid   = new QGridLayout();
-  QFormLayout* pForm1  = new QFormLayout();
-  QFormLayout* pForm2  = new QFormLayout();
-  QFormLayout* pForm3  = new QFormLayout();
-  QWidget*     pDummy  = new QWidget();
+  QWidget*     pWidget  = new QWidget();
+  QGridLayout* pGrid    = new QGridLayout();
+  QFormLayout* pForm1   = new QFormLayout();
+  QFormLayout* pForm2   = new QFormLayout();
+  QFormLayout* pForm3   = new QFormLayout();
+  QWidget*     pBlank   = new QWidget();
+  QHBoxLayout* pButtons = new QHBoxLayout();
 
   pForm1->addRow(tr("Status :"), m_pLblStatus);
   pForm1->addRow(tr("Fields :"), m_pLblFixFields);
@@ -183,11 +183,22 @@ void WndMain::showFix (void)
   pForm3->addRow(tr("GSM :"),    m_pLblFixGsm);
   pForm3->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
 
+  {
+    QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
+    QPushButton* pBtnSpeed = new QPushButton(tr("Speed"));
+
+    this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onPushedSat()));
+    this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onPushedSpeed()));
+
+    pButtons->addWidget(pBtnSat);
+    pButtons->addWidget(pBtnSpeed);
+  }
+
   pGrid->setHorizontalSpacing(5);
-  pGrid->addLayout(pForm1, 0, 0);
-  pGrid->addLayout(pForm2, 0, 1);
-  pGrid->addLayout(pForm3, 1, 0, 1, 2, Qt::AlignTop);
-  pGrid->addWidget(pDummy, 2, 0, 5, 2);
+  pGrid->addLayout(pForm1,   0, 0);
+  pGrid->addLayout(pForm2,   0, 1);
+  pGrid->addLayout(pForm3,   1, 0, 1, 2, Qt::AlignVCenter);
+  pGrid->addLayout(pButtons, 2, 0, 1, 2, Qt::AlignBottom);
 
   pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
@@ -281,6 +292,14 @@ void WndMain::onPushedConvert (void)
 void WndMain::onPushedSat (void)
 {
   App::instance()->wndSat()->show();
+}
+
+//---------------------------------------------------------------------------
+// onPushedSpeed
+//---------------------------------------------------------------------------
+void WndMain::onPushedSpeed (void)
+{
+  App::instance()->wndSpeed()->show();
 }
 
 //---------------------------------------------------------------------------

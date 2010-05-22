@@ -67,6 +67,7 @@ public :
   Location*    location      (void) { return m_pLocation; }
   WndMain*     wndMain       (void) { return m_pWndMain; }
   WndSat*      wndSat        (void) { return m_pWndSat; }
+  WndSpeed*    wndSpeed      (void) { return m_pWndSpeed; }
   WndAbout*    wndAbout      (void) { return m_pWndAbout; }
   GPSRFile*    outFile       (void) { return &m_GPSRFile; }
 
@@ -99,6 +100,7 @@ private :
   Location*   m_pLocation;
   WndMain*    m_pWndMain;
   WndSat*     m_pWndSat;
+  WndSpeed*   m_pWndSpeed;
   WndAbout*   m_pWndAbout;
 
   State m_eState;

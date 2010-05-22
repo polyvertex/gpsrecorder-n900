@@ -68,7 +68,8 @@ HEADERS += \
   src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h \
-  src/WndSat.h
+  src/WndSat.h \
+  src/WndSpeed.h
 
 SOURCES += \
   src/minizip/ioapi.c \
@@ -91,7 +92,8 @@ SOURCES += \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp \
-  src/WndSat.cpp
+  src/WndSat.cpp \
+  src/WndSpeed.cpp
 
 RESOURCES += src/resources.qrc
 
