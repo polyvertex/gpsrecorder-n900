@@ -112,6 +112,11 @@ void WndMain::createWidgets (void)
   m_pLblStatus = new QLabel();
   m_pLblStatus->setDisabled(true);
 
+  m_pLblStatusIcon = new QLabel();
+  m_pLblStatusIcon->setFixedWidth(App::instance()->getStatePix()->width() + 20);
+  m_pLblStatusIcon->setAlignment(Qt::AlignCenter);
+  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
+
   m_pLblFixFields = new QLabel();
   m_pLblFixFields->setDisabled(true);
 
@@ -190,6 +195,7 @@ void WndMain::showFix (void)
     this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onPushedSat()));
     this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onPushedSpeed()));
 
+    pButtons->addWidget(m_pLblStatusIcon);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
   }
@@ -219,6 +225,7 @@ void WndMain::onPushedStartStop (void)
 
     pApp->setState(App::STATE_STOPPED);
     m_pLblStatus->setText(tr("Stopped"));
+    m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
     m_pMenuStartStop->setText(tr("Start"));
     m_pMenuSnap->setEnabled(false);
@@ -230,6 +237,7 @@ void WndMain::onPushedStartStop (void)
 
     pApp->setState(App::STATE_STARTED);
     m_pLblStatus->setText(tr("Started"));
+    m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
     m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
@@ -350,6 +358,9 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
     App::instance()->getStateStr(),
     (bAccurate ? QT_TR_NOOP("Fixed") : pLocation->isAcquiring() ? QT_TR_NOOP("Acquiring") : QT_TR_NOOP("Lost")) );
   m_pLblStatus->setText(str);
+
+  // status icon
+  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // fix fields
   str.clear();

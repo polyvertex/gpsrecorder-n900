@@ -57,6 +57,7 @@ private :
 
   QLabel* m_pLblSpeed;
   QLabel* m_pLblSpeedUpdate;
+  QLabel* m_pLblStatusIcon;
 };
 
 

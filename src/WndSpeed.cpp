@@ -82,15 +82,22 @@ void WndSpeed::createWidgets (void)
     m_pLblSpeed->setFont(font);
   }
 
+  m_pLblStatusIcon = new QLabel();
+  m_pLblStatusIcon->setFixedWidth(App::instance()->getStatePix()->width() + 20);
+  m_pLblStatusIcon->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
+
   m_pLblSpeedUpdate = new QLabel();
   m_pLblSpeedUpdate->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
 
   pLblUnit = new QLabel("km/h");
   pLblUnit->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
-  pGrid->addWidget(m_pLblSpeed,       0, 0, 1, 2);
-  pGrid->addWidget(m_pLblSpeedUpdate, 1, 0);
-  pGrid->addWidget(pLblUnit,          1, 1);
+  pGrid->setHorizontalSpacing(10);
+  pGrid->addWidget(m_pLblSpeed,       0, 0, 1, 3);
+  pGrid->addWidget(m_pLblStatusIcon,  1, 0);
+  pGrid->addWidget(m_pLblSpeedUpdate, 1, 1);
+  pGrid->addWidget(pLblUnit,          1, 2);
   pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
 }
@@ -106,6 +113,9 @@ void WndSpeed::onLocationFix (Location* pLocation, const LocationFixContainer* p
 
   const LocationFix& fix = *pFixCont->getFix();
   time_t uiNow = time(0);
+
+  // status icon
+  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // update label only if necessary
   if (bAccurate && fix.hasFields(FIXFIELD_SPEED))

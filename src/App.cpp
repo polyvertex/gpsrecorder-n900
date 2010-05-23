@@ -50,6 +50,17 @@ App::App (int& nArgc, char** ppszArgv)
   m_bVirginOutput  = true;
   m_uiLastFixWrite = 0;
 
+  // load pixmaps
+  m_pPixPauseGrey    = new QPixmap(":/pause-grey-48-nomargin.png");
+  m_pPixPauseGreen   = new QPixmap(":/pause-green-48-nomargin.png");
+  m_pPixPauseOrange  = new QPixmap(":/pause-orange-48-nomargin.png");
+  m_pPixPauseRed     = new QPixmap(":/pause-red-48-nomargin.png");
+  m_pPixRecordGrey   = new QPixmap(":/record-grey-48-nomargin.png");
+  m_pPixRecordGreen  = new QPixmap(":/record-green-48-nomargin.png");
+  m_pPixRecordOrange = new QPixmap(":/record-orange-48-nomargin.png");
+  m_pPixRecordRed    = new QPixmap(":/record-red-48-nomargin.png");
+  m_pPixState        = m_pPixPauseGrey;
+
   // connect to AppSettings signals
   this->connect(
     &m_Settings,
@@ -98,19 +109,23 @@ App::~App (void)
 {
   m_Settings.disconnect();
 
-  if (m_pWndAbout)
-    delete m_pWndAbout;
-  if (m_pWndSpeed)
-    delete m_pWndSpeed;
-  if (m_pWndSat)
-    delete m_pWndSat;
-  if (m_pWndMain)
-    delete m_pWndMain;
+  delete m_pWndAbout;
+  delete m_pWndSpeed;
+  delete m_pWndSat;
+  delete m_pWndMain;
 
-  if (m_pLocation)
-    delete m_pLocation;
+  delete m_pLocation;
 
   this->closeGPSRFile();
+
+  delete m_pPixPauseGrey;
+  delete m_pPixPauseGreen;
+  delete m_pPixPauseOrange;
+  delete m_pPixPauseRed;
+  delete m_pPixRecordGrey;
+  delete m_pPixRecordGreen;
+  delete m_pPixRecordOrange;
+  delete m_pPixRecordRed;
 }
 
 
@@ -252,6 +267,8 @@ void App::setState (App::State eNewState)
 
     m_pLocation->resetLastFix();
     m_pLocation->start();
+
+    m_pPixState = m_pPixRecordGrey;
   }
   else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
   {
@@ -259,6 +276,8 @@ void App::setState (App::State eNewState)
       m_pLocation->stop();
 
     this->closeGPSRFile();
+
+    m_pPixState = m_pPixPauseGrey;
   }
 
   m_eState = eNewState;
@@ -396,6 +415,26 @@ void App::onLocationFixLost (Location* pLocation, const LocationFixContainer* pL
 void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
   Q_UNUSED(pLocation);
+
+  // update status icon
+  if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+  {
+    if (bAccurate)
+      m_pPixState = m_pPixRecordGreen;
+    else if (pLocation->isAcquiring())
+      m_pPixState = m_pPixRecordOrange;
+    else
+      m_pPixState = m_pPixRecordRed;
+  }
+  else
+  {
+    if (bAccurate)
+      m_pPixState = m_pPixPauseGreen;
+    else if (pLocation->isAcquiring())
+      m_pPixState = m_pPixPauseOrange;
+    else
+      m_pPixState = m_pPixPauseRed;
+  }
 
   // setup system time if needed
   if (!m_GPSRFile.isOpen() &&

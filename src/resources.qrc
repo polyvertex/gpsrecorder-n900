@@ -1,5 +1,13 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>pause-green-48-nomargin.png</file>
+  <file>pause-grey-48-nomargin.png</file>
+  <file>pause-orange-48-nomargin.png</file>
+  <file>pause-red-48-nomargin.png</file>
+  <file>record-green-48-nomargin.png</file>
+  <file>record-grey-48-nomargin.png</file>
+  <file>record-orange-48-nomargin.png</file>
+  <file>record-red-48-nomargin.png</file>
   <file>wallpaper-800x480.jpg</file>
 </qresource>
 </RCC>

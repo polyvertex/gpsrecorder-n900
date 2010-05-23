@@ -77,6 +77,7 @@ private :
   QAction* m_pMenuAbout;
 
   QLabel* m_pLblStatus;
+  QLabel* m_pLblStatusIcon;
   QLabel* m_pLblFixFields;
   QLabel* m_pLblFixMode;
   QLabel* m_pLblFixTime;
