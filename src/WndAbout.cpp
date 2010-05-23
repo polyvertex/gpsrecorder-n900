@@ -63,7 +63,14 @@ void WndAbout::createWidgets (void)
   // * wallpaper
   // * water effect on wallpaper :)
 
+  QWidget* pWidget = new QWidget();
+  QHBoxLayout* pHBox = new QHBoxLayout();
+  QLabel* pLblIcon = new QLabel();
   QLabel* pLblAbout = new QLabel();
+
+  pLblIcon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  pLblIcon->setPixmap(QPixmap(":/appicon-128.png"));
+  pLblIcon->setFixedWidth(140);
 
   //pLblAbout->setStyleSheet("background-image: url(:/wallpaper-800x480.jpg);");
   pLblAbout->setTextFormat(Qt::RichText);
@@ -75,10 +82,11 @@ void WndAbout::createWidgets (void)
     "<br>"
     "<a href=\"%3\">%3</a><br>"
     "<br>"
-    "Copyright (c) 2010 Jean-Charles Lefebvre &lt;<a href=\"mailto:%4\">%4</a>&gt;<br>"
+    "Copyright (c) 2010 <a href=\"mailto:%4\">Jean-Charles Lefebvre</a><br>"
     "Licensed under the terms of the GNU Public License.<br>"
     "<br>"
-    "Current output directory is %5<br>"
+    "Current output directory is :<br>"
+    "%5<br>"
     )
     .arg(App::applicationLabel())
     .arg(App::applicationVersion())
@@ -87,5 +95,8 @@ void WndAbout::createWidgets (void)
     .arg(App::outputDir())
   );
 
-  this->setCentralWidget(pLblAbout);
+  pHBox->addWidget(pLblIcon);
+  pHBox->addWidget(pLblAbout);
+  pWidget->setLayout(pHBox);
+  this->setCentralWidget(pWidget);
 }
