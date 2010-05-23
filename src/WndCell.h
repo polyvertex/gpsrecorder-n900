@@ -20,82 +20,52 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-03-25 14:53:21
+// Created On : 2010-05-23 07:48:50
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDMAIN_H__
-#define __WNDMAIN_H__
+#ifndef __WNDCELL_H__
+#define __WNDCELL_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndMain
+// WndCell
 //---------------------------------------------------------------------------
-class WndMain : public QMainWindow
+class WndCell : public QMainWindow
 {
   Q_OBJECT
 
 public :
-  WndMain (QMainWindow* pParent=0);
-  virtual ~WndMain (void);
-
-
-protected :
-  void closeEvent (QCloseEvent* pEvent);
+  WndCell (QMainWindow* pParent=0);
+  virtual ~WndCell (void);
 
 
 private :
   void createWidgets (void);
 
-  void showHome (void);
-  void showFix  (void);
-
-  void clearFixFields (void);
-
 
 private slots :
-  void onPushedStartStop (void);
-  void onPushedSnap      (void);
-  void onPushedConfig    (void);
-  void onPushedConvert   (void);
-  void onPushedSat       (void);
-  void onPushedSpeed     (void);
-  void onPushedCell      (void);
-  void onPushedAbout     (void);
-
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 
 private :
-  QAction* m_pMenuStartStop;
-  QAction* m_pMenuSnap;
-  QAction* m_pMenuConfig;
-  QAction* m_pMenuConvert;
-  QAction* m_pMenuAbout;
+  QLabel* m_pLblCellModeIcon;
 
-  QLabel* m_pLblStatus;
+  QFormLayout* m_pForm;
+  QLabel*      m_pLblCellMode; // 0: "gsm" or "wcdma"
+  QLabel*      m_pLblMCC;      // 1: gsm/wcdma
+  QLabel*      m_pLblMNC;      // 2: gsm/wcdma
+  QLabel*      m_pLblLAC;      // 3: gsm only
+  QLabel*      m_pLblCellId;   // 4: gsm only
+  QLabel*      m_pLblUCID;     // 5: wcdma only
+
   QLabel* m_pLblStatusIcon;
-  QLabel* m_pLblFixFields;
-  QLabel* m_pLblFixMode;
-  QLabel* m_pLblFixTime;
-  QLabel* m_pLblFixSatUse;
-  QLabel* m_pLblFixLat;
-  QLabel* m_pLblFixLong;
-  QLabel* m_pLblFixAlt;
-  QLabel* m_pLblFixTrack;
-  QLabel* m_pLblFixSpeed;
-  QLabel* m_pLblFixGsm;
-  QLabel* m_pLblFixWcdma;
-
-  LocationFixCellInfoGsm   m_CellInfoGsm;
-  time_t                   m_uiCellInfoGsmTime;
-  LocationFixCellInfoWcdma m_CellInfoWcdma;
-  time_t                   m_uiCellInfoWcdmaTime;
+  QLabel* m_pLblCellModeUpdate;
 };
 
 
-#endif // #ifndef __WNDMAIN_H__
+#endif // #ifndef __WNDCELL_H__

@@ -173,31 +173,38 @@ void WndMain::showFix (void)
   QWidget*     pBlank   = new QWidget();
   QHBoxLayout* pButtons = new QHBoxLayout();
 
+  pForm1->setHorizontalSpacing(8);
   pForm1->addRow(tr("Status :"), m_pLblStatus);
   pForm1->addRow(tr("Fields :"), m_pLblFixFields);
   pForm1->addRow(tr("Mode :"),   m_pLblFixMode);
   pForm1->addRow(tr("Time :"),   m_pLblFixTime);
   pForm1->addRow(tr("SatUse :"), m_pLblFixSatUse);
 
+  pForm2->setHorizontalSpacing(8);
   pForm2->addRow(tr("Lat :"),    m_pLblFixLat);
   pForm2->addRow(tr("Long :"),   m_pLblFixLong);
   pForm2->addRow(tr("Alt :"),    m_pLblFixAlt);
   pForm2->addRow(tr("Track :"),  m_pLblFixTrack);
   pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
 
+  pForm3->setHorizontalSpacing(8);
   pForm3->addRow(tr("GSM :"),    m_pLblFixGsm);
   pForm3->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
     QPushButton* pBtnSpeed = new QPushButton(tr("Speed"));
+    QPushButton* pBtnCell  = new QPushButton(tr("Cell Tower"));
 
     this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onPushedSat()));
     this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onPushedSpeed()));
+    this->connect(pBtnCell, SIGNAL(clicked()), SLOT(onPushedCell()));
 
+    pButtons->setSpacing(5);
     pButtons->addWidget(m_pLblStatusIcon);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
+    pButtons->addWidget(pBtnCell);
   }
 
   pGrid->setHorizontalSpacing(5);
@@ -308,6 +315,14 @@ void WndMain::onPushedSat (void)
 void WndMain::onPushedSpeed (void)
 {
   App::instance()->wndSpeed()->show();
+}
+
+//---------------------------------------------------------------------------
+// onPushedCell
+//---------------------------------------------------------------------------
+void WndMain::onPushedCell (void)
+{
+  App::instance()->wndCell()->show();
 }
 
 //---------------------------------------------------------------------------

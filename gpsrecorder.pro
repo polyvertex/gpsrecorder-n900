@@ -65,6 +65,7 @@ HEADERS += \
   src/LocationMaemo.h \
   src/Util.h \
   src/WndAbout.h \
+  src/WndCell.h \
   src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h \
@@ -89,6 +90,7 @@ SOURCES += \
   src/LocationMaemo.cpp \
   src/Util.cpp \
   src/WndAbout.cpp \
+  src/WndCell.cpp \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp \

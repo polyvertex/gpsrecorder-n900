@@ -75,7 +75,12 @@ public :
   WndMain*  wndMain  (void) { return m_pWndMain; }
   WndSat*   wndSat   (void) { return m_pWndSat; }
   WndSpeed* wndSpeed (void) { return m_pWndSpeed; }
+  WndCell*  wndCell  (void) { return m_pWndCell; }
   WndAbout* wndAbout (void) { return m_pWndAbout; }
+
+  QPixmap* pixCellModeNone (void) { return m_pPixCellModeNone; }
+  QPixmap* pixCellMode2G   (void) { return m_pPixCellMode2G; }
+  QPixmap* pixCellMode3G   (void) { return m_pPixCellMode3G; }
 
 
 public slots :
@@ -102,6 +107,9 @@ private :
   Location*   m_pLocation;
   QPixmap*    m_pPixState;
 
+  QPixmap* m_pPixCellModeNone;
+  QPixmap* m_pPixCellMode2G;
+  QPixmap* m_pPixCellMode3G;
   QPixmap* m_pPixPauseGrey;
   QPixmap* m_pPixPauseGreen;
   QPixmap* m_pPixPauseOrange;
@@ -114,6 +122,7 @@ private :
   WndMain*  m_pWndMain;
   WndSat*   m_pWndSat;
   WndSpeed* m_pWndSpeed;
+  WndCell*  m_pWndCell;
   WndAbout* m_pWndAbout;
 
   State m_eState;

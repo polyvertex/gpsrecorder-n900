@@ -1,5 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>cellmode-2g-170.png</file>
+  <file>cellmode-3g-170.png</file>
+  <file>cellmode-none-170.png</file>
   <file>pause-green-48-nomargin.png</file>
   <file>pause-grey-48-nomargin.png</file>
   <file>pause-orange-48-nomargin.png</file>

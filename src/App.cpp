@@ -51,6 +51,9 @@ App::App (int& nArgc, char** ppszArgv)
   m_uiLastFixWrite = 0;
 
   // load pixmaps
+  m_pPixCellModeNone = new QPixmap(":/cellmode-none-170.png");
+  m_pPixCellMode2G   = new QPixmap(":/cellmode-2g-170.png");
+  m_pPixCellMode3G   = new QPixmap(":/cellmode-3g-170.png");
   m_pPixPauseGrey    = new QPixmap(":/pause-grey-48-nomargin.png");
   m_pPixPauseGreen   = new QPixmap(":/pause-green-48-nomargin.png");
   m_pPixPauseOrange  = new QPixmap(":/pause-orange-48-nomargin.png");
@@ -94,6 +97,10 @@ App::App (int& nArgc, char** ppszArgv)
   m_pWndSpeed = new WndSpeed(m_pWndMain);
   Q_CHECK_PTR(m_pWndSpeed);
 
+  // create cell window
+  m_pWndCell = new WndCell(m_pWndMain);
+  Q_CHECK_PTR(m_pWndCell);
+
   // create about window
   m_pWndAbout = new WndAbout(m_pWndMain);
   Q_CHECK_PTR(m_pWndAbout);
@@ -110,6 +117,7 @@ App::~App (void)
   m_Settings.disconnect();
 
   delete m_pWndAbout;
+  delete m_pWndCell;
   delete m_pWndSpeed;
   delete m_pWndSat;
   delete m_pWndMain;
@@ -118,6 +126,9 @@ App::~App (void)
 
   this->closeGPSRFile();
 
+  delete m_pPixCellModeNone;
+  delete m_pPixCellMode2G;
+  delete m_pPixCellMode3G;
   delete m_pPixPauseGrey;
   delete m_pPixPauseGreen;
   delete m_pPixPauseOrange;
