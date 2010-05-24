@@ -543,7 +543,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
         emit sigReadChunkNamedSnap(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
         break;
       default :
-        qDebug("Unknown chunk #%u @ offset %d in file %s !", (uint)pChunk->uiId, nChunkOffset, m_strFilePath.constData());
+        qWarning("Unknown chunk #%u @ offset %d in file %s !", (uint)pChunk->uiId, nChunkOffset, m_strFilePath.constData());
         emit sigReadChunkUnknown(this, pChunk);
         break;
     }

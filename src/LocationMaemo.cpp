@@ -476,27 +476,27 @@ void LocationMaemo::locationOnGpsdErrorVerbose (LocationGPSDControl* pGpsdContro
   switch (eError)
   {
     case LOCATION_ERROR_USER_REJECTED_DIALOG :
-      qDebug("User rejected location enabling dialog.");
+      qWarning("User rejected location enabling dialog.");
       break;
 
     case LOCATION_ERROR_USER_REJECTED_SETTINGS :
-      qDebug("User changed settings which disabled locationing.");
+      qWarning("User changed settings which disabled locationing.");
       break;
 
     case LOCATION_ERROR_BT_GPS_NOT_AVAILABLE :
-      qDebug("Problems using BT GPS.");
+      qWarning("Problems using BT GPS.");
       break;
 
     case LOCATION_ERROR_METHOD_NOT_ALLOWED_IN_OFFLINE_MODE :
-      qDebug("Method unavailable in offline mode.");
+      qWarning("Method unavailable in offline mode.");
       break;
 
     case LOCATION_ERROR_SYSTEM :
-      qDebug("System error ! SIM card is missing ?");
+      qWarning("System error ! SIM card is missing ?");
       break;
 
     default :
-      qDebug("Unknown GPSD error %d !", eError);
+      qWarning("Unknown GPSD error %d !", eError);
       break;
   }
 }

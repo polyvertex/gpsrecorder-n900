@@ -29,7 +29,7 @@ TEMPLATE = app
 
 CONFIG += warn_off precompile_header release
 #CONFIG += silent
-CONFIG += debug
+#CONFIG += debug
 CONFIG(debug, debug|release) {
   #TARGET = $$join(TARGET,,,-debug)
   message(This is a DEBUG build !)
@@ -44,6 +44,8 @@ DEFINES     +=
 
 QMAKE_CFLAGS   +=
 QMAKE_CXXFLAGS += -fno-strict-aliasing -Wall -Werror
+
+QMAKE_POST_LINK = strip --strip-all $(TARGET)
 
 PRECOMPILED_HEADER = src/stable.h
 
