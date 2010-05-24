@@ -46,11 +46,11 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   {
     this->menuBar()->clear();
-    m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onPushedStartStop()));
-    m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onPushedSnap()));
-    m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onPushedConfig()));
-    m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onPushedConvert()));
-    m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onPushedAbout()));
+    m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onClickedStartStop()));
+    m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onClickedSnap()));
+    m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onClickedConfig()));
+    m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onClickedConvert()));
+    m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onClickedAbout()));
 
     m_pMenuSnap->setEnabled(false);
   }
@@ -95,7 +95,7 @@ void WndMain::closeEvent (QCloseEvent* pEvent)
     }
     else
     {
-      this->onPushedStartStop();
+      this->onClickedStartStop();
     }
   }
 
@@ -144,11 +144,9 @@ void WndMain::createWidgets (void)
   m_pLblFixSpeed = new QLabel();
   m_pLblFixSpeed->setDisabled(true);
 
-  m_pLblFixGsm = new QLabel();
-  m_pLblFixGsm->setDisabled(true);
-
-  m_pLblFixWcdma = new QLabel();
-  m_pLblFixWcdma->setDisabled(true);
+  m_pBtnCell = new QPushButton(tr("Cell Tower"));
+  m_pBtnCell->setEnabled(false);
+  this->connect(m_pBtnCell, SIGNAL(clicked()), SLOT(onClickedCell()));
 }
 
 //---------------------------------------------------------------------------
@@ -169,49 +167,41 @@ void WndMain::showFix (void)
   QGridLayout* pGrid    = new QGridLayout();
   QFormLayout* pForm1   = new QFormLayout();
   QFormLayout* pForm2   = new QFormLayout();
-  QFormLayout* pForm3   = new QFormLayout();
   QWidget*     pBlank   = new QWidget();
   QHBoxLayout* pButtons = new QHBoxLayout();
 
-  pForm1->setHorizontalSpacing(8);
+  pForm1->setSpacing(8);
   pForm1->addRow(tr("Status :"), m_pLblStatus);
   pForm1->addRow(tr("Fields :"), m_pLblFixFields);
   pForm1->addRow(tr("Mode :"),   m_pLblFixMode);
   pForm1->addRow(tr("Time :"),   m_pLblFixTime);
   pForm1->addRow(tr("SatUse :"), m_pLblFixSatUse);
 
-  pForm2->setHorizontalSpacing(8);
+  pForm2->setSpacing(8);
   pForm2->addRow(tr("Lat :"),    m_pLblFixLat);
   pForm2->addRow(tr("Long :"),   m_pLblFixLong);
   pForm2->addRow(tr("Alt :"),    m_pLblFixAlt);
   pForm2->addRow(tr("Track :"),  m_pLblFixTrack);
   pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
 
-  pForm3->setHorizontalSpacing(8);
-  pForm3->addRow(tr("GSM :"),    m_pLblFixGsm);
-  pForm3->addRow(tr("WCDMA :"),  m_pLblFixWcdma);
-
   {
     QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
     QPushButton* pBtnSpeed = new QPushButton(tr("Speed"));
-    QPushButton* pBtnCell  = new QPushButton(tr("Cell Tower"));
 
-    this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onPushedSat()));
-    this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onPushedSpeed()));
-    this->connect(pBtnCell, SIGNAL(clicked()), SLOT(onPushedCell()));
+    this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onClickedSat()));
+    this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onClickedSpeed()));
 
     pButtons->setSpacing(5);
     pButtons->addWidget(m_pLblStatusIcon);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
-    pButtons->addWidget(pBtnCell);
+    pButtons->addWidget(m_pBtnCell);
   }
 
   pGrid->setHorizontalSpacing(5);
   pGrid->addLayout(pForm1,   0, 0);
   pGrid->addLayout(pForm2,   0, 1);
-  pGrid->addLayout(pForm3,   1, 0, 1, 2, Qt::AlignVCenter);
-  pGrid->addLayout(pButtons, 2, 0, 1, 2, Qt::AlignBottom);
+  pGrid->addLayout(pButtons, 1, 0, 1, 2, Qt::AlignBottom);
 
   pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
@@ -220,9 +210,9 @@ void WndMain::showFix (void)
 
 
 //---------------------------------------------------------------------------
-// onPushedStartStop
+// onClickedStartStop
 //---------------------------------------------------------------------------
-void WndMain::onPushedStartStop (void)
+void WndMain::onClickedStartStop (void)
 {
   App* pApp = App::instance();
 
@@ -241,6 +231,7 @@ void WndMain::onPushedStartStop (void)
   else
   {
     this->clearFixFields();
+    m_pBtnCell->setEnabled(false);
 
     pApp->setState(App::STATE_STARTED);
     m_pLblStatus->setText(tr("Started"));
@@ -253,9 +244,9 @@ void WndMain::onPushedStartStop (void)
 }
 
 //---------------------------------------------------------------------------
-// onPushedSnap
+// onClickedSnap
 //---------------------------------------------------------------------------
-void WndMain::onPushedSnap (void)
+void WndMain::onClickedSnap (void)
 {
   GPSRFile* pGPSRFile = App::instance()->outFile();
   QString   strName;
@@ -281,18 +272,18 @@ void WndMain::onPushedSnap (void)
 }
 
 //---------------------------------------------------------------------------
-// onPushedConfig
+// onClickedConfig
 //---------------------------------------------------------------------------
-void WndMain::onPushedConfig (void)
+void WndMain::onClickedConfig (void)
 {
   WndConfig wndConfig(this);
   wndConfig.exec();
 }
 
 //---------------------------------------------------------------------------
-// onPushedConvert
+// onClickedConvert
 //---------------------------------------------------------------------------
-void WndMain::onPushedConvert (void)
+void WndMain::onClickedConvert (void)
 {
   WndConvert wndConvert(this);
   wndConvert.exec();
@@ -302,33 +293,33 @@ void WndMain::onPushedConvert (void)
 }
 
 //---------------------------------------------------------------------------
-// onPushedSat
+// onClickedSat
 //---------------------------------------------------------------------------
-void WndMain::onPushedSat (void)
+void WndMain::onClickedSat (void)
 {
   App::instance()->wndSat()->show();
 }
 
 //---------------------------------------------------------------------------
-// onPushedSpeed
+// onClickedSpeed
 //---------------------------------------------------------------------------
-void WndMain::onPushedSpeed (void)
+void WndMain::onClickedSpeed (void)
 {
   App::instance()->wndSpeed()->show();
 }
 
 //---------------------------------------------------------------------------
-// onPushedCell
+// onClickedCell
 //---------------------------------------------------------------------------
-void WndMain::onPushedCell (void)
+void WndMain::onClickedCell (void)
 {
   App::instance()->wndCell()->show();
 }
 
 //---------------------------------------------------------------------------
-// onPushedAbout
+// onClickedAbout
 //---------------------------------------------------------------------------
-void WndMain::onPushedAbout (void)
+void WndMain::onClickedAbout (void)
 {
   App::instance()->wndAbout()->show();
 }
@@ -349,13 +340,6 @@ void WndMain::clearFixFields (void)
   m_pLblFixTrack->clear();
   m_pLblFixSpeed->clear();
   m_pLblFixSatUse->clear();
-  m_pLblFixGsm->clear();
-  m_pLblFixWcdma->clear();
-
-  memset(&m_CellInfoGsm, 0, sizeof(m_CellInfoGsm));
-  memset(&m_CellInfoWcdma, 0, sizeof(m_CellInfoWcdma));
-  m_uiCellInfoGsmTime   = 0;
-  m_uiCellInfoWcdmaTime = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -407,33 +391,15 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
 
   // fix properties
   m_pLblFixSatUse->setText(QString::number(fix.cSatUse) + " / " + QString::number(fix.cSatCount));
-  m_pLblFixLat->setText(QString::number(fix.getLatDeg(), 'f', 6) + QChar(L'\x00b0'));
-  m_pLblFixLong->setText(QString::number(fix.getLongDeg(), 'f', 6) + QChar(L'\x00b0'));
+  m_pLblFixLat->setText(QString::number((isnan(fix.getLatDeg()) ? 0.0 : fix.getLatDeg()), 'f', 6) + QChar(L'\x00b0'));
+  m_pLblFixLong->setText(QString::number((isnan(fix.getLongDeg()) ? 0.0 : fix.getLongDeg()), 'f', 6) + QChar(L'\x00b0'));
   m_pLblFixAlt->setText(QString::number(fix.iAlt) + " m");
-  m_pLblFixTrack->setText(QString::number(fix.getTrackDeg(), 'f', 1));
-  m_pLblFixSpeed->setText(QString::number(fix.getSpeedKmh(), 'f', 2));
+  m_pLblFixTrack->setText(QString::number((isnan(fix.getTrackDeg()) ? 0.0 : fix.getTrackDeg()), 'f', 1) + QChar(L'\x00b0'));
+  m_pLblFixSpeed->setText(QString::number((isnan(fix.getSpeedKmh()) ? 0.0 : fix.getSpeedKmh()), 'f', 2) + " km/h");
 
-  // gsm cell info
-  str.clear();
-  if (fix.sGSM.bSetup)
-  {
-    memcpy(&m_CellInfoGsm, &fix.sGSM, sizeof(m_CellInfoGsm));
-    m_uiCellInfoGsmTime = fix.uiTime;
-
-    str.sprintf("MCC:%u MNC:%u LAC:%u Cell:%u", (uint)fix.sGSM.uiMCC, (uint)fix.sGSM.uiMNC, (uint)fix.sGSM.uiLAC, (uint)fix.sGSM.uiCellId);
-  }
-  m_pLblFixGsm->setText(str);
-
-  // wcdma cell info
-  str.clear();
-  if (fix.sWCDMA.bSetup)
-  {
-    memcpy(&m_CellInfoWcdma, &fix.sWCDMA, sizeof(m_CellInfoWcdma));
-    m_uiCellInfoWcdmaTime = fix.uiTime;
-
-    str.sprintf("MCC:%u MNC:%u UCID:%u", (uint)fix.sWCDMA.uiMCC, (uint)fix.sWCDMA.uiMNC, (uint)fix.sWCDMA.uiUCID);
-  }
-  m_pLblFixWcdma->setText(str);
+  // enable cell tower button if we received cell mode info
+  if (fix.sGSM.bSetup || fix.sWCDMA.bSetup)
+    m_pBtnCell->setEnabled(true);
 
 
   this->setUpdatesEnabled(true);

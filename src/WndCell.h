@@ -53,6 +53,9 @@ private slots :
 
 
 private :
+  LocationFixCellInfoGsm   m_Gsm;
+  LocationFixCellInfoWcdma m_Wcdma;
+
   QLabel* m_pLblCellModeIcon;
 
   QFormLayout* m_pForm;

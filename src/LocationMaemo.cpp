@@ -66,7 +66,7 @@ LocationMaemo::LocationMaemo (void)
 : Location(0)
 {
   m_eGpsdControlInterval = LOCATION_INTERVAL_1S;
-  m_eGpsdControlMethod   = LOCATION_METHOD_GNSS;
+  m_eGpsdControlMethod   = LOCATION_METHOD_CWP | LOCATION_METHOD_GNSS;
 
   // init location lib
   {
@@ -83,9 +83,9 @@ LocationMaemo::LocationMaemo (void)
     m_auiSigHdlGpsDevice[1] = g_signal_connect(G_OBJECT(m_pGpsDevice), "disconnected", G_CALLBACK(LocationMaemo::locationOnDevDisconnected), this);
     m_auiSigHdlGpsDevice[2] = g_signal_connect(G_OBJECT(m_pGpsDevice), "changed",      G_CALLBACK(LocationMaemo::locationOnDevChanged), this);
 
-	  m_auiSigHdlGpsdControl[0] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_running",  G_CALLBACK(LocationMaemo::locationOnGpsdRunning), this);
-	  m_auiSigHdlGpsdControl[1] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_stopped",  G_CALLBACK(LocationMaemo::locationOnGpsdStopped), this);
-	  m_auiSigHdlGpsdControl[2] = g_signal_connect(G_OBJECT(m_pGpsdControl), "error-verbose", G_CALLBACK(LocationMaemo::locationOnGpsdErrorVerbose), this);
+    m_auiSigHdlGpsdControl[0] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_running",  G_CALLBACK(LocationMaemo::locationOnGpsdRunning), this);
+    m_auiSigHdlGpsdControl[1] = g_signal_connect(G_OBJECT(m_pGpsdControl), "gpsd_stopped",  G_CALLBACK(LocationMaemo::locationOnGpsdStopped), this);
+    m_auiSigHdlGpsdControl[2] = g_signal_connect(G_OBJECT(m_pGpsdControl), "error-verbose", G_CALLBACK(LocationMaemo::locationOnGpsdErrorVerbose), this);
   }
 
   // use default fix step value from Location constructor
@@ -123,7 +123,10 @@ LocationMaemo::~LocationMaemo (void)
 bool LocationMaemo::setAssisted (bool bAssisted)
 {
   bool bWasStarted = this->isStarted();
-  LocationGPSDControlMethod eNewMethod = bAssisted ? (LOCATION_METHOD_GNSS | LOCATION_METHOD_AGNSS) : LOCATION_METHOD_GNSS;
+  LocationGPSDControlMethod eNewMethod =
+    bAssisted ?
+    (LOCATION_METHOD_CWP | LOCATION_METHOD_GNSS | LOCATION_METHOD_AGNSS) :
+    (LOCATION_METHOD_CWP | LOCATION_METHOD_GNSS);
 
   if (eNewMethod == m_eGpsdControlMethod)
   {

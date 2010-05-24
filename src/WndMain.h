@@ -58,14 +58,14 @@ private :
 
 
 private slots :
-  void onPushedStartStop (void);
-  void onPushedSnap      (void);
-  void onPushedConfig    (void);
-  void onPushedConvert   (void);
-  void onPushedSat       (void);
-  void onPushedSpeed     (void);
-  void onPushedCell      (void);
-  void onPushedAbout     (void);
+  void onClickedStartStop (void);
+  void onClickedSnap      (void);
+  void onClickedConfig    (void);
+  void onClickedConvert   (void);
+  void onClickedSat       (void);
+  void onClickedSpeed     (void);
+  void onClickedCell      (void);
+  void onClickedAbout     (void);
 
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
@@ -88,13 +88,8 @@ private :
   QLabel* m_pLblFixAlt;
   QLabel* m_pLblFixTrack;
   QLabel* m_pLblFixSpeed;
-  QLabel* m_pLblFixGsm;
-  QLabel* m_pLblFixWcdma;
 
-  LocationFixCellInfoGsm   m_CellInfoGsm;
-  time_t                   m_uiCellInfoGsmTime;
-  LocationFixCellInfoWcdma m_CellInfoWcdma;
-  time_t                   m_uiCellInfoWcdmaTime;
+  QPushButton* m_pBtnCell;
 };
 
 

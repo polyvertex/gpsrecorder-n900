@@ -113,7 +113,7 @@ void WndConfig::setupControls (void)
     QWidget*     pScrollWidget = new QWidget();
     QPushButton* pBtnDone = new QPushButton(tr("Done"));
 
-    this->connect(pBtnDone, SIGNAL(clicked()), SLOT(onPushedDone()));
+    this->connect(pBtnDone, SIGNAL(clicked()), SLOT(onClickedDone()));
 
     pScrollWidget->setLayout(pLeftLayout);
 
@@ -133,9 +133,9 @@ void WndConfig::setupControls (void)
 
 
 //---------------------------------------------------------------------------
-// onPushedDone
+// onClickedDone
 //---------------------------------------------------------------------------
-void WndConfig::onPushedDone (void)
+void WndConfig::onClickedDone (void)
 {
   AppSettings& settings = *App::instance()->settings();
 

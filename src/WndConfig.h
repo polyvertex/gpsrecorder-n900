@@ -49,7 +49,7 @@ private :
 
 
 private slots :
-  void onPushedDone (void);
+  void onClickedDone (void);
 
 
 private :

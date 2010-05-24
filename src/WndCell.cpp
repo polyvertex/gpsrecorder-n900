@@ -44,6 +44,9 @@ WndCell::WndCell (QMainWindow* pParent/*=0*/)
 #endif
   this->createWidgets();
 
+  memset(&m_Gsm, 0, sizeof(m_Gsm));
+  memset(&m_Wcdma, 0, sizeof(m_Wcdma));
+
   this->connect(
     App::instance()->location(),
     SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
@@ -113,7 +116,7 @@ void WndCell::createWidgets (void)
     pLblNote->setEnabled(false);
     pLblNote->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     pLblNote->setWordWrap(true);
-    pLblNote->setText(tr("Please note that complete GSM/WCDMA data is available only when GPS data is not available !"));
+    pLblNote->setText(tr("Please note that Cell Tower info is provided only when GPS data is not available !"));
 
     pGrid->setHorizontalSpacing(20);
     pGrid->addWidget(m_pLblCellModeIcon,   0, 0);
@@ -145,9 +148,10 @@ void WndCell::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // wcdma
-  if ((iLastMode == -1) || (fix.sWCDMA.bSetup && iLastMode != 1))
+  if (fix.sWCDMA.bSetup && ((iLastMode != 1) || (memcmp(&m_Wcdma, &fix.sWCDMA, sizeof(m_Wcdma)) != 0)))
   {
     iLastMode = 1;
+    memcpy(&m_Wcdma, &fix.sWCDMA, sizeof(m_Wcdma));
 
     m_pLblCellMode->setText("WCDMA");
     m_pLblCellModeIcon->setPixmap(*App::instance()->pixCellMode3G());
@@ -167,9 +171,10 @@ void WndCell::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   }
 
   // gsm
-  else if ((iLastMode == -1) || (fix.sGSM.bSetup && iLastMode != 0))
+  else if (fix.sGSM.bSetup && ((iLastMode != 0) || (memcmp(&m_Gsm, &fix.sGSM, sizeof(m_Gsm)) != 0)))
   {
     iLastMode = 0;
+    memcpy(&m_Gsm, &fix.sGSM, sizeof(m_Gsm));
 
     m_pLblCellMode->setText("GSM");
     m_pLblCellModeIcon->setPixmap(*App::instance()->pixCellMode2G());
