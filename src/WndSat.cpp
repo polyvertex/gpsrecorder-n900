@@ -41,15 +41,9 @@
 // WndSat
 //---------------------------------------------------------------------------
 WndSat::WndSat (QMainWindow* pParent/*=0*/)
-: QMainWindow(pParent)
+: WndBase(pParent)
 {
-  Q_ASSERT(App::instance());
-  Q_ASSERT(App::instance()->location());
-
   this->setWindowTitle(App::applicationLabel() + QString(" - ") + tr("Satellites"));
-#if QT_VERSION > 0x040503
-  this->setAttribute(Qt::WA_Maemo5StackedWindow);
-#endif
   this->createWidgets();
 
   this->connect(

@@ -20,33 +20,48 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-05-16 11:45:17
+// Created On : 2010-05-24 13:34:08
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDABOUT_H__
-#define __WNDABOUT_H__
-
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndAbout
+// WndBase
 //---------------------------------------------------------------------------
-class WndAbout : public WndBase
+WndBase::WndBase (QMainWindow* pParent/*=0*/)
+: QMainWindow(pParent)
 {
-  Q_OBJECT
+  Q_ASSERT(App::instance());
+  Q_ASSERT(App::instance()->location());
 
-public :
-  WndAbout (QMainWindow* pParent=0);
-  virtual ~WndAbout (void);
+#if QT_VERSION > 0x040503
+  this->setAttribute(Qt::WA_Maemo5StackedWindow);
+#endif
+}
+
+//---------------------------------------------------------------------------
+// ~WndBase
+//---------------------------------------------------------------------------
+WndBase::~WndBase (void)
+{
+}
 
 
-private :
-  void createWidgets (void);
-};
 
+//---------------------------------------------------------------------------
+// showEvent
+//---------------------------------------------------------------------------
+void WndBase::showEvent (QShowEvent* pEvent)
+{
+  // this allows to repaint widgets which were updated while they were
+  // hidden.
+  // this also allows to avoid graphical artefacts, especially for Maemo's
+  // stacked windows where flickering occurs when show() is called.
+  QTimer::singleShot(1000, this, SLOT(update()));
 
-#endif // #ifndef __WNDSAT_H__
+  QMainWindow::showEvent(pEvent);
+}

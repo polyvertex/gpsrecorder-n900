@@ -83,6 +83,10 @@ public :
   QPixmap* pixCellMode3G   (void) { return m_pPixCellMode3G; }
 
 
+signals :
+  void sigAppStatePixChanged (QPixmap* pNewStatePixmap);
+
+
 public slots :
   void onSettingsWritten (void);
   void onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont);

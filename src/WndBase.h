@@ -20,33 +20,35 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-05-16 11:45:17
+// Created On : 2010-05-24 13:34:01
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDABOUT_H__
-#define __WNDABOUT_H__
+#ifndef __WNDBASE_H__
+#define __WNDBASE_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndAbout
+// WndBase
 //---------------------------------------------------------------------------
-class WndAbout : public WndBase
+class WndBase : public QMainWindow
 {
   Q_OBJECT
 
 public :
-  WndAbout (QMainWindow* pParent=0);
-  virtual ~WndAbout (void);
+  WndBase (QMainWindow* pParent=0);
+  virtual ~WndBase (void);
 
 
-private :
-  void createWidgets (void);
+protected :
+  virtual void showEvent (QShowEvent* pEvent);
+
+  virtual void createWidgets (void) = 0;
 };
 
 
-#endif // #ifndef __WNDSAT_H__
+#endif // #ifndef __WNDBASE_H__

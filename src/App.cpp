@@ -276,10 +276,10 @@ void App::setState (App::State eNewState)
       // TODO : warn user !!!
     }
 
+    m_pPixState = m_pPixRecordGrey;
+
     m_pLocation->resetLastFix();
     m_pLocation->start();
-
-    m_pPixState = m_pPixRecordGrey;
   }
   else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
   {
@@ -292,6 +292,8 @@ void App::setState (App::State eNewState)
   }
 
   m_eState = eNewState;
+
+  emit this->sigAppStatePixChanged(m_pPixState);
 }
 
 //---------------------------------------------------------------------------
@@ -402,8 +404,17 @@ void App::onSettingsWritten (void)
   m_pLocation->setAssisted(m_Settings.getGpsAssisted());
 
   // start location service if needed
-  if (m_Settings.getGpsAlwaysConnected() && !m_pLocation->isStarted())
+  if (!m_pLocation->isStarted() && (m_Settings.getGpsAlwaysConnected() || m_eState == STATE_STARTED))
     m_pLocation->start();
+
+  // update state pixmap
+  {
+    QPixmap* pPrevStatePix = m_pPixState;
+
+    m_pPixState = (m_eState == STATE_STOPPED) ? m_pPixPauseGrey : m_pPixRecordGrey;
+    if (m_pPixState != pPrevStatePix)
+      emit this->sigAppStatePixChanged(m_pPixState);
+  }
 }
 
 
@@ -428,23 +439,30 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   Q_UNUSED(pLocation);
 
   // update status icon
-  if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
   {
-    if (bAccurate)
-      m_pPixState = m_pPixRecordGreen;
-    else if (pLocation->isAcquiring())
-      m_pPixState = m_pPixRecordOrange;
+    QPixmap* pPrevStatePix = m_pPixState;
+
+    if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+    {
+      if (bAccurate)
+        m_pPixState = m_pPixRecordGreen;
+      else if (pLocation->isAcquiring())
+        m_pPixState = m_pPixRecordOrange;
+      else
+        m_pPixState = m_pPixRecordRed;
+    }
     else
-      m_pPixState = m_pPixRecordRed;
-  }
-  else
-  {
-    if (bAccurate)
-      m_pPixState = m_pPixPauseGreen;
-    else if (pLocation->isAcquiring())
-      m_pPixState = m_pPixPauseOrange;
-    else
-      m_pPixState = m_pPixPauseRed;
+    {
+      if (bAccurate)
+        m_pPixState = m_pPixPauseGreen;
+      else if (pLocation->isAcquiring())
+        m_pPixState = m_pPixPauseOrange;
+      else
+        m_pPixState = m_pPixPauseRed;
+    }
+
+    if (m_pPixState != pPrevStatePix)
+      emit this->sigAppStatePixChanged(m_pPixState);
   }
 
   // setup system time if needed

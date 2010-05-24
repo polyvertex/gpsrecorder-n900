@@ -33,31 +33,29 @@
 // WndMain
 //---------------------------------------------------------------------------
 WndMain::WndMain (QMainWindow* pParent/*=0*/)
-: QMainWindow(pParent)
+: WndBase(pParent)
 {
   Q_ASSERT(App::instance());
   Q_ASSERT(App::instance()->location());
-  Q_ASSERT(App::instance()->wndSat());
 
   this->setWindowTitle(App::applicationLabel());
-#if QT_VERSION > 0x040503
-  this->setAttribute(Qt::WA_Maemo5StackedWindow);
-#endif
 
-  {
-    this->menuBar()->clear();
-    m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onClickedStartStop()));
-    m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onClickedSnap()));
-    m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onClickedConfig()));
-    m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onClickedConvert()));
-    m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onClickedAbout()));
-
-    m_pMenuSnap->setEnabled(false);
-  }
+  this->menuBar()->clear();
+  m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onClickedStartStop()));
+  m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onClickedSnap()));
+  m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onClickedConfig()));
+  m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onClickedConvert()));
+  m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onClickedAbout()));
+  m_pMenuSnap->setEnabled(false);
 
   this->createWidgets();
   this->clearFixFields();
   this->showHome();
+
+  this->connect(
+    App::instance(),
+    SIGNAL(sigAppStatePixChanged(QPixmap*)),
+    SLOT(onAppStatePixChanged(QPixmap*)) );
 
   this->connect(
     App::instance()->location(),
@@ -207,6 +205,22 @@ void WndMain::showFix (void)
   this->setCentralWidget(pWidget);
 }
 
+//---------------------------------------------------------------------------
+// clearFixFields
+//---------------------------------------------------------------------------
+void WndMain::clearFixFields (void)
+{
+  m_pLblFixFields->clear();
+  m_pLblFixMode->clear();
+  m_pLblFixTime->clear();
+  m_pLblFixLat->clear();
+  m_pLblFixLong->clear();
+  m_pLblFixAlt->clear();
+  m_pLblFixTrack->clear();
+  m_pLblFixSpeed->clear();
+  m_pLblFixSatUse->clear();
+}
+
 
 
 //---------------------------------------------------------------------------
@@ -222,7 +236,6 @@ void WndMain::onClickedStartStop (void)
 
     pApp->setState(App::STATE_STOPPED);
     m_pLblStatus->setText(tr("Stopped"));
-    m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
     m_pMenuStartStop->setText(tr("Start"));
     m_pMenuSnap->setEnabled(false);
@@ -235,7 +248,6 @@ void WndMain::onClickedStartStop (void)
 
     pApp->setState(App::STATE_STARTED);
     m_pLblStatus->setText(tr("Started"));
-    m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
     m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
@@ -327,19 +339,11 @@ void WndMain::onClickedAbout (void)
 
 
 //---------------------------------------------------------------------------
-// clearFixFields
+// onAppStatePixChanged
 //---------------------------------------------------------------------------
-void WndMain::clearFixFields (void)
+void WndMain::onAppStatePixChanged (QPixmap* pNewStatePixmap)
 {
-  m_pLblFixFields->clear();
-  m_pLblFixMode->clear();
-  m_pLblFixTime->clear();
-  m_pLblFixLat->clear();
-  m_pLblFixLong->clear();
-  m_pLblFixAlt->clear();
-  m_pLblFixTrack->clear();
-  m_pLblFixSpeed->clear();
-  m_pLblFixSatUse->clear();
+  m_pLblStatusIcon->setPixmap(*pNewStatePixmap);
 }
 
 //---------------------------------------------------------------------------
@@ -357,9 +361,6 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
     App::instance()->getStateStr(),
     (bAccurate ? QT_TR_NOOP("Fixed") : pLocation->isAcquiring() ? QT_TR_NOOP("Acquiring") : QT_TR_NOOP("Lost")) );
   m_pLblStatus->setText(str);
-
-  // status icon
-  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // fix fields
   str.clear();

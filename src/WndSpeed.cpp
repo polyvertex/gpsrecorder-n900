@@ -33,18 +33,17 @@
 // WndSpeed
 //---------------------------------------------------------------------------
 WndSpeed::WndSpeed (QMainWindow* pParent/*=0*/)
-: QMainWindow(pParent)
+: WndBase(pParent)
 {
-  Q_ASSERT(App::instance());
-  Q_ASSERT(App::instance()->location());
-
   m_uiSpeedLastUpdate = 0;
 
   this->setWindowTitle(App::applicationLabel() + QString(" - ") + tr("Speed"));
-#if QT_VERSION > 0x040503
-  this->setAttribute(Qt::WA_Maemo5StackedWindow);
-#endif
   this->createWidgets();
+
+  this->connect(
+    App::instance(),
+    SIGNAL(sigAppStatePixChanged(QPixmap*)),
+    SLOT(onAppStatePixChanged(QPixmap*)) );
 
   this->connect(
     App::instance()->location(),
@@ -105,6 +104,14 @@ void WndSpeed::createWidgets (void)
 
 
 //---------------------------------------------------------------------------
+// onAppStatePixChanged
+//---------------------------------------------------------------------------
+void WndSpeed::onAppStatePixChanged (QPixmap* pNewStatePixmap)
+{
+  m_pLblStatusIcon->setPixmap(*pNewStatePixmap);
+}
+
+//---------------------------------------------------------------------------
 // onLocationFix
 //---------------------------------------------------------------------------
 void WndSpeed::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
@@ -113,9 +120,6 @@ void WndSpeed::onLocationFix (Location* pLocation, const LocationFixContainer* p
 
   const LocationFix& fix = *pFixCont->getFix();
   time_t uiNow = time(0);
-
-  // status icon
-  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // update label only if necessary
   if (bAccurate && fix.hasFields(FIXFIELD_SPEED))

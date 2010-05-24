@@ -160,6 +160,7 @@ class ExporterSink;
 #include "ExporterSinkGpx.h"
 #include "ExporterSinkKml.h"
 
+#include "WndBase.h"
 #include "WndAbout.h"
 #include "WndCell.h"
 #include "WndConfig.h"

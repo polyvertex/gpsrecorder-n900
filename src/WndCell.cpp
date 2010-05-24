@@ -33,19 +33,18 @@
 // WndCell
 //---------------------------------------------------------------------------
 WndCell::WndCell (QMainWindow* pParent/*=0*/)
-: QMainWindow(pParent)
+: WndBase(pParent)
 {
-  Q_ASSERT(App::instance());
-  Q_ASSERT(App::instance()->location());
-
   this->setWindowTitle(App::applicationLabel() + QString(" - ") + tr("Cell Tower"));
-#if QT_VERSION > 0x040503
-  this->setAttribute(Qt::WA_Maemo5StackedWindow);
-#endif
   this->createWidgets();
 
   memset(&m_Gsm, 0, sizeof(m_Gsm));
   memset(&m_Wcdma, 0, sizeof(m_Wcdma));
+
+  this->connect(
+    App::instance(),
+    SIGNAL(sigAppStatePixChanged(QPixmap*)),
+    SLOT(onAppStatePixChanged(QPixmap*)) );
 
   this->connect(
     App::instance()->location(),
@@ -133,6 +132,14 @@ void WndCell::createWidgets (void)
 
 
 //---------------------------------------------------------------------------
+// onAppStatePixChanged
+//---------------------------------------------------------------------------
+void WndCell::onAppStatePixChanged (QPixmap* pNewStatePixmap)
+{
+  m_pLblStatusIcon->setPixmap(*pNewStatePixmap);
+}
+
+//---------------------------------------------------------------------------
 // onLocationFix
 //---------------------------------------------------------------------------
 void WndCell::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
@@ -143,9 +150,6 @@ void WndCell::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   static int iLastMode = -1; // -1:unknown 0:gsm 1:wcdma
 
   const LocationFix& fix = *pFixCont->getFix();
-
-  // status icon
-  m_pLblStatusIcon->setPixmap(*App::instance()->getStatePix());
 
   // wcdma
   if (fix.sWCDMA.bSetup && ((iLastMode != 1) || (memcmp(&m_Wcdma, &fix.sWCDMA, sizeof(m_Wcdma)) != 0)))

@@ -35,7 +35,7 @@
 //---------------------------------------------------------------------------
 // WndCell
 //---------------------------------------------------------------------------
-class WndCell : public QMainWindow
+class WndCell : public WndBase
 {
   Q_OBJECT
 
@@ -49,6 +49,8 @@ private :
 
 
 private slots :
+  void onAppStatePixChanged (QPixmap* pNewStatePixmap);
+
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 

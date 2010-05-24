@@ -33,14 +33,11 @@
 // WndAbout
 //---------------------------------------------------------------------------
 WndAbout::WndAbout (QMainWindow* pParent/*=0*/)
-: QMainWindow(pParent)
+: WndBase(pParent)
 {
   Q_ASSERT(App::instance());
 
   this->setWindowTitle(tr("About") + QString(" ") + App::applicationLabel());
-#if QT_VERSION > 0x040503
-  this->setAttribute(Qt::WA_Maemo5StackedWindow);
-#endif
   this->createWidgets();
 }
 

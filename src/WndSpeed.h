@@ -35,7 +35,7 @@
 //---------------------------------------------------------------------------
 // WndSpeed
 //---------------------------------------------------------------------------
-class WndSpeed : public QMainWindow
+class WndSpeed : public WndBase
 {
   Q_OBJECT
 
@@ -49,6 +49,8 @@ private :
 
 
 private slots :
+  void onAppStatePixChanged (QPixmap* pNewStatePixmap);
+
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 

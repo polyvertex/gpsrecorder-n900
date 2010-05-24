@@ -35,7 +35,7 @@
 //---------------------------------------------------------------------------
 // WndMain
 //---------------------------------------------------------------------------
-class WndMain : public QMainWindow
+class WndMain : public WndBase
 {
   Q_OBJECT
 
@@ -66,6 +66,8 @@ private slots :
   void onClickedSpeed     (void);
   void onClickedCell      (void);
   void onClickedAbout     (void);
+
+  void onAppStatePixChanged (QPixmap* pNewStatePixmap);
 
   void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
