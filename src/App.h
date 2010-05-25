@@ -67,7 +67,7 @@ public :
   Location*    location      (void) { return m_pLocation; }
   GPSRFile*    outFile       (void) { return &m_GPSRFile; }
 
-  void        setState    (State eNewState);
+  bool        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }
   const char* getStateStr (void) const;
   QPixmap*    getStatePix (void) { return m_pPixState; }

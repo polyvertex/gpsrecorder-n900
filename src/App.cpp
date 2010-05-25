@@ -245,21 +245,29 @@ const QString& App::outputDir (void)
 //---------------------------------------------------------------------------
 // setState
 //---------------------------------------------------------------------------
-void App::setState (App::State eNewState)
+bool App::setState (App::State eNewState)
 {
   if (m_eState == eNewState)
-    return;
+    return true;
 
   if (m_eState == STATE_STOPPED && eNewState == STATE_STARTED)
   {
     QByteArray strPath;
     QString    strTrackName;
 
+    if (m_Settings.getAskTrackName())
+    {
+      strTrackName = this->askTrackName();
+      if (strTrackName == ".")
+      {
+        // here, user cancelled
+        // TODO : information box
+        return false;
+      }
+    }
+
     m_bVirginOutput  = true;
     m_uiLastFixWrite = 0;
-
-    if (m_Settings.getAskTrackName())
-      strTrackName = this->askTrackName();
 
     strPath  = App::outputDir().toAscii();
     strPath += "/gpstrack-";
@@ -294,6 +302,8 @@ void App::setState (App::State eNewState)
   m_eState = eNewState;
 
   emit this->sigAppStatePixChanged(m_pPixState);
+
+  return true;
 }
 
 //---------------------------------------------------------------------------
@@ -322,12 +332,18 @@ const char* App::getStateStr (void) const
 QString App::askTrackName (void)
 {
   QString strTrackName;
+  bool bOk = false;
 
   strTrackName = QInputDialog::getText(
     m_pWndMain,
     tr("Track name ?"),
     tr("Please enter desired track name or leave blank :"),
-    QLineEdit::Normal).trimmed();
+    QLineEdit::Normal,
+    "",
+    &bOk).trimmed();
+
+  if (!bOk)
+    return QString(".");
 
   strTrackName.replace('.', '_');
 

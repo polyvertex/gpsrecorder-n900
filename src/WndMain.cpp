@@ -243,10 +243,11 @@ void WndMain::onClickedStartStop (void)
   }
   else
   {
+    if (!pApp->setState(App::STATE_STARTED))
+      return;
+
     this->clearFixFields();
     m_pBtnCell->setEnabled(false);
-
-    pApp->setState(App::STATE_STARTED);
     m_pLblStatus->setText(tr("Started"));
 
     m_pMenuStartStop->setText(tr("Stop"));
@@ -263,6 +264,7 @@ void WndMain::onClickedSnap (void)
   GPSRFile* pGPSRFile = App::instance()->outFile();
   QString   strName;
   time_t    uiTime = time(0);
+  bool      bOk = false;
 
   Q_ASSERT(pGPSRFile);
   Q_ASSERT(pGPSRFile->isOpen());
@@ -275,12 +277,21 @@ void WndMain::onClickedSnap (void)
     this,
     tr("Point name ?"),
     tr("Please enter the name of the point to snap or leave blank :"),
-    QLineEdit::Normal).trimmed();
+    QLineEdit::Normal,
+    "",
+    &bOk).trimmed();
 
-  // snap point
-  pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
+  if (!bOk)
+  {
+    // TODO : information box 'cancelled'
+  }
+  else
+  {
+    // snap point
+    pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
-  // TODO : popup a message to inform user (no confirmation needed !)
+    // TODO : information box 'position snapped'
+  }
 }
 
 //---------------------------------------------------------------------------
