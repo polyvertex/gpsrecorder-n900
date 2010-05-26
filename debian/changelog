@@ -1,3 +1,9 @@
+gpsrecorder (0.1.104) unstable; urgency=low
+
+  * User can now cancel a 'Start' or a 'Snap' action through Input dialogs.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Wed, 26 May 2010 18:24:35 +0200
+
 gpsrecorder (0.1.102) unstable; urgency=low
 
   * Initial public release.
