@@ -111,12 +111,11 @@ MOC_DIR     = $$DESTDIR
 UI_DIR      = $$DESTDIR
 
 
-# build revision.h header
-PRE_TARGETDEPS         += version.txt
-build-version.target    = version.txt
-build-version.commands  = scripts/buildversion.sh
+# create version.h
+build-version.commands  = scripts/version.sh create-header
 build-version.depends   = FORCE
 QMAKE_EXTRA_TARGETS    += build-version
+PRE_TARGETDEPS          = build-version
 
 
 # define install target
@@ -140,13 +139,19 @@ icon64.files  = data/64x64/gpsrecorder.png
 INSTALLS     += icon64
 
 
+# create REVISION file for source code releasing
+create-revfile.commands  = scripts/version.sh create-revfile
+create-revfile.depends   = FORCE
+QMAKE_EXTRA_TARGETS     += create-revfile
+
 # targets for debian source and binary package creation
 debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d -i -I.svn
+debian-src.depends   = create-revfile
 debian-bin.commands  = dpkg-buildpackage -b -r -uc -d
 debian-all.depends   = debian-src debian-bin
 QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin
 
 
 # clean all but Makefile
-compiler_clean.commands  = -$(DEL_FILE) $(TARGET) version.txt src/version.h ; $(DEL_FILE) -rf $$DESTDIR
-QMAKE_EXTRA_TARGETS     +=  compiler_clean
+compiler_clean.commands  = -$(DEL_FILE) $(TARGET) ; $(DEL_FILE) -rf $$DESTDIR ; scripts/version.sh clean
+QMAKE_EXTRA_TARGETS     += compiler_clean
