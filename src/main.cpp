@@ -157,7 +157,7 @@ int main (int nArgc, char** ppszArgv)
     qPrintable(QCoreApplication::applicationVersion()));
 
   (void)App::outputDir(); // force outputDir to be setup by App now !
-  printf("Output directory is %s\n", qPrintable(App::outputDir()));
+  //printf("Output directory is %s\n", qPrintable(App::outputDir()));
 
   fflush(NULL);
 
