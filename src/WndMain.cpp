@@ -283,14 +283,14 @@ void WndMain::onClickedSnap (void)
 
   if (!bOk)
   {
-    // TODO : information box 'cancelled'
+    // TODO : information popup 'cancelled'
   }
   else
   {
     // snap point
     pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
-    // TODO : information box 'position snapped'
+    // TODO : information popup 'position snapped'
   }
 }
 

@@ -261,7 +261,7 @@ bool App::setState (App::State eNewState)
       if (strTrackName == ".")
       {
         // here, user cancelled
-        // TODO : information box
+        // TODO : information popup
         return false;
       }
     }
@@ -281,7 +281,8 @@ bool App::setState (App::State eNewState)
 
     if (!m_GPSRFile.openWrite(strPath.constData(), true))
     {
-      // TODO : warn user !!!
+      QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath));
+      return false;
     }
 
     m_pPixState = m_pPixRecordGrey;

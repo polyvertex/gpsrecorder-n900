@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>add-file.png</file>
+  <file>add-folder.png</file>
   <file>appicon-128.png</file>
   <file>cellmode-2g-170.png</file>
   <file>cellmode-3g-170.png</file>

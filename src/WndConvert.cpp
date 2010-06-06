@@ -66,20 +66,22 @@ void WndConvert::setupControls (void)
 
   // browse input file(s)
   {
-    QGridLayout* pGrid = new QGridLayout;
-    QPushButton* pBtnBrowseFiles = new QPushButton(tr("Files"));
-    QPushButton* pBtnBrowseDir = new QPushButton(tr("Directory"));
+    QHBoxLayout* pHBox = new QHBoxLayout();
+    QToolButton* pBtnBrowseFiles = new QToolButton();
+    QToolButton* pBtnBrowseDir = new QToolButton();
 
     m_pTxtBrowse = new QLineEdit;
     m_pTxtBrowse->setReadOnly(true);
 
+    pBtnBrowseFiles->setIcon(QIcon(":/add-file.png"));
+    pBtnBrowseDir->setIcon(QIcon(":/add-folder.png"));
     this->connect(pBtnBrowseFiles, SIGNAL(clicked()), SLOT(onClickedBrowseFiles()));
     this->connect(pBtnBrowseDir, SIGNAL(clicked()), SLOT(onClickedBrowseDir()));
 
-    pGrid->addWidget(m_pTxtBrowse,    0, 0, 1, 2);
-    pGrid->addWidget(pBtnBrowseFiles, 1, 0);
-    pGrid->addWidget(pBtnBrowseDir,   1, 1);
-    pLeftLayout->addLayout(pGrid);
+    pHBox->addWidget(m_pTxtBrowse);
+    pHBox->addWidget(pBtnBrowseFiles);
+    pHBox->addWidget(pBtnBrowseDir);
+    pLeftLayout->addLayout(pHBox);
     pLeftLayout->addSpacing(5);
   }
 
@@ -207,9 +209,7 @@ void WndConvert::refreshInputFilesControl (void)
   }
   else if (m_InputFiles.count() > 1)
   {
-    QString str;
-
-    str.sprintf(QT_TR_NOOP("%d files selected"), m_InputFiles.count());
+    QString str(tr("%1 files selected").arg(m_InputFiles.count()));
     m_pTxtBrowse->setText(str);
   }
 }
@@ -308,7 +308,7 @@ void WndConvert::onClickedConvert (void)
   {
     if (m_InputFiles.isEmpty())
     {
-      // TODO : popup a message "No file selected !"
+      QMessageBox::warning(this, "", tr("No file selected !"));
       return;
     }
 
@@ -316,7 +316,7 @@ void WndConvert::onClickedConvert (void)
         m_pChkGpx->checkState() == Qt::Unchecked &&
         m_pChkKml->checkState() == Qt::Unchecked)
     {
-      // TODO : popup a message "No output format selected !"
+      QMessageBox::warning(this, "", tr("No output format selected !"));
       return;
     }
   }
@@ -369,7 +369,19 @@ void WndConvert::onClickedConvert (void)
   delete pSinkGpx;
   delete pSinkKml;
 
-  // TODO : popup a message to show the uiSuccessCount value
+  // inform user
+  {
+    QString strMsg;
+
+    if (!uiSuccessCount)
+      strMsg = tr("No file was exported !");
+    else if (uiSuccessCount == 1)
+      strMsg = tr("1 file exported successfully.");
+    else if (uiSuccessCount > 1)
+      strMsg = tr("%1 files exported successfully.").arg(uiSuccessCount);
+
+    QMessageBox::information(this, "", strMsg);
+  }
 
   // exit dialog
   this->done(0);
