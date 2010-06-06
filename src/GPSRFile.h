@@ -103,11 +103,11 @@ public :
   bool openWrite (const char* pszFile, bool bTruncate);
   bool openRead  (const char* pszFile); // implicit call to seekFirst()
 
-  bool        isOpen    (void) const { return m_pFile != 0; }
-  bool        isWriting (void) const { return m_bWriting; }
-  bool        isError   (void) const { return m_bError; }
-  bool        isEOF     (void) const { return m_bEOF; }
-  const char* getPath   (void) const { return m_strFilePath.constData(); }
+  bool              isOpen    (void) const { return m_pFile != 0; }
+  bool              isWriting (void) const { return m_bWriting; }
+  bool              isError   (void) const { return m_bError; }
+  bool              isEOF     (void) const { return m_bEOF; }
+  const QByteArray& getPath   (void) const { return m_strFilePath; }
 
   void close (void);
 

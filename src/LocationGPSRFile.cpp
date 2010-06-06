@@ -135,9 +135,9 @@ void LocationGPSRFile::start (void)
   if (m_bStarted)
   {
     Q_ASSERT(m_GPSRFile.isOpen());
-    Q_ASSERT(strcmp(m_strFilePath.constData(), m_GPSRFile.getPath()) == 0);
+    Q_ASSERT(m_strFilePath == m_GPSRFile.getPath());
 
-    if (!strcmp(m_strFilePath.constData(), m_GPSRFile.getPath()))
+    if (m_strFilePath == m_GPSRFile.getPath())
     {
       // this is the same input file, just rewind
       this->readFirstFix();

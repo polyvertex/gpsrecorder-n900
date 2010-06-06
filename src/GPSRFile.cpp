@@ -157,7 +157,7 @@ bool GPSRFile::openRead (const char* pszFile)
     qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
-  qDebug("Opened  GPSR file %s.", pszFile);
+  qDebug("Opened  GPSR file %s", pszFile);
 
   // setup members
   m_strFilePath = pszFile;
