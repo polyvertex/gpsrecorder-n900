@@ -281,7 +281,7 @@ bool App::setState (App::State eNewState)
 
     if (!m_GPSRFile.openWrite(strPath.constData(), true))
     {
-      QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath));
+      QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath.constData()));
       return false;
     }
 
