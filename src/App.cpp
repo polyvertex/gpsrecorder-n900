@@ -45,6 +45,11 @@ QString App::ms_strOutputDir;
 App::App (int& nArgc, char** ppszArgv)
 : QApplication(nArgc, ppszArgv)
 {
+  // force POSIX locale for *printf() calls, this is required by the
+  // Exporter classes.  we do this here because the QApplication()
+  // constructor seems to apply locale settings by itself.
+  setlocale(LC_NUMERIC, "C");
+
   // init members
   m_eState         = STATE_STOPPED;
   m_bVirginOutput  = true;
