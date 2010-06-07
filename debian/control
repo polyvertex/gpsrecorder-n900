@@ -2,7 +2,7 @@ Source: gpsrecorder
 Section: user/navigation
 Priority: extra
 Maintainer: Jean-Charles Lefebvre <gpsrecorder@jcl.name>
-Build-Depends: debhelper (>= 5), libdbus-glib-1-dev, libgconf2-dev, libglib2.0-dev, liblocation-dev, libqt4-dev, libqt4-gui-dev, libtime-dev, zlib1g-dev
+Build-Depends: debhelper (>= 5), libdbus-glib-1-dev, libgconf2-dev, libglib2.0-dev, liblocation-dev, libqt4-dev, libtime-dev, zlib1g-dev
 Standards-Version: 3.7.3
 Homepage: http://gpsrecorder.jcl.name/
 XSBC-Bugtracker: http://garage.maemo.org/tracker/?atid=5769&group_id=1620

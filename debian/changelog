@@ -1,3 +1,11 @@
+gpsrecorder (0.1.112) unstable; urgency=low
+
+  * Corrected bug #5883 (non POSIX locale was applied to exported files).
+  * Added information boxes here and there to inform user when something goes wrong.
+  * Polished the Convert dialog a little ('browse' icons).
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 07 Jun 2010 18:49:12 +0200
+
 gpsrecorder (0.1.105) unstable; urgency=low
 
   * User can cancel a 'Start' or a 'Snap' action through Input dialogs.
