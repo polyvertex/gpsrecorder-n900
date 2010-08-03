@@ -68,7 +68,7 @@ void WndConfig::setupControls (void)
     QStandardItemModel*      pCboLogStepItemModel = new QStandardItemModel(this);
     QMaemo5ListPickSelector* pCboLogStepSelector;
     uint uiConfiguredLogStep   = settings.getLogStep();
-    uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 3600, 7200, 10800 };
+    uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120, 180, 240, 300, 600, 1200, 1800, 3600, 7200, 10800 };
     int  iDefaultLogStepIdx    = 4; // 5 seconds
 
     for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
@@ -83,7 +83,7 @@ void WndConfig::setupControls (void)
         if (auiProposedLogSteps[i] < 60)
         {
           strItem.sprintf(
-            "%u second%s (data fetched every %u seconds)",
+            "%u second%s (%u)",
             auiProposedLogSteps[i],
             (auiProposedLogSteps[i] == 1) ? "" : "s",
             uiBestAllowedFixStep);
@@ -93,7 +93,7 @@ void WndConfig::setupControls (void)
           uint uiMinutes = auiProposedLogSteps[i] / 60;
 
           strItem.sprintf(
-            "%u minute%s (data fetched every %u seconds)",
+            "%u minute%s (%u)",
             uiMinutes,
             (uiMinutes == 1) ? "" : "s",
             uiBestAllowedFixStep);
@@ -103,7 +103,7 @@ void WndConfig::setupControls (void)
           uint uiHours = auiProposedLogSteps[i] / 3600;
 
           strItem.sprintf(
-            "%u hour%s (data fetched every %u seconds)",
+            "%u hour%s (%u)",
             uiHours,
             (uiHours == 1) ? "" : "s",
             uiBestAllowedFixStep);
