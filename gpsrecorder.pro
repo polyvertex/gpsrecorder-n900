@@ -36,7 +36,7 @@ CONFIG(debug, debug|release) {
 }
 
 QT  = core gui
-#QT += maemo5
+QT += maemo5
 
 INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include
 LIBS        += -lrt -lz -lglib-2.0 -llocation -ltime

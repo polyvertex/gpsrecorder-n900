@@ -106,10 +106,9 @@ extern "C" {
 #include <QtGui>
 #endif
 
-// qt - maemo
-// requires 'libqt4-maemo5-maemo5' package into the device
+// qt - maemo specific
 #ifdef __cplusplus
-//#include <QMaemo5InformationBox> // qt4.6+
+#include <QMaemo5InformationBox> // qt4.6+
 #endif
 
 

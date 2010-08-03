@@ -283,14 +283,23 @@ void WndMain::onClickedSnap (void)
 
   if (!bOk)
   {
-    // TODO : information popup 'cancelled'
+    QMaemo5InformationBox::information(
+      this,
+      tr("Action <b>cancelled</b> !"));
   }
   else
   {
     // snap point
     pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
-    // TODO : information popup 'position snapped'
+    if (!strName.isEmpty())
+    {
+      strName.prepend("<b>");
+      strName.append("</b>");
+    }
+    QMaemo5InformationBox::information(
+      this,
+      QString(tr("Snapped position %1 !")).arg(strName));
   }
 }
 

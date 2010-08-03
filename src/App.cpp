@@ -265,8 +265,9 @@ bool App::setState (App::State eNewState)
       strTrackName = this->askTrackName();
       if (strTrackName == ".")
       {
-        // here, user cancelled
-        // TODO : information popup
+        QMaemo5InformationBox::information(
+          m_pWndMain,
+          tr("Action <b>canceled</b> !"));
         return false;
       }
     }
@@ -376,7 +377,10 @@ void App::closeGPSRFile (void)
 
       if (m_bVirginOutput)
       {
-        // TODO : information popup
+        QMaemo5InformationBox::information(
+          m_pWndMain,
+          tr("Deleting track file because nothing was written in it !"),
+          5000);
         qDebug("Deleting %s because nothing was written in it.", strPath.constData());
         QFile::remove(strPath);
       }
@@ -395,14 +399,25 @@ bool App::applyGpsTime (uint uiGpsTime)
 
   if (Util::timeSetup(uiGpsTime, &nTimeDiff))
   {
+    static uint uiLastTime = 0;
+
     QString strInfo;
+
+    if (uiGpsTime < uiLastTime || (uiGpsTime - uiLastTime) >= 10) // do not bother user too much
+    {
+      strInfo = tr("System time synchronized with GPS and is now %1.<br>Offset was %2%3 seconds.");
+      strInfo.arg(Util::timeString().constData());
+      strInfo.arg(nTimeDiff > 0 ? "+" : "");
+      strInfo.arg(nTimeDiff);
+
+      QMaemo5InformationBox::information(m_pWndMain, strInfo, 5000);
+      uiLastTime = uiGpsTime;
+    }
 
     strInfo.sprintf(
       "System time synchronized with GPS and is now %s (offset was %+d seconds).",
       Util::timeString().constData(),
       nTimeDiff);
-
-    // TODO : information popup
     qDebug(qPrintable(strInfo));
 
     return true;
