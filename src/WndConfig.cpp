@@ -68,7 +68,7 @@ void WndConfig::setupControls (void)
     QStandardItemModel*      pCboLogStepItemModel = new QStandardItemModel(this);
     QMaemo5ListPickSelector* pCboLogStepSelector;
     uint uiConfiguredLogStep   = settings.getLogStep();
-    uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120 };
+    uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 3600, 7200, 10800 };
     int  iDefaultLogStepIdx    = 4; // 5 seconds
 
     for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
@@ -77,13 +77,37 @@ void WndConfig::setupControls (void)
           auiProposedLogSteps[i] <= AppSettings::logStepBounds().second)
       {
         QStandardItem* pItem = new QStandardItem;
-        QString strItem;
+        QString        strItem;
+        uint           uiBestAllowedFixStep = Location::selectBestAllowedFixStep(auiProposedLogSteps[i]);
 
-        strItem.sprintf(
-          "%u second%s (%u)",
-          auiProposedLogSteps[i],
-          (auiProposedLogSteps[i] == 1) ? "" : "s",
-          Location::selectBestAllowedFixStep(auiProposedLogSteps[i]));
+        if (auiProposedLogSteps[i] < 60)
+        {
+          strItem.sprintf(
+            "%u second%s (data fetched every %u seconds)",
+            auiProposedLogSteps[i],
+            (auiProposedLogSteps[i] == 1) ? "" : "s",
+            uiBestAllowedFixStep);
+        }
+        else if (auiProposedLogSteps[i] < 3600)
+        {
+          uint uiMinutes = auiProposedLogSteps[i] / 60;
+
+          strItem.sprintf(
+            "%u minute%s (data fetched every %u seconds)",
+            uiMinutes,
+            (uiMinutes == 1) ? "" : "s",
+            uiBestAllowedFixStep);
+        }
+        else
+        {
+          uint uiHours = auiProposedLogSteps[i] / 3600;
+
+          strItem.sprintf(
+            "%u hour%s (data fetched every %u seconds)",
+            uiHours,
+            (uiHours == 1) ? "" : "s",
+            uiBestAllowedFixStep);
+        }
 
         pItem->setText(strItem);
         pItem->setTextAlignment(Qt::AlignLeft);

@@ -121,10 +121,13 @@ uint Location::selectBestAllowedFixStep (uint uiDesiredFixStep)
   {
     const QVector<uint>& vecFixSteps = Location::allowedFixSteps();
 
-    for (int i = 0; i < vecFixSteps.count(); ++i)
+    for (int i = vecFixSteps.count() - 1; i >= 0; --i)
     {
-      if (vecFixSteps[i] * 2 == uiDesiredFixStep)
+      if (uiDesiredFixStep > vecFixSteps[i] &&
+          uiDesiredFixStep % vecFixSteps[i] == 0)
+      {
         return vecFixSteps[i];
+      }
     }
   }
 
