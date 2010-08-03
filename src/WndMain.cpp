@@ -285,7 +285,7 @@ void WndMain::onClickedSnap (void)
   {
     QMaemo5InformationBox::information(
       this,
-      tr("Action cancelled !"));
+      tr("Action canceled !"));
   }
   else
   {
