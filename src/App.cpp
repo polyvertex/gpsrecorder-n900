@@ -267,7 +267,7 @@ bool App::setState (App::State eNewState)
       {
         QMaemo5InformationBox::information(
           m_pWndMain,
-          tr("Action <b>canceled</b> !"));
+          tr("Action cancelled !"));
         return false;
       }
     }

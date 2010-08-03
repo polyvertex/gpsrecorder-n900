@@ -285,7 +285,7 @@ void WndMain::onClickedSnap (void)
   {
     QMaemo5InformationBox::information(
       this,
-      tr("Action <b>cancelled</b> !"));
+      tr("Action cancelled !"));
   }
   else
   {
@@ -294,8 +294,8 @@ void WndMain::onClickedSnap (void)
 
     if (!strName.isEmpty())
     {
-      strName.prepend("<b>");
-      strName.append("</b>");
+      strName.prepend("<i>");
+      strName.append("</i>");
     }
     QMaemo5InformationBox::information(
       this,
