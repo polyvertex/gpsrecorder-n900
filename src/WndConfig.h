@@ -53,10 +53,10 @@ private slots :
 
 
 private :
-  QComboBox* m_pCboLogStep;
-  QCheckBox* m_pChkGpsAssisted;
-  QCheckBox* m_pChkGpsAlwaysConnected;
-  QCheckBox* m_pChkAskTrackName;
+  QMaemo5ValueButton* m_pCboLogStep;
+  QCheckBox*          m_pChkGpsAssisted;
+  QCheckBox*          m_pChkGpsAlwaysConnected;
+  QCheckBox*          m_pChkAskTrackName;
 };
 
 

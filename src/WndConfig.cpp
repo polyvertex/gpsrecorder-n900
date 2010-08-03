@@ -64,17 +64,19 @@ void WndConfig::setupControls (void)
 
   // options
   {
-    QFormLayout* pForm = new QFormLayout;
+    QVBoxLayout*             pVBox = new QVBoxLayout;
+    QStandardItemModel*      pCboLogStepItemModel = new QStandardItemModel(this);
+    QMaemo5ListPickSelector* pCboLogStepSelector;
     uint uiConfiguredLogStep   = settings.getLogStep();
     uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120 };
     int  iDefaultLogStepIdx    = 4; // 5 seconds
 
-    m_pCboLogStep = new QComboBox;
     for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
     {
       if (auiProposedLogSteps[i] >= AppSettings::logStepBounds().first ||
           auiProposedLogSteps[i] <= AppSettings::logStepBounds().second)
       {
+        QStandardItem* pItem = new QStandardItem;
         QString strItem;
 
         strItem.sprintf(
@@ -83,28 +85,38 @@ void WndConfig::setupControls (void)
           (auiProposedLogSteps[i] == 1) ? "" : "s",
           Location::selectBestAllowedFixStep(auiProposedLogSteps[i]));
 
-        m_pCboLogStep->addItem(strItem, QVariant(auiProposedLogSteps[i]));
+        pItem->setText(strItem);
+        pItem->setTextAlignment(Qt::AlignLeft);
+        pItem->setEditable(false);
+        pItem->setData(QVariant(auiProposedLogSteps[i]));
+        pCboLogStepItemModel->appendRow(pItem);
+
         if (auiProposedLogSteps[i] == uiConfiguredLogStep)
-          m_pCboLogStep->setCurrentIndex(i);
+          iDefaultLogStepIdx = i;
       }
     }
-    if (m_pCboLogStep->currentIndex() < 0)
-      m_pCboLogStep->setCurrentIndex(iDefaultLogStepIdx);
 
-    m_pChkGpsAssisted = new QCheckBox;
+    pCboLogStepSelector = new QMaemo5ListPickSelector;
+    pCboLogStepSelector->setModel(pCboLogStepItemModel);
+    pCboLogStepSelector->setCurrentIndex(iDefaultLogStepIdx);
+    m_pCboLogStep = new QMaemo5ValueButton(tr("Log step"));
+    m_pCboLogStep->setValueLayout(QMaemo5ValueButton::ValueBesideText);
+    m_pCboLogStep->setPickSelector(pCboLogStepSelector);
+
+    m_pChkGpsAssisted = new QCheckBox(tr("Assisted GPS"));
     m_pChkGpsAssisted->setCheckState(settings.getGpsAssisted() ? Qt::Checked : Qt::Unchecked);
 
-    m_pChkGpsAlwaysConnected = new QCheckBox;
+    m_pChkGpsAlwaysConnected = new QCheckBox(tr("GPS always connected"));
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
-    m_pChkAskTrackName = new QCheckBox;
+    m_pChkAskTrackName = new QCheckBox(tr("Ask for track name before create"));
     m_pChkAskTrackName->setCheckState(settings.getAskTrackName() ? Qt::Checked : Qt::Unchecked);
 
-    pForm->addRow(tr("Log Step :"), m_pCboLogStep);
-    pForm->addRow(tr("Assisted GPS :"), m_pChkGpsAssisted);
-    pForm->addRow(tr("GPS always connected :"), m_pChkGpsAlwaysConnected);
-    pForm->addRow(tr("Ask for track name before create :"), m_pChkAskTrackName);
-    pLeftLayout->addLayout(pForm);
+    pVBox->addWidget(m_pCboLogStep);
+    pVBox->addWidget(m_pChkGpsAssisted);
+    pVBox->addWidget(m_pChkGpsAlwaysConnected);
+    pVBox->addWidget(m_pChkAskTrackName);
+    pLeftLayout->addLayout(pVBox);
   }
 
   // main layout setup
@@ -138,8 +150,9 @@ void WndConfig::setupControls (void)
 void WndConfig::onClickedDone (void)
 {
   AppSettings& settings = *App::instance()->settings();
+  QMaemo5ListPickSelector* pCboLogStepSelector = static_cast<QMaemo5ListPickSelector*>(m_pCboLogStep->pickSelector());
 
-  settings.setLogStep(m_pCboLogStep->itemData(m_pCboLogStep->currentIndex()).toUInt());
+  settings.setLogStep(static_cast<QStandardItemModel*>(pCboLogStepSelector->model())->item(pCboLogStepSelector->currentIndex())->data().toUInt());
   settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
   settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);

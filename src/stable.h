@@ -106,9 +106,9 @@ extern "C" {
 #include <QtGui>
 #endif
 
-// qt - maemo specific
+// qt - maemo specific (qt4.6+)
 #ifdef __cplusplus
-#include <QMaemo5InformationBox> // qt4.6+
+#include <QtMaemo5>
 #endif
 
 
