@@ -64,21 +64,21 @@ void WndConfig::setupControls (void)
 
   // options
   {
-    QVBoxLayout*             pVBox = new QVBoxLayout;
-    QStandardItemModel*      pCboLogStepItemModel = new QStandardItemModel(this);
-    QMaemo5ListPickSelector* pCboLogStepSelector;
+    QVBoxLayout* pVBox = new QVBoxLayout;
     uint uiConfiguredLogStep   = settings.getLogStep();
     uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120, 180, 240, 300, 600, 1200, 1800, 3600, 7200, 10800 };
     int  iDefaultLogStepIdx    = 4; // 5 seconds
+
+    m_pCboLogStep = new MaemoComboBox(tr("Log step"), this);
+    m_pCboLogStep->setValueLayout(QMaemo5ValueButton::ValueBesideText);
 
     for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
     {
       if (auiProposedLogSteps[i] >= AppSettings::logStepBounds().first ||
           auiProposedLogSteps[i] <= AppSettings::logStepBounds().second)
       {
-        QStandardItem* pItem = new QStandardItem;
-        QString        strItem;
-        uint           uiBestAllowedFixStep = Location::selectBestAllowedFixStep(auiProposedLogSteps[i]);
+        QString strItem;
+        uint    uiBestAllowedFixStep = Location::selectBestAllowedFixStep(auiProposedLogSteps[i]);
 
         if (auiProposedLogSteps[i] < 60)
         {
@@ -109,23 +109,12 @@ void WndConfig::setupControls (void)
             uiBestAllowedFixStep);
         }
 
-        pItem->setText(strItem);
-        pItem->setTextAlignment(Qt::AlignLeft);
-        pItem->setEditable(false);
-        pItem->setData(QVariant(auiProposedLogSteps[i]));
-        pCboLogStepItemModel->appendRow(pItem);
-
+        m_pCboLogStep->addItem(strItem, QVariant(auiProposedLogSteps[i]));
         if (auiProposedLogSteps[i] == uiConfiguredLogStep)
           iDefaultLogStepIdx = i;
       }
     }
-
-    pCboLogStepSelector = new QMaemo5ListPickSelector;
-    pCboLogStepSelector->setModel(pCboLogStepItemModel);
-    pCboLogStepSelector->setCurrentIndex(iDefaultLogStepIdx);
-    m_pCboLogStep = new QMaemo5ValueButton(tr("Log step"));
-    m_pCboLogStep->setValueLayout(QMaemo5ValueButton::ValueBesideText);
-    m_pCboLogStep->setPickSelector(pCboLogStepSelector);
+    m_pCboLogStep->setCurrentIndex(iDefaultLogStepIdx);
 
     m_pChkGpsAssisted = new QCheckBox(tr("Assisted GPS"));
     m_pChkGpsAssisted->setCheckState(settings.getGpsAssisted() ? Qt::Checked : Qt::Unchecked);

@@ -144,10 +144,9 @@ signals :
 
 
 private :
-  uint maxChunkDataSize (void) const { return sizeof(m_Swap) - sizeof(Chunk); }
-  void writeData        (const char* pData, uint uiSize);
-  bool readSize         (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
-  void signalReadError  (Error eError);
+  void writeData       (const char* pData, uint uiSize);
+  bool readSize        (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
+  void signalReadError (Error eError);
 
 
 private :

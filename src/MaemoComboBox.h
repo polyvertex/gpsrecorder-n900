@@ -20,44 +20,49 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-04-22 07:39:18
+// Created On : 2010-08-04 17:51:17
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDCONFIG_H__
-#define __WNDCONFIG_H__
+#ifndef __MAEMOCOMBOBOX_H__
+#define __MAEMOCOMBOBOX_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndConfig
+// MaemoComboBox
 //---------------------------------------------------------------------------
-class WndConfig : public QDialog
+class MaemoComboBox : public QMaemo5ValueButton
 {
   Q_OBJECT
 
 public :
-  WndConfig (QWidget* pParent=0);
-  virtual ~WndConfig (void);
+  MaemoComboBox (QWidget* pParent=0);
+  MaemoComboBox (const QString& strText, QWidget* pParent=0);
+
+  void setTextAlignment (Qt::Alignment eAlign);
+
+  void addItem         (const QString& strText, const QVariant& userData=QVariant());
+  void setCurrentIndex (int iNewIndex);
+
+  int      count           (void) const;
+  int      currentIndex    (void) const;
+  QVariant itemData        (int iIndex);
+  QVariant currentItemData (void);
 
 
 private :
-  void setupControls (void);
-
-
-private slots :
-  void onClickedDone (void);
+  void construct (QWidget* pParent);
 
 
 private :
-  MaemoComboBox* m_pCboLogStep;
-  QCheckBox*     m_pChkGpsAssisted;
-  QCheckBox*     m_pChkGpsAlwaysConnected;
-  QCheckBox*     m_pChkAskTrackName;
+  Qt::Alignment            m_eAlign;
+  QStandardItemModel*      m_pModel;
+  QMaemo5ListPickSelector* m_pSelector;
 };
 
 
-#endif // #ifndef __WNDCONFIG_H__
+#endif // #ifndef __MAEMOCOMBOBOX_H__
