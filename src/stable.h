@@ -148,6 +148,7 @@ class ExporterSink;
 #ifdef __cplusplus
 
 #include "MaemoComboBox.h"
+#include "MaemoGroupBox.h"
 
 #include "Util.h"
 #include "LocationFix.h"

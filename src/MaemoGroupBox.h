@@ -20,68 +20,45 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-04-20 15:39:18
+// Created On : 2010-08-04 18:45:02
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDCONVERT_H__
-#define __WNDCONVERT_H__
+#ifndef __MAEMOGROUPBOX_H__
+#define __MAEMOGROUPBOX_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndConvert
+// MaemoGroupBox
 //---------------------------------------------------------------------------
-class WndConvert : public QDialog
+class MaemoGroupBox : public QVBoxLayout
 {
   Q_OBJECT
 
 public :
-  WndConvert (QWidget* pParent=0);
-  virtual ~WndConvert (void);
+  MaemoGroupBox (QWidget* pParent=0);
+  MaemoGroupBox (const QString& strText, QWidget* pParent=0);
+
+  void setText    (const QString& strText);
+  void setEnabled (bool bEnabled);
+
+  QLabel* label (void) { return m_pLabel; }
+  QFrame* frame (void) { return m_pFrame; }
 
 
 private :
-  void setupControls            (void);
-  void refreshInputFilesControl (void);
-
-
-private slots :
-  void onClickedBrowseFiles  (void);
-  void onClickedBrowseDir    (void);
-  void onClickedKmlLineColor (void);
-  void onStateChangedCsv     (int nNewState);
-  void onStateChangedGpx     (int nNewState);
-  void onStateChangedKml     (int nNewState);
-  void onClickedConvert      (void);
+  void construct        (QWidget* pParent);
+  void setLayoutEnabled (QLayout* pLayout, bool bEnabled);
 
 
 private :
-  QStringList m_InputFiles;
-
-  QLineEdit* m_pTxtBrowse;
-
-  // csv
-  QCheckBox*     m_pChkCsv;
-  MaemoGroupBox* m_pGroupBoxCsv;
-  QComboBox*     m_pCboCsvSeparator;
-
-  // gpx
-  QCheckBox*     m_pChkGpx;
-  MaemoGroupBox* m_pGroupBoxGpx;
-
-  // kml
-  QCheckBox*       m_pChkKml;
-  MaemoGroupBox*   m_pGroupBoxKml;
-  QCheckBox*       m_pChkKmlZipped;
-  QPushButton*     m_pBtnKmlLineColor;
-  QColor           m_KmlLineColor;
-  QComboBox*       m_pCboKmlLineWidth;
-  QCheckBox*       m_pChkKmlAircraft;
+  QLabel* m_pLabel;
+  QFrame* m_pFrame;
 };
 
 
-#endif // #ifndef __WNDCONVERT_H__
+#endif // #ifndef __MAEMOGROUPBOX_H__

@@ -101,11 +101,11 @@ void WndConvert::setupControls (void)
 
     pForm->addRow(tr("Separator :"), m_pCboCsvSeparator);
 
-    m_pGroupBoxCsv = new QGroupBox(tr("CSV options"));
+    m_pGroupBoxCsv = new MaemoGroupBox(tr("CSV options"));
     m_pGroupBoxCsv->setEnabled(settings.getConvertCsv());
-    m_pGroupBoxCsv->setLayout(pForm);
+    m_pGroupBoxCsv->addLayout(pForm);
 
-    pLeftLayout->addWidget(m_pGroupBoxCsv);
+    pLeftLayout->addLayout(m_pGroupBoxCsv);
     pLeftLayout->addSpacing(5);
   }
 
@@ -113,11 +113,11 @@ void WndConvert::setupControls (void)
   //{
   //  QFormLayout* pForm = new QFormLayout;
   //
-  //  m_pGroupBoxGpx = new QGroupBox(tr("GPX options"));
+  //  m_pGroupBoxGpx = new MaemoGroupBox(tr("GPX options"));
   //  m_pGroupBoxGpx->setEnabled(settings.getConvertGpx());
-  //  m_pGroupBoxGpx->setLayout(pForm);
+  //  m_pGroupBoxGpx->addLayout(pForm);
   //
-  //  pLeftLayout->addWidget(m_pGroupBoxGpx);
+  //  pLeftLayout->addLayout(m_pGroupBoxGpx);
   //  pLeftLayout->addSpacing(5);
   //}
 
@@ -148,11 +148,11 @@ void WndConvert::setupControls (void)
     pForm->addRow(tr("Line Width :"), m_pCboKmlLineWidth);
     pForm->addRow(tr("Aircraft Mode :"), m_pChkKmlAircraft);
 
-    m_pGroupBoxKml = new QGroupBox(tr("KML options"));
+    m_pGroupBoxKml = new MaemoGroupBox(tr("KML options"));
     m_pGroupBoxKml->setEnabled(settings.getConvertKml());
-    m_pGroupBoxKml->setLayout(pForm);
+    m_pGroupBoxKml->addLayout(pForm);
 
-    pLeftLayout->addWidget(m_pGroupBoxKml);
+    pLeftLayout->addLayout(m_pGroupBoxKml);
     pLeftLayout->addSpacing(5);
   }
 
