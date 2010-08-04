@@ -14,5 +14,8 @@
   <file>record-grey-48-nomargin.png</file>
   <file>record-orange-48-nomargin.png</file>
   <file>record-red-48-nomargin.png</file>
+  <file>start-48.png</file>
+  <file>stop-48.png</file>
+  <file>snap-48-nomargin.png</file>
 </qresource>
 </RCC>

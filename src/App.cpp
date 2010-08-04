@@ -67,6 +67,9 @@ App::App (int& nArgc, char** ppszArgv)
   m_pPixRecordGreen  = new QPixmap(":/record-green-48-nomargin.png");
   m_pPixRecordOrange = new QPixmap(":/record-orange-48-nomargin.png");
   m_pPixRecordRed    = new QPixmap(":/record-red-48-nomargin.png");
+  m_pPixStart        = new QPixmap(":/start-48.png");
+  m_pPixStop         = new QPixmap(":/stop-48.png");
+  m_pPixSnap         = new QPixmap(":/snap-48-nomargin.png");
   m_pPixState        = m_pPixPauseGrey;
 
   // connect to AppSettings signals
@@ -142,6 +145,9 @@ App::~App (void)
   delete m_pPixRecordGreen;
   delete m_pPixRecordOrange;
   delete m_pPixRecordRed;
+  delete m_pPixStart;
+  delete m_pPixStop;
+  delete m_pPixSnap;
 }
 
 
@@ -406,9 +412,10 @@ bool App::applyGpsTime (uint uiGpsTime)
     if (uiGpsTime < uiLastTime || (uiGpsTime - uiLastTime) >= 10) // do not bother user too much
     {
       strInfo = tr("System time synchronized with GPS and is now %1.<br>Offset was %2%3 seconds.");
-      strInfo.arg(Util::timeString().constData());
-      strInfo.arg(nTimeDiff > 0 ? "+" : "");
-      strInfo.arg(nTimeDiff);
+      strInfo = strInfo
+        .arg(Util::timeString().constData())
+        .arg(nTimeDiff > 0 ? "+" : "")
+        .arg(nTimeDiff);
 
       QMaemo5InformationBox::information(m_pWndMain, strInfo, 5000);
       uiLastTime = uiGpsTime;

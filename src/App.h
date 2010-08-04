@@ -81,6 +81,9 @@ public :
   QPixmap* pixCellModeNone (void) { return m_pPixCellModeNone; }
   QPixmap* pixCellMode2G   (void) { return m_pPixCellMode2G; }
   QPixmap* pixCellMode3G   (void) { return m_pPixCellMode3G; }
+  QPixmap* pixStart        (void) { return m_pPixStart; }
+  QPixmap* pixStop         (void) { return m_pPixStop; }
+  QPixmap* pixSnap         (void) { return m_pPixSnap; }
 
 
 signals :
@@ -122,6 +125,9 @@ private :
   QPixmap* m_pPixRecordGreen;
   QPixmap* m_pPixRecordOrange;
   QPixmap* m_pPixRecordRed;
+  QPixmap* m_pPixStart;
+  QPixmap* m_pPixStop;
+  QPixmap* m_pPixSnap;
 
   WndMain*  m_pWndMain;
   WndSat*   m_pWndSat;

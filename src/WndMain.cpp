@@ -142,6 +142,10 @@ void WndMain::createWidgets (void)
   m_pLblFixSpeed = new QLabel();
   m_pLblFixSpeed->setDisabled(true);
 
+  m_pBtnSnap = new QPushButton(QIcon(*App::instance()->pixSnap()), QString());
+  m_pBtnSnap->setEnabled(false);
+  this->connect(m_pBtnSnap, SIGNAL(clicked()), SLOT(onClickedSnap()));
+
   m_pBtnCell = new QPushButton(tr("Cell Tower"));
   m_pBtnCell->setEnabled(false);
   this->connect(m_pBtnCell, SIGNAL(clicked()), SLOT(onClickedCell()));
@@ -191,6 +195,7 @@ void WndMain::showFix (void)
 
     pButtons->setSpacing(5);
     pButtons->addWidget(m_pLblStatusIcon);
+    pButtons->addWidget(m_pBtnSnap);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
     pButtons->addWidget(m_pBtnCell);
@@ -239,6 +244,7 @@ void WndMain::onClickedStartStop (void)
 
     m_pMenuStartStop->setText(tr("Start"));
     m_pMenuSnap->setEnabled(false);
+    m_pBtnSnap->setEnabled(false);
     m_pMenuConvert->setEnabled(true);
   }
   else
@@ -252,6 +258,7 @@ void WndMain::onClickedStartStop (void)
 
     m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
+    m_pBtnSnap->setEnabled(true);
     m_pMenuConvert->setEnabled(false);
   }
 }

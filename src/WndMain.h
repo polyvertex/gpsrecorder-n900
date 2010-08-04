@@ -91,6 +91,7 @@ private :
   QLabel* m_pLblFixTrack;
   QLabel* m_pLblFixSpeed;
 
+  QPushButton* m_pBtnSnap;
   QPushButton* m_pBtnCell;
 };
 
