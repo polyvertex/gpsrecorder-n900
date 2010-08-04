@@ -1,21 +1,21 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-  <file>add-file.png</file>
-  <file>add-folder.png</file>
-  <file>appicon-128.png</file>
-  <file>cellmode-2g-170.png</file>
-  <file>cellmode-3g-170.png</file>
-  <file>cellmode-none-170.png</file>
-  <file>pause-green-48-nomargin.png</file>
-  <file>pause-grey-48-nomargin.png</file>
-  <file>pause-orange-48-nomargin.png</file>
-  <file>pause-red-48-nomargin.png</file>
-  <file>record-green-48-nomargin.png</file>
-  <file>record-grey-48-nomargin.png</file>
-  <file>record-orange-48-nomargin.png</file>
-  <file>record-red-48-nomargin.png</file>
-  <file>start-48.png</file>
-  <file>stop-48.png</file>
-  <file>snap-48-nomargin.png</file>
+  <file>icons/add-file.png</file>
+  <file>icons/add-folder.png</file>
+  <file>icons/appicon-128.png</file>
+  <file>icons/cellmode-2g-170.png</file>
+  <file>icons/cellmode-3g-170.png</file>
+  <file>icons/cellmode-none-170.png</file>
+  <file>icons/pause-green-48-nomargin.png</file>
+  <file>icons/pause-grey-48-nomargin.png</file>
+  <file>icons/pause-orange-48-nomargin.png</file>
+  <file>icons/pause-red-48-nomargin.png</file>
+  <file>icons/record-green-48-nomargin.png</file>
+  <file>icons/record-grey-48-nomargin.png</file>
+  <file>icons/record-orange-48-nomargin.png</file>
+  <file>icons/record-red-48-nomargin.png</file>
+  <file>icons/start-48.png</file>
+  <file>icons/stop-48.png</file>
+  <file>icons/snap-48-nomargin.png</file>
 </qresource>
 </RCC>

@@ -56,20 +56,20 @@ App::App (int& nArgc, char** ppszArgv)
   m_uiLastFixWrite = 0;
 
   // load pixmaps
-  m_pPixCellModeNone = new QPixmap(":/cellmode-none-170.png");
-  m_pPixCellMode2G   = new QPixmap(":/cellmode-2g-170.png");
-  m_pPixCellMode3G   = new QPixmap(":/cellmode-3g-170.png");
-  m_pPixPauseGrey    = new QPixmap(":/pause-grey-48-nomargin.png");
-  m_pPixPauseGreen   = new QPixmap(":/pause-green-48-nomargin.png");
-  m_pPixPauseOrange  = new QPixmap(":/pause-orange-48-nomargin.png");
-  m_pPixPauseRed     = new QPixmap(":/pause-red-48-nomargin.png");
-  m_pPixRecordGrey   = new QPixmap(":/record-grey-48-nomargin.png");
-  m_pPixRecordGreen  = new QPixmap(":/record-green-48-nomargin.png");
-  m_pPixRecordOrange = new QPixmap(":/record-orange-48-nomargin.png");
-  m_pPixRecordRed    = new QPixmap(":/record-red-48-nomargin.png");
-  m_pPixStart        = new QPixmap(":/start-48.png");
-  m_pPixStop         = new QPixmap(":/stop-48.png");
-  m_pPixSnap         = new QPixmap(":/snap-48-nomargin.png");
+  m_pPixCellModeNone = new QPixmap(":/icons/cellmode-none-170.png");
+  m_pPixCellMode2G   = new QPixmap(":/icons/cellmode-2g-170.png");
+  m_pPixCellMode3G   = new QPixmap(":/icons/cellmode-3g-170.png");
+  m_pPixPauseGrey    = new QPixmap(":/icons/pause-grey-48-nomargin.png");
+  m_pPixPauseGreen   = new QPixmap(":/icons/pause-green-48-nomargin.png");
+  m_pPixPauseOrange  = new QPixmap(":/icons/pause-orange-48-nomargin.png");
+  m_pPixPauseRed     = new QPixmap(":/icons/pause-red-48-nomargin.png");
+  m_pPixRecordGrey   = new QPixmap(":/icons/record-grey-48-nomargin.png");
+  m_pPixRecordGreen  = new QPixmap(":/icons/record-green-48-nomargin.png");
+  m_pPixRecordOrange = new QPixmap(":/icons/record-orange-48-nomargin.png");
+  m_pPixRecordRed    = new QPixmap(":/icons/record-red-48-nomargin.png");
+  m_pPixStart        = new QPixmap(":/icons/start-48.png");
+  m_pPixStop         = new QPixmap(":/icons/stop-48.png");
+  m_pPixSnap         = new QPixmap(":/icons/snap-48-nomargin.png");
   m_pPixState        = m_pPixPauseGrey;
 
   // connect to AppSettings signals

@@ -73,8 +73,8 @@ void WndConvert::setupControls (void)
     m_pTxtBrowse = new QLineEdit;
     m_pTxtBrowse->setReadOnly(true);
 
-    pBtnBrowseFiles->setIcon(QIcon(":/add-file.png"));
-    pBtnBrowseDir->setIcon(QIcon(":/add-folder.png"));
+    pBtnBrowseFiles->setIcon(QIcon(":/icons/add-file.png"));
+    pBtnBrowseDir->setIcon(QIcon(":/icons/add-folder.png"));
     this->connect(pBtnBrowseFiles, SIGNAL(clicked()), SLOT(onClickedBrowseFiles()));
     this->connect(pBtnBrowseDir, SIGNAL(clicked()), SLOT(onClickedBrowseDir()));
 

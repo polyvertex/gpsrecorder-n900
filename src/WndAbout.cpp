@@ -66,10 +66,10 @@ void WndAbout::createWidgets (void)
   QLabel* pLblAbout = new QLabel();
 
   pLblIcon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  pLblIcon->setPixmap(QPixmap(":/appicon-128.png"));
+  pLblIcon->setPixmap(QPixmap(":/icons/appicon-128.png"));
   pLblIcon->setFixedWidth(140);
 
-  //pLblAbout->setStyleSheet("background-image: url(:/wallpaper-800x480.jpg);");
+  //pLblAbout->setStyleSheet("background-image: url(:/images/wallpaper-800x480.jpg);");
   pLblAbout->setTextFormat(Qt::RichText);
   pLblAbout->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
   pLblAbout->setOpenExternalLinks(true);
