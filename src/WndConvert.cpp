@@ -82,14 +82,13 @@ void WndConvert::setupControls (void)
     pHBox->addWidget(pBtnBrowseFiles);
     pHBox->addWidget(pBtnBrowseDir);
     pLeftLayout->addLayout(pHBox);
-    pLeftLayout->addSpacing(5);
+    pLeftLayout->addSpacing(10);
   }
 
   // output format - csv
   {
-    QFormLayout* pForm = new QFormLayout;
-
-    m_pCboCsvSeparator = new QComboBox;
+    m_pCboCsvSeparator = new MaemoComboBox(tr("Fields separator"), this);
+    m_pCboCsvSeparator->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     for (int i = 0; i < (int)strlen(ExporterSinkCsv::supportedSeparators()); ++i)
     {
       QString strLabel(ExporterSinkCsv::supportedSeparators()[i]);
@@ -99,14 +98,12 @@ void WndConvert::setupControls (void)
     }
     m_pCboCsvSeparator->setCurrentIndex(ExporterSinkCsv::separatorIndex(settings.getCsvSeparator()));
 
-    pForm->addRow(tr("Separator :"), m_pCboCsvSeparator);
-
     m_pGroupBoxCsv = new MaemoGroupBox(tr("CSV options"));
+    m_pGroupBoxCsv->addWidget(m_pCboCsvSeparator);
     m_pGroupBoxCsv->setEnabled(settings.getConvertCsv());
-    m_pGroupBoxCsv->addLayout(pForm);
 
     pLeftLayout->addLayout(m_pGroupBoxCsv);
-    pLeftLayout->addSpacing(5);
+    pLeftLayout->addSpacing(10);
   }
 
   // output format - gpx
@@ -118,42 +115,41 @@ void WndConvert::setupControls (void)
   //  m_pGroupBoxGpx->addLayout(pForm);
   //
   //  pLeftLayout->addLayout(m_pGroupBoxGpx);
-  //  pLeftLayout->addSpacing(5);
+  //  pLeftLayout->addSpacing(10);
   //}
 
   // output format - kml
   {
     QFormLayout* pForm = new QFormLayout;
 
-    m_pChkKmlZipped = new QCheckBox;
-    m_pChkKmlZipped->setCheckState(settings.getKmlZipped() ? Qt::Checked : Qt::Unchecked);
-
     m_KmlLineColor = settings.getKmlLineColor();
-    m_pBtnKmlLineColor = new QPushButton;
+    m_pBtnKmlLineColor = new QPushButton(tr("Line color"));
     //m_pBtnKmlLineColor->setFlat(true);
     m_pBtnKmlLineColor->setAutoFillBackground(true);
     m_pBtnKmlLineColor->setStyleSheet(QString("background-color:rgb(%1,%2,%3)").arg(m_KmlLineColor.red()).arg(m_KmlLineColor.green()).arg(m_KmlLineColor.blue()));
     this->connect(m_pBtnKmlLineColor, SIGNAL(clicked()), SLOT(onClickedKmlLineColor()));
 
-    m_pCboKmlLineWidth = new QComboBox;
+    m_pCboKmlLineWidth = new MaemoComboBox(tr("Line width"), this);
+    m_pCboKmlLineWidth->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     for (int i = 1; i < 6; ++i)
       m_pCboKmlLineWidth->addItem(QString("%1").arg(i));
     m_pCboKmlLineWidth->setCurrentIndex(settings.getKmlLineWidth() - 1);
 
-    m_pChkKmlAircraft = new QCheckBox;
+    m_pChkKmlAircraft = new QCheckBox(tr("Aircraft mode"));
     m_pChkKmlAircraft->setCheckState(settings.getKmlAircraftMode() ? Qt::Checked : Qt::Unchecked);
 
-    pForm->addRow(tr("Zipped KML (KMZ) :"), m_pChkKmlZipped);
-    pForm->addRow(tr("Line Color :"), m_pBtnKmlLineColor);
-    pForm->addRow(tr("Line Width :"), m_pCboKmlLineWidth);
-    pForm->addRow(tr("Aircraft Mode :"), m_pChkKmlAircraft);
+    m_pChkKmlZipped = new QCheckBox(tr("Zipped KML (KMZ)"));
+    m_pChkKmlZipped->setCheckState(settings.getKmlZipped() ? Qt::Checked : Qt::Unchecked);
 
     m_pGroupBoxKml = new MaemoGroupBox(tr("KML options"));
+    m_pGroupBoxKml->addWidget(m_pBtnKmlLineColor);
+    m_pGroupBoxKml->addWidget(m_pCboKmlLineWidth);
+    m_pGroupBoxKml->addWidget(m_pChkKmlAircraft);
+    m_pGroupBoxKml->addWidget(m_pChkKmlZipped);
     m_pGroupBoxKml->setEnabled(settings.getConvertKml());
-    m_pGroupBoxKml->addLayout(pForm);
 
     pLeftLayout->addLayout(m_pGroupBoxKml);
-    pLeftLayout->addSpacing(5);
+    pLeftLayout->addSpacing(10);
   }
 
   // main layout setup
@@ -176,6 +172,7 @@ void WndConvert::setupControls (void)
 
     this->connect(pBtnConvert, SIGNAL(clicked()), SLOT(onClickedConvert()));
 
+    pLeftLayout->setSpacing(0);
     pScrollWidget->setLayout(pLeftLayout);
 
     pScrollArea->setWidgetResizable(true);
@@ -183,11 +180,13 @@ void WndConvert::setupControls (void)
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pScrollArea->setProperty("FingerScrollable", true);
 
-    pRootLayout->addWidget(pScrollArea, 0, 0, 4, 1);
+    pRootLayout->setSpacing(1);
+    pRootLayout->setColumnMinimumWidth(1, 150);
+    pRootLayout->addWidget(pScrollArea, 0, 0, 5, 1);
     pRootLayout->addWidget(m_pChkCsv,   0, 1);
     pRootLayout->addWidget(m_pChkGpx,   1, 1);
     pRootLayout->addWidget(m_pChkKml,   2, 1);
-    pRootLayout->addWidget(pBtnConvert, 3, 1);
+    pRootLayout->addWidget(pBtnConvert, 4, 1);
   }
 
   // apply layout
@@ -331,7 +330,7 @@ void WndConvert::onClickedConvert (void)
 
     if (m_pChkCsv->checkState() != Qt::Unchecked)
     {
-      settings.setCsvSeparator((char)m_pCboCsvSeparator->itemData(m_pCboCsvSeparator->currentIndex()).toInt());
+      settings.setCsvSeparator((char)m_pCboCsvSeparator->currentItemData().toInt());
     }
 
     //if (m_pChkGpx->checkState() != Qt::Unchecked)

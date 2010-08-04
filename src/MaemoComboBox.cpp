@@ -52,7 +52,7 @@ MaemoComboBox::MaemoComboBox (const QString& strText, QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 void MaemoComboBox::construct (QWidget* pParent)
 {
-  m_eAlign = Qt::AlignLeft;
+  m_eAlign = Qt::AlignCenter; // the Maemo5 design spec recommends this
 
   m_pModel = new QStandardItemModel(pParent);
 

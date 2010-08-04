@@ -64,13 +64,17 @@ void WndConfig::setupControls (void)
 
   // options
   {
-    QVBoxLayout* pVBox = new QVBoxLayout;
+    QVBoxLayout* pVBox;
     uint uiConfiguredLogStep   = settings.getLogStep();
     uint auiProposedLogSteps[] = { 1, 2, 3, 4, 5, 10, 20, 30, 60, 120, 180, 240, 300, 600, 1200, 1800, 3600, 7200, 10800 };
     int  iDefaultLogStepIdx    = 4; // 5 seconds
 
+    pVBox = new QVBoxLayout;
+    pVBox->setSpacing(1);
+
     m_pCboLogStep = new MaemoComboBox(tr("Log step"), this);
     m_pCboLogStep->setValueLayout(QMaemo5ValueButton::ValueBesideText);
+    m_pCboLogStep->setTextAlignment(Qt::AlignLeft);
 
     for (int i = 0; i < sizeof(auiProposedLogSteps)/sizeof(auiProposedLogSteps[0]); ++i)
     {
@@ -140,6 +144,7 @@ void WndConfig::setupControls (void)
 
     this->connect(pBtnDone, SIGNAL(clicked()), SLOT(onClickedDone()));
 
+    pLeftLayout->setSpacing(0);
     pScrollWidget->setLayout(pLeftLayout);
 
     pScrollArea->setWidgetResizable(true);
@@ -147,6 +152,7 @@ void WndConfig::setupControls (void)
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pScrollArea->setProperty("FingerScrollable", true);
 
+    pRootLayout->setSpacing(1);
     pRootLayout->addWidget(pScrollArea);
     pRootLayout->addWidget(pBtnDone, 0, Qt::AlignBottom);
   }
@@ -163,9 +169,8 @@ void WndConfig::setupControls (void)
 void WndConfig::onClickedDone (void)
 {
   AppSettings& settings = *App::instance()->settings();
-  QMaemo5ListPickSelector* pCboLogStepSelector = static_cast<QMaemo5ListPickSelector*>(m_pCboLogStep->pickSelector());
 
-  settings.setLogStep(static_cast<QStandardItemModel*>(pCboLogStepSelector->model())->item(pCboLogStepSelector->currentIndex())->data().toUInt());
+  settings.setLogStep(m_pCboLogStep->currentItemData().toUInt());
   settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
   settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);

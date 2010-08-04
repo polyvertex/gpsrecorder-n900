@@ -67,7 +67,7 @@ private :
   // csv
   QCheckBox*     m_pChkCsv;
   MaemoGroupBox* m_pGroupBoxCsv;
-  QComboBox*     m_pCboCsvSeparator;
+  MaemoComboBox* m_pCboCsvSeparator;
 
   // gpx
   QCheckBox*     m_pChkGpx;
@@ -79,7 +79,7 @@ private :
   QCheckBox*       m_pChkKmlZipped;
   QPushButton*     m_pBtnKmlLineColor;
   QColor           m_KmlLineColor;
-  QComboBox*       m_pCboKmlLineWidth;
+  MaemoComboBox*   m_pCboKmlLineWidth;
   QCheckBox*       m_pChkKmlAircraft;
 };
 

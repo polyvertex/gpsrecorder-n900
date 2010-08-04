@@ -59,7 +59,7 @@ void MaemoGroupBox::construct (QWidget* pParent)
   m_pFrame = new QFrame;
   m_pFrame->setFrameShape(QFrame::HLine);
 
-  this->setSpacing(0);
+  this->setSpacing(1);
   this->addWidget(m_pLabel);
   this->addWidget(m_pFrame);
 }
