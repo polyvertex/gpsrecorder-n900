@@ -240,9 +240,9 @@ void WndConvert::onClickedBrowseDir (void)
     App::outputDir(),
     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
+  m_InputFiles.clear();
   if (strDir.isEmpty())
   {
-    m_InputFiles.clear();
     m_pTxtBrowse->clear();
   }
   else
@@ -307,7 +307,7 @@ void WndConvert::onClickedConvert (void)
   {
     if (m_InputFiles.isEmpty())
     {
-      QMessageBox::warning(this, "", tr("No file selected !"));
+      QMessageBox::warning(this, "", tr("No file selected or directory is empty !"));
       return;
     }
 
