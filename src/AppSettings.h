@@ -64,6 +64,9 @@ public :
   void setAskTrackName (bool bEnable);
   bool getAskTrackName (void);
 
+  void setAskPointName (bool bEnable);
+  bool getAskPointName (void);
+
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);
@@ -92,6 +95,7 @@ public :
   static bool             defaultGpsAssisted        (void) { return true; }
   static bool             defaultGpsAlwaysConnected (void) { return true; }
   static bool             defaultAskTrackName       (void) { return true; }
+  static bool             defaultAskPointName       (void) { return true; }
 
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }

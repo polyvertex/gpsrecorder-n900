@@ -129,10 +129,14 @@ void WndConfig::setupControls (void)
     m_pChkAskTrackName = new QCheckBox(tr("Ask for track name before create"));
     m_pChkAskTrackName->setCheckState(settings.getAskTrackName() ? Qt::Checked : Qt::Unchecked);
 
+    m_pChkAskPointName = new QCheckBox(tr("Ask for point name before snap"));
+    m_pChkAskPointName->setCheckState(settings.getAskPointName() ? Qt::Checked : Qt::Unchecked);
+
     pVBox->addWidget(m_pCboLogStep);
     pVBox->addWidget(m_pChkGpsAssisted);
     pVBox->addWidget(m_pChkGpsAlwaysConnected);
     pVBox->addWidget(m_pChkAskTrackName);
+    pVBox->addWidget(m_pChkAskPointName);
     pLeftLayout->addLayout(pVBox);
   }
 
@@ -174,6 +178,7 @@ void WndConfig::onClickedDone (void)
   settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
   settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);
+  settings.setAskPointName(m_pChkAskPointName->checkState() != Qt::Unchecked);
 
   settings.write();
   this->done(0);

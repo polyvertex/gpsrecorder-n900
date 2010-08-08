@@ -271,7 +271,7 @@ void WndMain::onClickedSnap (void)
   GPSRFile* pGPSRFile = App::instance()->outFile();
   QString   strName;
   time_t    uiTime = time(0);
-  bool      bOk = false;
+  bool      bOk;
 
   Q_ASSERT(pGPSRFile);
   Q_ASSERT(pGPSRFile->isOpen());
@@ -279,14 +279,22 @@ void WndMain::onClickedSnap (void)
   if (!pGPSRFile || !pGPSRFile->isOpen() || !pGPSRFile->isWriting())
     return;
 
-  // ask for point name
-  strName = QInputDialog::getText(
-    this,
-    tr("Point name ?"),
-    tr("Please enter the name of the point to snap or leave blank :"),
-    QLineEdit::Normal,
-    "",
-    &bOk).trimmed();
+  if (App::instance()->settings()->getAskPointName())
+  {
+    // ask for point name
+    bOk = false;
+    strName = QInputDialog::getText(
+      this,
+      tr("Point name ?"),
+      tr("Please enter the name of the point to snap or leave blank :"),
+      QLineEdit::Normal,
+      "",
+      &bOk).trimmed();
+  }
+  else
+  {
+    bOk = true;
+  }
 
   if (!bOk)
   {
@@ -305,12 +313,12 @@ void WndMain::onClickedSnap (void)
     // inform user
     if (!strName.isEmpty())
     {
-      strName.prepend("<i>");
+      strName.prepend(" <i>");
       strName.append("</i>");
     }
     QMaemo5InformationBox::information(
       this,
-      QString(tr("Snapped position %1 !")).arg(strName));
+      QString(tr("Snapped position%1 at %2 !")).arg(strName).arg(Util::timeString().constData()));
   }
 }
 
