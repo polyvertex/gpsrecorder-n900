@@ -299,6 +299,10 @@ void WndMain::onClickedSnap (void)
     // snap point
     pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
+    // reset last fix time to get position as soon as possible
+    App::instance()->resetFixTime();
+
+    // inform user
     if (!strName.isEmpty())
     {
       strName.prepend("<i>");
