@@ -1,3 +1,9 @@
+gpsrecorder (0.1.136) unstable; urgency=low
+
+  * Corrected : Revision number from the 'About' window disappeared.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 09 Aug 2010 22:56:21 +0200
+
 gpsrecorder (0.1.135) unstable; urgency=low
 
   * Corrected : We could not 'Convert' two consecutive times without browsing from file/dir the second time.
