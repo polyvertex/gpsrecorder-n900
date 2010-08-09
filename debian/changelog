@@ -1,3 +1,15 @@
+gpsrecorder (0.1.135) unstable; urgency=low
+
+  * Corrected : We could not 'Convert' two consecutive times without browsing from file/dir the second time.
+  * Added : 'Snap' button to the main window (request #6075).
+  * Added : 'Ask for point name to snap' option.
+  * Added : Yellow informations banners here and there and replaced some information boxes.
+  * Modified : Allow much longer log steps from 1 second to 3 hours (request from talk.maemo.org).
+  * Modified : When a position is snapped, write position as soon as possible instead of waiting for next log step.
+  * Modified : Upgraded from Qt 4.5 to 4.6 : corrected and polished layout of windows and dialos accordingly.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 09 Aug 2010 22:04:04 +0200
+
 gpsrecorder (0.1.112) unstable; urgency=low
 
   * Corrected bug #5883 (non POSIX locale was applied to exported files).
