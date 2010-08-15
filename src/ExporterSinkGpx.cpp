@@ -71,22 +71,63 @@ ExporterSinkGpx::~ExporterSinkGpx (void)
 
 
 //---------------------------------------------------------------------------
+// writeEOF
+//---------------------------------------------------------------------------
+void ExporterSinkGpx::writeEOF (void)
+{
+  Q_ASSERT(m_pFile);
+
+  // write end of track
+  fprintf(m_pFile,
+    "</trkseg>" GPX_NL
+    "</trk>" GPX_NL );
+
+  // write snapped points
+  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
+  {
+    const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
+    QString strName(QString("Snap %1").arg(i + 1));
+    QString strEle;
+
+    if (!snapPt.strPointName.isEmpty())
+    {
+      strName += " : ";
+      strName += snapPt.strPointName;
+    }
+
+    if (snapPt.bHasAlt)
+      strEle.sprintf(" <ele>%d</ele>" GPX_NL, snapPt.iAltM);
+
+    fprintf(m_pFile,
+      "<wpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
+      " <time>%s</time>" GPX_NL
+      "%s"
+      " <name>%s</name>" GPX_NL
+      "</wpt>" GPX_NL,
+      snapPt.rLatDeg, snapPt.rLongDeg,
+      Util::timeStringIso8601(true, snapPt.uiTime).constData(),
+      qPrintable(strEle),
+      qPrintable(strName) );
+  }
+  m_vecSnappedPoints.clear();
+
+  // write end of file
+  fprintf(m_pFile,
+    "</gpx>" GPX_NL );
+}
+
+//---------------------------------------------------------------------------
 // close
 //---------------------------------------------------------------------------
 void ExporterSinkGpx::close (void)
 {
   // write footer
   if (m_pFile)
-  {
-    fprintf(m_pFile,
-      "</trkseg>" GPX_NL
-      "</trk>" GPX_NL
-      "</gpx>" GPX_NL );
-  }
+    this->writeEOF();
+
+  m_vecSnappedPoints.clear();
 
   ExporterSink::close();
-
-  m_uiSnapCount = 1;
 }
 
 
@@ -194,32 +235,11 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 }
 
 //---------------------------------------------------------------------------
-// onSnap
+// onSnappedPoint
 //---------------------------------------------------------------------------
 void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
 {
-  QString strEle;
-  QString strName(QString("Snap %1").arg(m_uiSnapCount++));
-
-  if (pSnappedPoint->bHasAlt)
-    strEle.sprintf(" <ele>%d</ele>" GPX_NL, pSnappedPoint->iAltM);
-
-  if (!pSnappedPoint->strPointName.isEmpty())
-  {
-    strName += " : ";
-    strName += pSnappedPoint->strPointName;
-  }
-
-  fprintf(m_pFile,
-    "<trkpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
-    " <time>%s</time>" GPX_NL
-    "%s"
-    " <name>%s</name>" GPX_NL
-    "</trkpt>" GPX_NL,
-    pSnappedPoint->rLatDeg, pSnappedPoint->rLongDeg,
-    Util::timeStringIso8601(true, pSnappedPoint->uiTime).constData(),
-    qPrintable(strEle),
-    qPrintable(strName) );
+  m_vecSnappedPoints.append(*pSnappedPoint);
 }
 
 //---------------------------------------------------------------------------

@@ -212,7 +212,7 @@ void Exporter::onReadChunkLocationFix (GPSRFile* pGPSRFile, time_t uiTime, const
 {
   Q_UNUSED(pGPSRFile);
 
-  // emit snapped points if there is any
+  // emit snapped points
   for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
     this->emitSnappedPoint(m_vecSnappedPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), &fix);
   m_vecSnappedPoints.clear();
@@ -279,7 +279,7 @@ void Exporter::onReadEOF (GPSRFile* pGPSRFile)
 {
   Q_UNUSED(pGPSRFile);
 
-  // emit remaining snapped points if there is any
+  // emit remaining snapped points
   for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
     this->emitSnappedPoint(m_vecSnappedPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), 0);
   m_vecSnappedPoints.clear();

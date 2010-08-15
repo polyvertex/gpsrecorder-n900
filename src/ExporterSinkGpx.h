@@ -47,6 +47,10 @@ public :
   void close (void);
 
 
+private :
+  void writeEOF (void);
+
+
 public slots :
   void onSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
   void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
@@ -56,7 +60,7 @@ public slots :
 
 private :
   // runtime
-  uint m_uiSnapCount;
+  QVector<Exporter::SnappedPoint> m_vecSnappedPoints;
 };
 
 

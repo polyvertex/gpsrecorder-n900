@@ -188,11 +188,11 @@ void ExporterSinkKml::writeEOF (void)
       (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0) );
   }
 
-  // write snapped points if there is any
+  // write snapped points
   for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
   {
     const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
-    QString   strName(QString("Snap %1").arg(i + 1));
+    QString strName(QString("Snap %1").arg(i + 1));
 
     if (!snapPt.strPointName.isEmpty())
     {
@@ -379,7 +379,7 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 }
 
 //---------------------------------------------------------------------------
-// onSnap
+// onSnappedPoint
 //---------------------------------------------------------------------------
 void ExporterSinkKml::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
 {
