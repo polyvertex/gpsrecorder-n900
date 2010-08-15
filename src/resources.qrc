@@ -1,8 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-  <file>icons/add-file.png</file>
-  <file>icons/add-folder.png</file>
   <file>icons/appicon-128.png</file>
+  <file>icons/browse-file.png</file>
+  <file>icons/browse-folder.png</file>
   <file>icons/cellmode-2g-170.png</file>
   <file>icons/cellmode-3g-170.png</file>
   <file>icons/cellmode-none-170.png</file>
