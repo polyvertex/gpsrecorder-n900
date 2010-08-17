@@ -1,3 +1,10 @@
+gpsrecorder (0.1.141) unstable; urgency=low
+
+  * Modified : Better handling of snapped points in GPX exporter.
+  * Modified : Replaced 'browse' icons to be a *little* bit more intuitive.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Tue, 17 Aug 2010 17:51:36 +0200
+
 gpsrecorder (0.1.136) unstable; urgency=low
 
   * Corrected : Revision number from the 'About' window disappeared.
