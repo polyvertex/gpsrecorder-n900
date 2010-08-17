@@ -122,15 +122,24 @@ struct LocationFix
 
   bool hasFields (fxuint16 wWantedFields) const { return (wFixFields & wWantedFields) != 0; }
 
-  double getLatDeg     (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
-  double getLongDeg    (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
-  double getHorizEpM   (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(uiHorizEP) / 100.0) : NAN; }
-  double getTrackDeg   (void) const { return this->hasFields(FIXFIELD_TRACK)   ? (double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
-  double getTrackEpDeg (void) const { return this->hasFields(FIXFIELD_TRACK)   ? (double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
-  double getSpeedKmh   (void) const { return this->hasFields(FIXFIELD_SPEED)   ? (double(uiSpeed)   / double(LOCFIX_MULTIPLIER_SPEED)) : NAN; }
-  double getSpeedKmhEp (void) const { return this->hasFields(FIXFIELD_SPEED)   ? (double(uiSpeedEP) / double(LOCFIX_MULTIPLIER_SPEED)) : NAN; }
-  double getClimbM     (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(iClimb)    / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
-  double getClimbMEp   (void) const { return this->hasFields(FIXFIELD_CLIMB)   ? (double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB)) : NAN; }
+  double      getLatDeg        (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLat)      / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
+  double      getLongDeg       (void) const { return this->hasFields(FIXFIELD_LATLONG) ? (double(iLong)     / double(LOCFIX_MULTIPLIER_LATLONG)) : NAN; }
+  double      getHorizEp       (uint uiUnitSystem) const;
+  const char* getHorizEpSuffix (uint uiUnitSystem) const;
+  double      getAlt           (uint uiUnitSystem) const;
+  const char* getAltSuffix     (uint uiUnitSystem) const;
+  double      getAltEp         (uint uiUnitSystem) const;
+  const char* getAltEpSuffix   (uint uiUnitSystem) const;
+  double      getTrackDeg      (void) const { return this->hasFields(FIXFIELD_TRACK) ? (double(uiTrack)   / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
+  double      getTrackEpDeg    (void) const { return this->hasFields(FIXFIELD_TRACK) ? (double(uiTrackEP) / double(LOCFIX_MULTIPLIER_TRACK)) : NAN; }
+  double      getSpeed         (uint uiHorizSpeedUnit) const;
+  const char* getSpeedSuffix   (uint uiHorizSpeedUnit) const;
+  double      getSpeedEp       (uint uiHorizSpeedUnit) const;
+  const char* getSpeedEpSuffix (uint uiHorizSpeedUnit) const;
+  double      getClimb         (uint uiUnitSystem) const;
+  const char* getClimbSuffix   (uint uiUnitSystem) const;
+  double      getClimbEp       (uint uiUnitSystem) const;
+  const char* getClimbEpSuffix (uint uiUnitSystem) const;
 
   const LocationFixSat* getSat (fxuint8 cSatIndex) const;
 

@@ -51,6 +51,246 @@ const char* LocationFix::getModeStr (void) const
 }
 
 //---------------------------------------------------------------------------
+// getHorizEp
+//---------------------------------------------------------------------------
+double LocationFix::getHorizEp (uint uiUnitSystem) const
+{
+  if (!this->hasFields(FIXFIELD_LATLONG))
+    return NAN;
+
+  // uiHorizEP unit is cm
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return double(uiHorizEP) / 100.0; // cm -> m
+    case UNITSYSTEM_IMPERIAL :
+      return double(uiHorizEP) * 0.0328083989501; // cm -> ft
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getHorizEpSuffix (uint uiUnitSystem) const
+{
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return "m";
+    case UNITSYSTEM_IMPERIAL :
+      return "ft";
+
+    default :
+      Q_ASSERT(0);
+      return "?";
+  }
+}
+
+//---------------------------------------------------------------------------
+// getAlt
+//---------------------------------------------------------------------------
+double LocationFix::getAlt (uint uiUnitSystem) const
+{
+  if (!this->hasFields(FIXFIELD_ALT))
+    return NAN;
+
+  // iAlt unit is m
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return double(iAlt); // m
+    case UNITSYSTEM_IMPERIAL :
+      return double(iAlt) * 3.28083989501; // m -> ft
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getAltSuffix (uint uiUnitSystem) const
+{
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return "m";
+    case UNITSYSTEM_IMPERIAL :
+      return "ft";
+
+    default :
+      Q_ASSERT(0);
+      return "?";
+  }
+}
+
+//---------------------------------------------------------------------------
+// getAltEp
+//---------------------------------------------------------------------------
+double LocationFix::getAltEp (uint uiUnitSystem) const
+{
+  if (!this->hasFields(FIXFIELD_ALT))
+    return NAN;
+
+  // uiAltEP unit is m
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return double(uiAltEP); // m
+    case UNITSYSTEM_IMPERIAL :
+      return double(uiAltEP) * 3.28083989501; // m -> ft
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getAltEpSuffix (uint uiUnitSystem) const
+{
+  return this->getAltSuffix(uiUnitSystem);
+}
+
+//---------------------------------------------------------------------------
+// getSpeed
+//---------------------------------------------------------------------------
+double LocationFix::getSpeed (uint uiHorizSpeedUnit) const
+{
+  if (!this->hasFields(FIXFIELD_SPEED))
+    return NAN;
+
+  // uiSpeed unit is m/h
+  switch (uiHorizSpeedUnit)
+  {
+    case HORIZSPEEDUNIT_KMH :
+      return double(uiSpeed) / double(LOCFIX_MULTIPLIER_SPEED); // m/h -> km/h
+    case HORIZSPEEDUNIT_MPH :
+      return double(uiSpeed) * 0.000621371192237; // m/h -> mph
+    case HORIZSPEEDUNIT_MS :
+      return double(uiSpeed) * 0.000277777777778; // m/h -> m/s
+    case HORIZSPEEDUNIT_KNOTS :
+      return double(uiSpeed) * 0.000539956803456; // m/h -> knots
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getSpeedSuffix (uint uiHorizSpeedUnit) const
+{
+  switch (uiHorizSpeedUnit)
+  {
+    case HORIZSPEEDUNIT_KMH :
+      return "km/h";
+    case HORIZSPEEDUNIT_MPH :
+      return "mph";
+    case HORIZSPEEDUNIT_MS :
+      return "m/s";
+    case HORIZSPEEDUNIT_KNOTS :
+      return "knots";
+
+    default :
+      return "?";
+  }
+}
+
+//---------------------------------------------------------------------------
+// getSpeedEp
+//---------------------------------------------------------------------------
+double LocationFix::getSpeedEp (uint uiHorizSpeedUnit) const
+{
+  if (!this->hasFields(FIXFIELD_SPEED))
+    return NAN;
+
+  // uiSpeedEP unit is m/h
+  switch (uiHorizSpeedUnit)
+  {
+    case HORIZSPEEDUNIT_KMH :
+      return double(uiSpeedEP) / double(LOCFIX_MULTIPLIER_SPEED); // m/h -> km/h
+    case HORIZSPEEDUNIT_MPH :
+      return double(uiSpeedEP) * 0.000621371192237; // m/h -> mph
+    case HORIZSPEEDUNIT_MS :
+      return double(uiSpeedEP) * 0.000277777777778; // m/h -> m/s
+    case HORIZSPEEDUNIT_KNOTS :
+      return double(uiSpeedEP) * 0.000539956803456; // m/h -> knots
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getSpeedEpSuffix (uint uiHorizSpeedUnit) const
+{
+  return this->getSpeedSuffix(uiHorizSpeedUnit);
+}
+
+//---------------------------------------------------------------------------
+// getClimb
+//---------------------------------------------------------------------------
+double LocationFix::getClimb (uint uiUnitSystem) const
+{
+  if (!this->hasFields(FIXFIELD_CLIMB))
+    return NAN;
+
+  // iClimb unit is cm/s
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return double(iClimb) / double(LOCFIX_MULTIPLIER_CLIMB); // cm/s -> m/s
+    case UNITSYSTEM_IMPERIAL :
+      return double(iClimb) * 0.0328083989501; // cm/s -> ft/s
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getClimbSuffix (uint uiUnitSystem) const
+{
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return "m/s";
+    case UNITSYSTEM_IMPERIAL :
+      return "ft/s";
+
+    default :
+      Q_ASSERT(0);
+      return "?";
+  }
+}
+
+//---------------------------------------------------------------------------
+// getClimbEp
+//---------------------------------------------------------------------------
+double LocationFix::getClimbEp (uint uiUnitSystem) const
+{
+  if (!this->hasFields(FIXFIELD_CLIMB))
+    return NAN;
+
+  // uiClimbEP unit is cm/s
+  switch (uiUnitSystem)
+  {
+    case UNITSYSTEM_METRIC :
+      return double(uiClimbEP) / double(LOCFIX_MULTIPLIER_CLIMB); // cm/s -> m/s
+    case UNITSYSTEM_IMPERIAL :
+      return double(uiClimbEP) * 0.0328083989501; // cm/s -> ft/s
+
+    default :
+      Q_ASSERT(0);
+      return NAN;
+  }
+}
+
+const char* LocationFix::getClimbEpSuffix (uint uiUnitSystem) const
+{
+  return this->getClimbSuffix(uiUnitSystem);
+}
+
+//---------------------------------------------------------------------------
 // getSat
 //---------------------------------------------------------------------------
 const LocationFixSat* LocationFix::getSat (fxuint8 cSatIndex) const

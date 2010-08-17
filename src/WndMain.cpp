@@ -391,6 +391,7 @@ void WndMain::onAppStatePixChanged (QPixmap* pNewStatePixmap)
 void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate)
 {
   const LocationFix& fix = *pFixCont->getFix();
+  AppSettings& settings = *App::instance()->settings();
   QString str;
 
   this->setUpdatesEnabled(false);
@@ -433,9 +434,9 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblFixSatUse->setText(QString::number(fix.cSatUse) + " / " + QString::number(fix.cSatCount));
   m_pLblFixLat->setText(QString::number((isnan(fix.getLatDeg()) ? 0.0 : fix.getLatDeg()), 'f', 6) + QChar(L'\x00b0'));
   m_pLblFixLong->setText(QString::number((isnan(fix.getLongDeg()) ? 0.0 : fix.getLongDeg()), 'f', 6) + QChar(L'\x00b0'));
-  m_pLblFixAlt->setText(QString::number(fix.iAlt) + " m");
+  m_pLblFixAlt->setText(QString::number(fix.hasFields(FIXFIELD_ALT) ? fix.getAlt(settings.getUnitSystem()) : 0.0) + " " + QString(fix.getAltSuffix(settings.getUnitSystem())));
   m_pLblFixTrack->setText(QString::number((isnan(fix.getTrackDeg()) ? 0.0 : fix.getTrackDeg()), 'f', 1) + QChar(L'\x00b0'));
-  m_pLblFixSpeed->setText(QString::number((isnan(fix.getSpeedKmh()) ? 0.0 : fix.getSpeedKmh()), 'f', 2) + " km/h");
+  m_pLblFixSpeed->setText(QString::number((fix.hasFields(FIXFIELD_SPEED) ? fix.getSpeed(settings.getHorizSpeedUnit()) : 0.0), 'f', 2) + " " + QString(fix.getSpeedSuffix(settings.getHorizSpeedUnit())));
 
   // enable cell tower button if we received cell mode info
   if (fix.sGSM.bSetup || fix.sWCDMA.bSetup)

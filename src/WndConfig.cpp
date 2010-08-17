@@ -132,11 +132,27 @@ void WndConfig::setupControls (void)
     m_pChkAskPointName = new QCheckBox(tr("Ask for point name before snap"));
     m_pChkAskPointName->setCheckState(settings.getAskPointName() ? Qt::Checked : Qt::Unchecked);
 
+    m_pCboUnitSystem = new MaemoComboBox(tr("Unit system"), this);
+    m_pCboUnitSystem->setValueLayout(QMaemo5ValueButton::ValueBesideText);
+    m_pCboUnitSystem->addItem(AppSettings::unitSystemToName(UNITSYSTEM_METRIC),    QVariant(UNITSYSTEM_METRIC));
+    m_pCboUnitSystem->addItem(AppSettings::unitSystemToName(UNITSYSTEM_IMPERIAL),  QVariant(UNITSYSTEM_IMPERIAL));
+    m_pCboUnitSystem->setCurrentIndex(settings.getUnitSystem());
+
+    m_pCboHorizSpeedUnit = new MaemoComboBox(tr("Horizontal speed unit"), this);
+    m_pCboHorizSpeedUnit->setValueLayout(QMaemo5ValueButton::ValueBesideText);
+    m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_KMH),   QVariant(HORIZSPEEDUNIT_KMH));
+    m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_MPH),   QVariant(HORIZSPEEDUNIT_MPH));
+    m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_MS),    QVariant(HORIZSPEEDUNIT_MS));
+    m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_KNOTS), QVariant(HORIZSPEEDUNIT_KNOTS));
+    m_pCboHorizSpeedUnit->setCurrentIndex(settings.getHorizSpeedUnit());
+
     pVBox->addWidget(m_pCboLogStep);
     pVBox->addWidget(m_pChkGpsAssisted);
     pVBox->addWidget(m_pChkGpsAlwaysConnected);
     pVBox->addWidget(m_pChkAskTrackName);
     pVBox->addWidget(m_pChkAskPointName);
+    pVBox->addWidget(m_pCboUnitSystem);
+    pVBox->addWidget(m_pCboHorizSpeedUnit);
     pLeftLayout->addLayout(pVBox);
   }
 
@@ -179,6 +195,8 @@ void WndConfig::onClickedDone (void)
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
   settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);
   settings.setAskPointName(m_pChkAskPointName->checkState() != Qt::Unchecked);
+  settings.setUnitSystem(m_pCboUnitSystem->currentItemData().toUInt());
+  settings.setHorizSpeedUnit(m_pCboHorizSpeedUnit->currentItemData().toUInt());
 
   settings.write();
   this->done(0);

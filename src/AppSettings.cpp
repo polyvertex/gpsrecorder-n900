@@ -39,6 +39,8 @@ static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
 static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName";
 static const char* SETTINGNAME_ASKPOINTNAME       = "AskPointName";
+static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
+static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 //
 static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX = "ConvertGpx";
@@ -51,6 +53,37 @@ static const char* SETTINGNAME_KML_LINECOLOR    = "KmlLineColor";
 static const char* SETTINGNAME_KML_LINEWIDTH    = "KmlLineWidth";
 static const char* SETTINGNAME_KML_AIRCRAFTMODE = "KmlAircraftMode";
 //atic const char* SETTINGNAME_KML_COLORBYSPEED = "KmlColorBySpeed";
+
+
+
+//---------------------------------------------------------------------------
+// Constants
+//---------------------------------------------------------------------------
+static const struct UNITSYSTEMS_
+{
+  uint        uiId;
+  const char* pszName;
+}
+UNITSYSTEMS[] =
+{
+  { UNITSYSTEM_METRIC,   "Metric"   },
+  { UNITSYSTEM_IMPERIAL, "Imperial" },
+};
+static const int UNITSYSTEMS_COUNT = sizeof(UNITSYSTEMS) / sizeof(UNITSYSTEMS[0]);
+
+static const struct HORIZSPEEDUNITS_
+{
+  uint        uiId;
+  const char* pszName;
+}
+HORIZSPEEDUNITS[] =
+{
+  { HORIZSPEEDUNIT_KMH,   "km/h"  },
+  { HORIZSPEEDUNIT_MPH,   "mph"   },
+  { HORIZSPEEDUNIT_MS,    "m/s"   },
+  { HORIZSPEEDUNIT_KNOTS, "knots" },
+};
+static const int HORIZSPEEDUNITS_COUNT = sizeof(HORIZSPEEDUNITS) / sizeof(HORIZSPEEDUNITS[0]);
 
 
 
@@ -232,6 +265,56 @@ bool AppSettings::getAskPointName (void)
 }
 
 //---------------------------------------------------------------------------
+// UnitSystem
+//---------------------------------------------------------------------------
+void AppSettings::setUnitSystem (uint uiUnitSystem)
+{
+  m_Settings.setValue(SETTINGNAME_UNITSYSTEM, QVariant(uiUnitSystem));
+}
+
+uint AppSettings::getUnitSystem (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_UNITSYSTEM);
+  if (var.canConvert(QVariant::UInt))
+  {
+    bool bOk = false;
+    uint ui = var.toUInt(&bOk);
+
+    if (bOk && AppSettings::unitSystemValidate(ui))
+      return ui;
+    else
+      this->setUnitSystem(AppSettings::defaultUnitSystem());
+  }
+
+  return AppSettings::defaultUnitSystem();
+}
+
+//---------------------------------------------------------------------------
+// HorizSpeedUnit
+//---------------------------------------------------------------------------
+void AppSettings::setHorizSpeedUnit (uint uiHorizSpeedUnit)
+{
+  m_Settings.setValue(SETTINGNAME_HORIZSPEEDUNIT, QVariant(uiHorizSpeedUnit));
+}
+
+uint AppSettings::getHorizSpeedUnit (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_HORIZSPEEDUNIT);
+  if (var.canConvert(QVariant::UInt))
+  {
+    bool bOk = false;
+    uint ui = var.toUInt(&bOk);
+
+    if (bOk && AppSettings::horizSpeedUnitValidate(ui))
+      return ui;
+    else
+      this->setHorizSpeedUnit(AppSettings::defaultHorizSpeedUnit());
+  }
+
+  return AppSettings::defaultHorizSpeedUnit();
+}
+
+//---------------------------------------------------------------------------
 // ConvertCsv
 //---------------------------------------------------------------------------
 void AppSettings::setConvertCsv (bool bEnable)
@@ -380,4 +463,62 @@ bool AppSettings::getKmlAircraftMode (void)
     return var.toBool();
 
   return ExporterSinkKml::defaultAircraftMode();
+}
+
+
+
+//---------------------------------------------------------------------------
+// unitSystemValidate
+//---------------------------------------------------------------------------
+bool AppSettings::unitSystemValidate (uint uiUnitSystem)
+{
+  for (int i = 0; i < UNITSYSTEMS_COUNT; ++i)
+  {
+    if (uiUnitSystem == UNITSYSTEMS[i].uiId)
+      return true;
+  }
+
+  return false;
+}
+
+//---------------------------------------------------------------------------
+// unitSystemToName
+//---------------------------------------------------------------------------
+const char* AppSettings::unitSystemToName (uint uiUnitSystem)
+{
+  for (int i = 0; i < UNITSYSTEMS_COUNT; ++i)
+  {
+    if (uiUnitSystem == UNITSYSTEMS[i].uiId)
+      return UNITSYSTEMS[i].pszName;
+  }
+
+  return NULL;
+}
+
+//---------------------------------------------------------------------------
+// horizSpeedUnitValidate
+//---------------------------------------------------------------------------
+bool AppSettings::horizSpeedUnitValidate (uint uiHorizSpeedUnit)
+{
+  for (int i = 0; i < HORIZSPEEDUNITS_COUNT; ++i)
+  {
+    if (uiHorizSpeedUnit == HORIZSPEEDUNITS[i].uiId)
+      return true;
+  }
+
+  return false;
+}
+
+//---------------------------------------------------------------------------
+// horizSpeedUnitToName
+//---------------------------------------------------------------------------
+const char* AppSettings::horizSpeedUnitToName (uint uiHorizSpeedUnit)
+{
+  for (int i = 0; i < HORIZSPEEDUNITS_COUNT; ++i)
+  {
+    if (uiHorizSpeedUnit == HORIZSPEEDUNITS[i].uiId)
+      return HORIZSPEEDUNITS[i].pszName;
+  }
+
+  return NULL;
 }

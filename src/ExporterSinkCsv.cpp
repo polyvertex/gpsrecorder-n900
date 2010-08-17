@@ -139,7 +139,7 @@ void ExporterSinkCsv::onLocationFix (time_t uiTime, const LocationFixContainer& 
     fix.getLongDeg(), m_cSeparator,
     (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0), m_cSeparator,
     fix.getTrackDeg(), m_cSeparator,
-    fix.getSpeedKmh() );
+    fix.getSpeed(HORIZSPEEDUNIT_KMH) );
 }
 
 //---------------------------------------------------------------------------

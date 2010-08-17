@@ -67,6 +67,12 @@ public :
   void setAskPointName (bool bEnable);
   bool getAskPointName (void);
 
+  void setUnitSystem (uint uiUnitSystem);
+  uint getUnitSystem (void);
+
+  void setHorizSpeedUnit (uint uiHorizSpeedUnit);
+  uint getHorizSpeedUnit (void);
+
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);
@@ -96,10 +102,17 @@ public :
   static bool             defaultGpsAlwaysConnected (void) { return true; }
   static bool             defaultAskTrackName       (void) { return true; }
   static bool             defaultAskPointName       (void) { return true; }
+  static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
+  static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
 
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }
   static bool defaultConvertKml (void) { return true; }
+
+  static bool        horizSpeedUnitValidate (uint uiHorizSpeedUnit);
+  static const char* horizSpeedUnitToName   (uint uiHorizSpeedUnit);
+  static bool        unitSystemValidate     (uint uiUnitSystem);
+  static const char* unitSystemToName       (uint uiUnitSystem);
 
 
 signals :

@@ -58,6 +58,8 @@ private :
   QCheckBox*     m_pChkGpsAlwaysConnected;
   QCheckBox*     m_pChkAskTrackName;
   QCheckBox*     m_pChkAskPointName;
+  MaemoComboBox* m_pCboUnitSystem;
+  MaemoComboBox* m_pCboHorizSpeedUnit;
 };
 
 

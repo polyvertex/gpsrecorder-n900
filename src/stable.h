@@ -135,6 +135,20 @@ extern "C" {
 
 
 //---------------------------------------------------------------------------
+// Constants
+//---------------------------------------------------------------------------
+// unit system
+#define UNITSYSTEM_METRIC    0
+#define UNITSYSTEM_IMPERIAL  1
+
+// horizontal speed unit
+#define HORIZSPEEDUNIT_KMH    0
+#define HORIZSPEEDUNIT_MPH    1
+#define HORIZSPEEDUNIT_MS     2
+#define HORIZSPEEDUNIT_KNOTS  3
+
+
+//---------------------------------------------------------------------------
 // Raw Types
 //---------------------------------------------------------------------------
 #ifdef __cplusplus
