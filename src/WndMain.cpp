@@ -286,7 +286,7 @@ void WndMain::onClickedSnap (void)
     strName = QInputDialog::getText(
       this,
       tr("Point name ?"),
-      tr("Please enter the name of the point to snap or leave blank :"),
+      tr("Please enter point name or leave blank :"),
       QLineEdit::Normal,
       "",
       &bOk).trimmed();

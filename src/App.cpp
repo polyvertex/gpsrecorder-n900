@@ -51,9 +51,10 @@ App::App (int& nArgc, char** ppszArgv)
   setlocale(LC_NUMERIC, "C");
 
   // init members
-  m_eState         = STATE_STOPPED;
-  m_bVirginOutput  = true;
-  m_uiLastFixWrite = 0;
+  m_eState            = STATE_STOPPED;
+  m_uiSystemTimeSetup = 0;
+  m_bVirginOutput     = true;
+  m_uiLastFixWrite    = 0;
 
   // load pixmaps
   m_pPixCellModeNone = new QPixmap(":/icons/cellmode-none-170.png");
@@ -350,7 +351,7 @@ QString App::askTrackName (void)
   strTrackName = QInputDialog::getText(
     m_pWndMain,
     tr("Track name ?"),
-    tr("Please enter desired track name or leave blank :"),
+    tr("Please enter track name or leave blank :"),
     QLineEdit::Normal,
     "",
     &bOk).trimmed();
@@ -408,6 +409,8 @@ bool App::applyGpsTime (uint uiGpsTime)
     static uint uiLastTime = 0;
 
     QString strInfo;
+
+    m_uiSystemTimeSetup = time(0);
 
     if (uiGpsTime < uiLastTime || (uiGpsTime - uiLastTime) >= 10) // do not bother user too much
     {
@@ -510,7 +513,8 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   }
 
   // setup system time if needed
-  if (!m_GPSRFile.isOpen() &&
+  if (!m_uiSystemTimeSetup &&
+      !m_GPSRFile.isOpen() &&
       pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
       pFixCont->getFix()->uiTimeEP == 0 && // <= m_Settings.getLogStep() &&
       Util::timeDiff(time(0), pFixCont->getFix()->uiTime, true) >= m_Settings.getLogStep())
@@ -525,9 +529,11 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
       (m_Settings.getLogStep() == m_pLocation->getFixStep()) ||
       ((pFixCont->getFix()->uiTime - m_uiLastFixWrite) >= m_Settings.getLogStep());
 
+    // do not log anything until we've got accurate enough time
     if (bCanLog && m_bVirginOutput)
     {
-      if (pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
+      if (!m_uiSystemTimeSetup &&
+          pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
           pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep())
       {
         this->applyGpsTime(pFixCont->getFix()->uiTime);

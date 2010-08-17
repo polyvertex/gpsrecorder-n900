@@ -73,6 +73,8 @@ public :
   const char* getStateStr (void) const;
   QPixmap*    getStatePix (void) { return m_pPixState; }
 
+  time_t lastTimeSetup (void) const { return m_uiSystemTimeSetup; }
+
   WndMain*  wndMain  (void) { return m_pWndMain; }
   WndSat*   wndSat   (void) { return m_pWndSat; }
   WndSpeed* wndSpeed (void) { return m_pWndSpeed; }
@@ -136,7 +138,8 @@ private :
   WndCell*  m_pWndCell;
   WndAbout* m_pWndAbout;
 
-  State m_eState;
+  State  m_eState;
+  time_t m_uiSystemTimeSetup; // last time the system time has been setup
 
   GPSRFile m_GPSRFile;
   bool     m_bVirginOutput;
