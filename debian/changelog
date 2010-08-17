@@ -1,3 +1,13 @@
+gpsrecorder (0.1.144) unstable; urgency=low
+
+  * Added : Unit conversion settings for distances and speed.
+  * Modified : Better handling of snapped points in GPX exporter.
+  * Modified : Setup system time only once per application instance.
+  * Modified : 'Point name' dialog now has shorter description so it is not chopped anymore.
+  * Modified : Replaced 'browse' icons to be a little bit more intuitive.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Tue, 17 Aug 2010 23:40:59 +0200
+
 gpsrecorder (0.1.136) unstable; urgency=low
 
   * Corrected : Revision number from the 'About' window disappeared.
