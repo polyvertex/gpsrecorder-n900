@@ -146,6 +146,9 @@ void WndConfig::setupControls (void)
     m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_KNOTS), QVariant(HORIZSPEEDUNIT_KNOTS));
     m_pCboHorizSpeedUnit->setCurrentIndex(settings.getHorizSpeedUnit());
 
+    m_pChkPreventBlankScreen = new QCheckBox(tr("Prevent screen blanking"));
+    m_pChkPreventBlankScreen->setCheckState(settings.getPreventBlankScreen() ? Qt::Checked : Qt::Unchecked);
+
     pVBox->addWidget(m_pCboLogStep);
     pVBox->addWidget(m_pChkGpsAssisted);
     pVBox->addWidget(m_pChkGpsAlwaysConnected);
@@ -153,6 +156,7 @@ void WndConfig::setupControls (void)
     pVBox->addWidget(m_pChkAskPointName);
     pVBox->addWidget(m_pCboUnitSystem);
     pVBox->addWidget(m_pCboHorizSpeedUnit);
+    pVBox->addWidget(m_pChkPreventBlankScreen);
     pLeftLayout->addLayout(pVBox);
   }
 
@@ -197,6 +201,7 @@ void WndConfig::onClickedDone (void)
   settings.setAskPointName(m_pChkAskPointName->checkState() != Qt::Unchecked);
   settings.setUnitSystem(m_pCboUnitSystem->currentItemData().toUInt());
   settings.setHorizSpeedUnit(m_pCboHorizSpeedUnit->currentItemData().toUInt());
+  settings.setPreventBlankScreen(m_pChkPreventBlankScreen->checkState() != Qt::Unchecked);
 
   settings.write();
   this->done(0);

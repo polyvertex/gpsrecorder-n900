@@ -60,6 +60,7 @@ private :
   QCheckBox*     m_pChkAskPointName;
   MaemoComboBox* m_pCboUnitSystem;
   MaemoComboBox* m_pCboHorizSpeedUnit;
+  QCheckBox*     m_pChkPreventBlankScreen;
 };
 
 

@@ -35,7 +35,7 @@ CONFIG(debug, debug|release) {
   message(This is a DEBUG build !)
 }
 
-QT  = core gui
+QT  = core gui dbus
 QT += maemo5
 
 INCLUDEPATH += /usr/include/glib-2.0 /usr/lib/glib-2.0/include

@@ -94,9 +94,10 @@ signals :
 
 
 public slots :
-  void onSettingsWritten (void);
-  void onLocationFixLost (Location* pLocation, const LocationFixContainer* pLastFixCont);
-  void onLocationFix     (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
+  void onSettingsWritten    (void);
+  void onPreventBlankScreen (void);
+  void onLocationFixLost    (Location* pLocation, const LocationFixContainer* pLastFixCont);
+  void onLocationFix        (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
 
 
 private :

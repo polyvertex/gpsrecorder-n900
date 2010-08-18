@@ -73,6 +73,9 @@ public :
   void setHorizSpeedUnit (uint uiHorizSpeedUnit);
   uint getHorizSpeedUnit (void);
 
+  void setPreventBlankScreen (bool bEnable);
+  bool getPreventBlankScreen (void);
+
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);
@@ -104,6 +107,7 @@ public :
   static bool             defaultAskPointName       (void) { return true; }
   static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
   static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
+  static bool             defaultPreventBlankScreen (void) { return false; }
 
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }

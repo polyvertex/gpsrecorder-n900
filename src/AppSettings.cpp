@@ -41,6 +41,7 @@ static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName";
 static const char* SETTINGNAME_ASKPOINTNAME       = "AskPointName";
 static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
+static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
 //
 static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX = "ConvertGpx";
@@ -312,6 +313,23 @@ uint AppSettings::getHorizSpeedUnit (void)
   }
 
   return AppSettings::defaultHorizSpeedUnit();
+}
+
+//---------------------------------------------------------------------------
+// PreventBlankScreen
+//---------------------------------------------------------------------------
+void AppSettings::setPreventBlankScreen (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_PREVENTBLANKSCREEN, QVariant(bEnable));
+}
+
+bool AppSettings::getPreventBlankScreen (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_PREVENTBLANKSCREEN);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultPreventBlankScreen();
 }
 
 //---------------------------------------------------------------------------

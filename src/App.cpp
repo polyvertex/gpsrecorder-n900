@@ -462,6 +462,30 @@ void App::onSettingsWritten (void)
     if (m_pPixState != pPrevStatePix)
       emit this->sigAppStatePixChanged(m_pPixState);
   }
+
+  // prevent blank screen if needed
+  if (m_Settings.getPreventBlankScreen())
+    QTimer::singleShot(1000, this, SLOT(onPreventBlankScreen()));
+}
+
+//---------------------------------------------------------------------------
+// onPreventBlankScreen
+//---------------------------------------------------------------------------
+void App::onPreventBlankScreen (void)
+{
+  if (!m_Settings.getPreventBlankScreen())
+    return;
+
+  // send dbus command
+  QDBusConnection::systemBus().call(
+    QDBusMessage::createMethodCall(
+      MCE_SERVICE,
+      MCE_REQUEST_PATH,
+      MCE_REQUEST_IF,
+      MCE_PREVENT_BLANK_REQ));
+
+  // the above dbus command has to be sent every 60 seconds at least
+  QTimer::singleShot(50000, this, SLOT(onPreventBlankScreen()));
 }
 
 

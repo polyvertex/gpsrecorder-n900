@@ -90,6 +90,18 @@ extern "C" {
 }
 #endif
 
+// maemo - mce (Mode Control Entity)
+//
+// http://maemo.org/api_refs/5.0/beta/mce-dev/index.html
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <mce/dbus-names.h>
+#include <mce/mode-names.h>
+#ifdef __cplusplus
+}
+#endif
+
 // minizip
 #ifdef __cplusplus
 extern "C" {
@@ -104,6 +116,7 @@ extern "C" {
 #include <QObject>
 #include <QSettings>
 #include <QtGui>
+#include <QtDBus>
 #endif
 
 // qt - maemo specific (qt4.6+)
