@@ -46,6 +46,11 @@ public :
 
 private :
   void createWidgets (void);
+  void readChangeLog (void);
+
+
+private :
+  QMap<QString,QString> m_mapChangeLog;
 };
 
 

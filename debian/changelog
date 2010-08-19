@@ -22,7 +22,7 @@ gpsrecorder (0.1.135) unstable; urgency=low
   * Added : Yellow informations banners here and there and replaced some information boxes.
   * Modified : Allow much longer log steps from 1 second to 3 hours (request from talk.maemo.org).
   * Modified : When a position is snapped, write position as soon as possible instead of waiting for next log step.
-  * Modified : Upgraded from Qt 4.5 to 4.6 : corrected and polished layout of windows and dialos accordingly.
+  * Modified : Upgraded from Qt 4.5 to 4.6 : corrected and polished layout of windows and dialogs accordingly.
 
  -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 09 Aug 2010 22:04:04 +0200
 
@@ -43,6 +43,6 @@ gpsrecorder (0.1.105) unstable; urgency=low
 
 gpsrecorder (0.1.102) unstable; urgency=low
 
-  * Initial public release.
+  * First public release.
 
  -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Sun, 14 Mar 2010 21:37:08 +0100

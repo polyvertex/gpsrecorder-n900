@@ -55,45 +55,120 @@ WndAbout::~WndAbout (void)
 //---------------------------------------------------------------------------
 void WndAbout::createWidgets (void)
 {
-  // TODO :
-  // * "Record" button if (App::instance()->getState() != App::STATE_STARTED)
-  // * wallpaper
-  // * water effect on wallpaper :)
+  QLabel* pLblIcon = new QLabel;
+  QLabel* pLblAbout = new QLabel;
 
-  QWidget* pWidget = new QWidget();
-  QHBoxLayout* pHBox = new QHBoxLayout();
-  QLabel* pLblIcon = new QLabel();
-  QLabel* pLblAbout = new QLabel();
+  this->readChangeLog();
 
   pLblIcon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   pLblIcon->setPixmap(QPixmap(":/icons/appicon-128.png"));
   pLblIcon->setFixedWidth(140);
 
-  //pLblAbout->setStyleSheet("background-image: url(:/images/wallpaper-800x480.jpg);");
-  pLblAbout->setTextFormat(Qt::RichText);
-  pLblAbout->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-  pLblAbout->setOpenExternalLinks(true);
-  pLblAbout->setText(QString(
-    "<h1>%1</h1>"
-    "version <b>%2</b><br>"
-    "<br>"
-    "<a href=\"%3\">%3</a><br>"
-    "<br>"
-    "Copyright (c) 2010 <a href=\"mailto:%4\">Jean-Charles Lefebvre</a><br>"
-    "Licensed under the terms of the GNU Public License.<br>"
-    "<br>"
-    "Current output directory is :<br>"
-    "%5<br>"
-    )
-    .arg(App::applicationLabel())
-    .arg(App::applicationVersion())
-    .arg(App::applicationUrl())
-    .arg(App::applicationEMail())
-    .arg(App::outputDir())
-  );
+  // 'about' text
+  {
+    QString strAbout;
+    QMapIterator<QString, QString> itLog(m_mapChangeLog);
 
-  pHBox->addWidget(pLblIcon);
-  pHBox->addWidget(pLblAbout);
-  pWidget->setLayout(pHBox);
-  this->setCentralWidget(pWidget);
+    strAbout = QString(
+      "<h1>%1</h1>"
+      "version <b>%2</b><br>"
+      "<br>"
+      "<a href=\"%3\">%3</a><br>"
+      "<br>"
+      "Copyright (c) 2010 <a href=\"mailto:%4\">Jean-Charles Lefebvre</a><br>"
+      "Licensed under the terms of the GNU Public License.<br>"
+      "<br>"
+      "Current output directory is :<br>"
+      "%5<br>"
+      "<h3>ChangeLog :</h3>"
+      )
+      .arg(App::applicationLabel())
+      .arg(App::applicationVersion())
+      .arg(App::applicationUrl())
+      .arg(App::applicationEMail())
+      .arg(App::outputDir());
+
+    itLog.toBack();
+    while (itLog.hasPrevious())
+    {
+      itLog.previous();
+      strAbout += itLog.key() + " :\n" + itLog.value() + "\n";
+    }
+    strAbout.replace('\n', "<br>");
+
+    //pLblAbout->setStyleSheet("background-image: url(:/images/wallpaper-800x480.jpg);");
+    pLblAbout->setTextFormat(Qt::RichText);
+    pLblAbout->setWordWrap(true);
+    pLblAbout->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    pLblAbout->setOpenExternalLinks(true);
+    pLblAbout->setText(strAbout);
+  }
+
+  // main layout setup
+  {
+    QWidget*     pRootWidget = new QWidget;
+    QHBoxLayout* pHBox = new QHBoxLayout;
+    QScrollArea* pScrollArea = new QScrollArea;
+
+    pScrollArea->setWidgetResizable(true);
+    pScrollArea->setWidget(pLblAbout);
+    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    pScrollArea->setProperty("FingerScrollable", true);
+
+    pHBox->setSpacing(1);
+    pHBox->addWidget(pLblIcon, 0, Qt::AlignLeft | Qt::AlignTop);
+    pHBox->addWidget(pScrollArea);
+
+    pRootWidget->setLayout(pHBox);
+
+    this->setCentralWidget(pRootWidget);
+  }
+}
+
+//---------------------------------------------------------------------------
+// readChangeLog
+//---------------------------------------------------------------------------
+void WndAbout::readChangeLog (void)
+{
+  QFile file(":/changelog");
+
+  m_mapChangeLog.clear();
+
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    return;
+
+  QTextStream stream(&file);
+  QString     strLogHeader(QCoreApplication::applicationName() + " (");
+  QString     strVersion;
+  QString     strLine = stream.readLine();
+
+  while (!strLine.isNull())
+  {
+    // log header
+    if (strLine.startsWith(strLogHeader, Qt::CaseSensitive))
+    {
+      int nEnd = strLine.indexOf(')', strLogHeader.length());
+      if (nEnd > 0)
+        strVersion = strLine.mid(strLogHeader.length(), nEnd - strLogHeader.length());
+    }
+
+    // log footer
+    else if (strLine.startsWith(" -- "))
+    {
+      strVersion.clear();
+    }
+
+    // log content
+    else if (!strVersion.isEmpty())
+    {
+      strLine = strLine.trimmed();
+      if (!strLine.isEmpty())
+        m_mapChangeLog[strVersion] += strLine.trimmed() + "\n";
+    }
+
+    // next line
+    strLine = stream.readLine();
+  }
+
+  file.close();
 }

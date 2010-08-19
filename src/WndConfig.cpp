@@ -163,7 +163,7 @@ void WndConfig::setupControls (void)
   // main layout setup
   {
     QScrollArea* pScrollArea = new QScrollArea;
-    QWidget*     pScrollWidget = new QWidget();
+    QWidget*     pScrollWidget = new QWidget;
     QPushButton* pBtnDone = new QPushButton(tr("Done"));
 
     this->connect(pBtnDone, SIGNAL(clicked()), SLOT(onClickedDone()));
