@@ -1,3 +1,10 @@
+gpsrecorder (0.1.147) unstable; urgency=low
+
+  * Added : Added 'Prevent screen blanking' option.
+  * Added : ChangeLog content into the About window.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Thu, 19 Aug 2010 19:51:20 +0200
+
 gpsrecorder (0.1.144) unstable; urgency=low
 
   * Added : Unit conversion settings for distances and speed.
