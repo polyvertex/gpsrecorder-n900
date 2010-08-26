@@ -73,7 +73,9 @@ public :
   const char* getStateStr (void) const;
   QPixmap*    getStatePix (void) { return m_pPixState; }
 
-  time_t lastTimeSetup (void) const { return m_uiSystemTimeSetup; }
+  time_t lastTimeSetup      (void) const { return m_uiSystemTimeSetup; }
+  uint   fixesWritten       (void) const { return m_uiFixesWritten; }
+  time_t lastWrittenFixTime (void) const { return m_uiLastFixWrite; }
 
   WndMain*  wndMain  (void) { return m_pWndMain; }
   WndSat*   wndSat   (void) { return m_pWndSat; }
@@ -144,6 +146,7 @@ private :
 
   GPSRFile m_GPSRFile;
   bool     m_bVirginOutput;
+  uint     m_uiFixesWritten;
   time_t   m_uiLastFixWrite;
 };
 

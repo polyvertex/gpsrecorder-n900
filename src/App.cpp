@@ -53,7 +53,7 @@ App::App (int& nArgc, char** ppszArgv)
   // init members
   m_eState            = STATE_STOPPED;
   m_uiSystemTimeSetup = 0;
-  m_bVirginOutput     = true;
+  m_uiFixesWritten    = 0;
   m_uiLastFixWrite    = 0;
 
   // load pixmaps
@@ -279,7 +279,7 @@ bool App::setState (App::State eNewState)
       }
     }
 
-    m_bVirginOutput  = true;
+    m_uiFixesWritten = 0;
     m_uiLastFixWrite = 0;
 
     strPath  = App::outputDir().toAscii();
@@ -382,7 +382,7 @@ void App::closeGPSRFile (void)
       strPath = m_GPSRFile.getPath();
       m_GPSRFile.close();
 
-      if (m_bVirginOutput)
+      if (!m_uiFixesWritten)
       {
         QMaemo5InformationBox::information(
           m_pWndMain,
@@ -394,7 +394,7 @@ void App::closeGPSRFile (void)
     }
   }
 
-  m_bVirginOutput = true;
+  m_uiFixesWritten = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -538,7 +538,6 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
 
   // setup system time if needed
   if (!m_uiSystemTimeSetup &&
-      !m_GPSRFile.isOpen() &&
       pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
       pFixCont->getFix()->uiTimeEP == 0 && // <= m_Settings.getLogStep() &&
       Util::timeDiff(time(0), pFixCont->getFix()->uiTime, true) >= m_Settings.getLogStep())
@@ -549,29 +548,18 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   // write location fix
   if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
   {
+    // log only if we have to
     bool bCanLog =
       (m_Settings.getLogStep() == m_pLocation->getFixStep()) ||
       ((pFixCont->getFix()->uiTime - m_uiLastFixWrite) >= m_Settings.getLogStep());
 
-    // do not log anything until we've got accurate enough time
-    if (bCanLog && m_bVirginOutput)
-    {
-      if (!m_uiSystemTimeSetup &&
-          pFixCont->getFix()->hasFields(FIXFIELD_TIME) &&
-          pFixCont->getFix()->uiTimeEP <= m_Settings.getLogStep())
-      {
-        this->applyGpsTime(pFixCont->getFix()->uiTime);
-      }
-      else
-      {
-        // do not log until we actually get time from GPS device
-        bCanLog = false;
-      }
-    }
+    // do not log anything until we've got accurate time from gps device
+    if (bCanLog && !m_uiFixesWritten && !m_uiSystemTimeSetup)
+      bCanLog = false;
 
     if (bCanLog)
     {
-      m_bVirginOutput  = false;
+      ++m_uiFixesWritten;
       m_uiLastFixWrite = pFixCont->getFix()->uiTime;
       m_GPSRFile.writeLocationFix(pFixCont->getFix()->uiTime, *pFixCont);
     }

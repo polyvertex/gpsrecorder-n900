@@ -142,6 +142,12 @@ void WndMain::createWidgets (void)
   m_pLblFixSpeed = new QLabel();
   m_pLblFixSpeed->setDisabled(true);
 
+  m_pLblFixesWritten = new QLabel();
+  m_pLblFixesWritten->setDisabled(true);
+
+  m_pLblLastWrittenFixTime = new QLabel();
+  m_pLblLastWrittenFixTime->setDisabled(true);
+
   m_pBtnSnap = new QPushButton(QIcon(*App::instance()->pixSnap()), QString());
   m_pBtnSnap->setEnabled(false);
   this->connect(m_pBtnSnap, SIGNAL(clicked()), SLOT(onClickedSnap()));
@@ -169,6 +175,7 @@ void WndMain::showFix (void)
   QGridLayout* pGrid    = new QGridLayout();
   QFormLayout* pForm1   = new QFormLayout();
   QFormLayout* pForm2   = new QFormLayout();
+  QFormLayout* pForm3   = new QFormLayout();
   QWidget*     pBlank   = new QWidget();
   QHBoxLayout* pButtons = new QHBoxLayout();
 
@@ -185,6 +192,10 @@ void WndMain::showFix (void)
   pForm2->addRow(tr("Alt :"),    m_pLblFixAlt);
   pForm2->addRow(tr("Track :"),  m_pLblFixTrack);
   pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
+
+  pForm3->setSpacing(8);
+  pForm3->addRow(tr("Fixes written :"), m_pLblFixesWritten);
+  pForm3->addRow(tr("Last written fix :"), m_pLblLastWrittenFixTime);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
@@ -204,7 +215,8 @@ void WndMain::showFix (void)
   pGrid->setHorizontalSpacing(5);
   pGrid->addLayout(pForm1,   0, 0);
   pGrid->addLayout(pForm2,   0, 1);
-  pGrid->addLayout(pButtons, 1, 0, 1, 2, Qt::AlignBottom);
+  pGrid->addLayout(pForm3,   1, 0);
+  pGrid->addLayout(pButtons, 2, 0, 1, 2, Qt::AlignBottom);
 
   pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
@@ -224,6 +236,9 @@ void WndMain::clearFixFields (void)
   m_pLblFixTrack->clear();
   m_pLblFixSpeed->clear();
   m_pLblFixSatUse->clear();
+
+  m_pLblFixesWritten->clear();
+  m_pLblLastWrittenFixTime->clear();
 }
 
 
@@ -437,6 +452,13 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblFixAlt->setText(QString::number(fix.hasFields(FIXFIELD_ALT) ? fix.getAlt(settings.getUnitSystem()) : 0.0) + " " + QString(fix.getAltSuffix(settings.getUnitSystem())));
   m_pLblFixTrack->setText(QString::number((isnan(fix.getTrackDeg()) ? 0.0 : fix.getTrackDeg()), 'f', 1) + QChar(L'\x00b0'));
   m_pLblFixSpeed->setText(QString::number((fix.hasFields(FIXFIELD_SPEED) ? fix.getSpeed(settings.getHorizSpeedUnit()) : 0.0), 'f', 2) + " " + QString(fix.getSpeedSuffix(settings.getHorizSpeedUnit())));
+
+  // miscellaneous
+  m_pLblFixesWritten->setText(QString::number(App::instance()->fixesWritten()));
+  if (!App::instance()->lastWrittenFixTime())
+    m_pLblLastWrittenFixTime->clear();
+  else
+    m_pLblLastWrittenFixTime->setText(Util::timeString(false, App::instance()->lastWrittenFixTime()));
 
   // enable cell tower button if we received cell mode info
   if (fix.sGSM.bSetup || fix.sWCDMA.bSetup)
