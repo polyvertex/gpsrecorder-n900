@@ -142,6 +142,9 @@ void WndMain::createWidgets (void)
   m_pLblFixSpeed = new QLabel();
   m_pLblFixSpeed->setDisabled(true);
 
+  m_pLblTimeFixed = new QLabel();
+  m_pLblTimeFixed->setDisabled(true);
+
   m_pLblFixesWritten = new QLabel();
   m_pLblFixesWritten->setDisabled(true);
 
@@ -194,6 +197,7 @@ void WndMain::showFix (void)
   pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
 
   pForm3->setSpacing(8);
+  pForm3->addRow(tr("Time fixed :"), m_pLblTimeFixed);
   pForm3->addRow(tr("Fixes written :"), m_pLblFixesWritten);
   pForm3->addRow(tr("Last written fix :"), m_pLblLastWrittenFixTime);
 
@@ -215,8 +219,9 @@ void WndMain::showFix (void)
   pGrid->setHorizontalSpacing(5);
   pGrid->addLayout(pForm1,   0, 0);
   pGrid->addLayout(pForm2,   0, 1);
-  pGrid->addLayout(pForm3,   1, 0);
-  pGrid->addLayout(pButtons, 2, 0, 1, 2, Qt::AlignBottom);
+  pGrid->addWidget(pBlank,   1, 0);
+  pGrid->addLayout(pForm3,   2, 0);
+  pGrid->addLayout(pButtons, 3, 0, 1, 2, Qt::AlignBottom);
 
   pWidget->setLayout(pGrid);
   this->setCentralWidget(pWidget);
@@ -237,6 +242,7 @@ void WndMain::clearFixFields (void)
   m_pLblFixSpeed->clear();
   m_pLblFixSatUse->clear();
 
+  m_pLblTimeFixed->clear();
   m_pLblFixesWritten->clear();
   m_pLblLastWrittenFixTime->clear();
 }
@@ -454,6 +460,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblFixSpeed->setText(QString::number((fix.hasFields(FIXFIELD_SPEED) ? fix.getSpeed(settings.getHorizSpeedUnit()) : 0.0), 'f', 2) + " " + QString(fix.getSpeedSuffix(settings.getHorizSpeedUnit())));
 
   // miscellaneous
+  m_pLblTimeFixed->setText(App::instance()->lastTimeSetup() == 0 ? tr("NO") : tr("YES"));
   m_pLblFixesWritten->setText(QString::number(App::instance()->fixesWritten()));
   if (!App::instance()->lastWrittenFixTime())
     m_pLblLastWrittenFixTime->clear();

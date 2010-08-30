@@ -91,6 +91,7 @@ private :
   QLabel* m_pLblFixTrack;
   QLabel* m_pLblFixSpeed;
 
+  QLabel* m_pLblTimeFixed;
   QLabel* m_pLblFixesWritten;
   QLabel* m_pLblLastWrittenFixTime;
 
