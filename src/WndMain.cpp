@@ -197,9 +197,9 @@ void WndMain::showFix (void)
   pForm2->addRow(tr("Speed :"),  m_pLblFixSpeed);
 
   pForm3->setSpacing(8);
-  pForm3->addRow(tr("Time fixed :"), m_pLblTimeFixed);
-  pForm3->addRow(tr("Fixes written :"), m_pLblFixesWritten);
-  pForm3->addRow(tr("Last written fix :"), m_pLblLastWrittenFixTime);
+  pForm3->addRow(tr("Time setup :"), m_pLblTimeFixed);
+  pForm3->addRow(tr("Waypoints :"), m_pLblFixesWritten);
+  pForm3->addRow(tr("Last waypoint :"), m_pLblLastWrittenFixTime);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
