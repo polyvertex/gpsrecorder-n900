@@ -122,23 +122,30 @@ QMAKE_EXTRA_TARGETS    += build-version
 PRE_TARGETDEPS          = build-version
 
 
+# define install paths
+isEmpty(PREFIX) {
+  PREFIX = /usr
+}
+BINDIR  = $$PREFIX/bin
+DATADIR = $$PREFIX/share
+
 # define install target
-target.path  = /usr/bin/
+target.path  = $$BINDIR
 INSTALLS    += target
 
-desktop.path   = /usr/share/applications/hildon
+desktop.path   = $$DATADIR/applications/hildon
 desktop.files  = data/gpsrecorder.desktop
 INSTALLS      += desktop
 
-#service.path   = /usr/share/dbus-1/services
+#service.path   = $$DATADIR/dbus-1/services
 #service.files  = data/gpsrecorder.service
 #INSTALLS      += service
 
-icon48.path   = /usr/share/icons/hicolor/48x48/apps
+icon48.path   = $$DATADIR/icons/hicolor/48x48/apps
 icon48.files  = data/48x48/gpsrecorder.png
 INSTALLS     += icon48
 
-icon64.path   = /usr/share/icons/hicolor/64x64/apps
+icon64.path   = $$DATADIR/icons/hicolor/64x64/apps
 icon64.files  = data/64x64/gpsrecorder.png
 INSTALLS     += icon64
 

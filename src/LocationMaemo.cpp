@@ -275,7 +275,7 @@ void LocationMaemo::fixSetup (LocationFixContainer& fixCont, const LocationGPSDe
 {
   LocationFix* pFix = 0;
 
-  // ensure we  really got a fix
+  // ensure we really got a fix
   Q_ASSERT(gpsdev.fix);
   if (!gpsdev.fix)
     qFatal("fixSetup() got null fix !");
