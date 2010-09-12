@@ -67,6 +67,14 @@ Exporter::Exporter (void)
     SLOT(onReadChunkNamedSnap(GPSRFile*, time_t, const char*, uint)) );
   this->connect(
     &m_GPSRFile,
+    SIGNAL(sigReadChunkPaused(GPSRFile*, time_t, const char*, uint)),
+    SLOT(onReadChunkPaused(GPSRFile*, time_t, const char*, uint)) );
+  this->connect(
+    &m_GPSRFile,
+    SIGNAL(sigReadChunkResumed(GPSRFile*, time_t)),
+    SLOT(onReadChunkResumed(GPSRFile*, time_t)) );
+  this->connect(
+    &m_GPSRFile,
     SIGNAL(sigReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)),
     SLOT(onReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)) );
   this->connect(
@@ -92,7 +100,7 @@ void Exporter::clear (void)
   m_strOutputBasePath.clear();
   m_GPSRFile.close();
   m_FixCont.reset();
-  m_vecSnappedPoints.clear();
+  m_vecGizmoPoints.clear();
 }
 
 
@@ -212,10 +220,10 @@ void Exporter::onReadChunkLocationFix (GPSRFile* pGPSRFile, time_t uiTime, const
 {
   Q_UNUSED(pGPSRFile);
 
-  // emit snapped points
-  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
-    this->emitSnappedPoint(m_vecSnappedPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), &fix);
-  m_vecSnappedPoints.clear();
+  // emit gizmo points
+  for (int i = 0; i < m_vecGizmoPoints.size(); ++i)
+    this->emitGizmoPoint(m_vecGizmoPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), &fix);
+  m_vecGizmoPoints.clear();
 
   // emit fix
   m_FixCont.setFix(fix);
@@ -246,19 +254,36 @@ void Exporter::onReadChunkSnap (GPSRFile* pGPSRFile, time_t uiTime)
 //---------------------------------------------------------------------------
 void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen)
 {
-  SnappedPoint* pSnappedPoint;
+  GizmoPoint* pGizmoPoint;
 
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiPointNameLen);
 
-  m_vecSnappedPoints.append(SnappedPoint());
-  pSnappedPoint               = &m_vecSnappedPoints.last();
-  pSnappedPoint->uiTime       = uiTime;
-  pSnappedPoint->strPointName = pszPointName ? pszPointName : "";
-  pSnappedPoint->rLatDeg      = 0.0;
-  pSnappedPoint->rLongDeg     = 0.0;
-  pSnappedPoint->bHasAlt      = false;
-  pSnappedPoint->iAltM        = 0;
+  m_vecGizmoPoints.append(GizmoPoint());
+  pGizmoPoint               = &m_vecGizmoPoints.last();
+  pGizmoPoint->uiTime       = uiTime;
+  pGizmoPoint->eType        = GIZMO_SNAP;
+  pGizmoPoint->strPointName = pszPointName ? pszPointName : "";
+  pGizmoPoint->rLatDeg      = 0.0;
+  pGizmoPoint->rLongDeg     = 0.0;
+  pGizmoPoint->bHasAlt      = false;
+  pGizmoPoint->iAltM        = 0;
+}
+
+//---------------------------------------------------------------------------
+// onReadChunkPaused
+//---------------------------------------------------------------------------
+void Exporter::onReadChunkPaused (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName, uint uiPauseNameLen)
+{
+  // TODO
+}
+
+//---------------------------------------------------------------------------
+// onReadChunkResumed
+//---------------------------------------------------------------------------
+void Exporter::onReadChunkResumed (GPSRFile* pGPSRFile, time_t uiTime)
+{
+  // TODO
 }
 
 //---------------------------------------------------------------------------
@@ -279,10 +304,10 @@ void Exporter::onReadEOF (GPSRFile* pGPSRFile)
 {
   Q_UNUSED(pGPSRFile);
 
-  // emit remaining snapped points
-  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
-    this->emitSnappedPoint(m_vecSnappedPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), 0);
-  m_vecSnappedPoints.clear();
+  // emit remaining gizmo points
+  for (int i = 0; i < m_vecGizmoPoints.size(); ++i)
+    this->emitGizmoPoint(m_vecGizmoPoints[i], (m_FixCont.hasFix() ? m_FixCont.getFix() : 0), 0);
+  m_vecGizmoPoints.clear();
 
   // emit eof
   emit this->sigEOF();
@@ -291,9 +316,9 @@ void Exporter::onReadEOF (GPSRFile* pGPSRFile)
 
 
 //---------------------------------------------------------------------------
-// emitSnappedPoint
+// emitGizmoPoint
 //---------------------------------------------------------------------------
-void Exporter::emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA, const LocationFix* pFixB)
+void Exporter::emitGizmoPoint (GizmoPoint& gizmoPt, const LocationFix* pFixA, const LocationFix* pFixB)
 {
   Q_ASSERT(pFixA || pFixB);
 
@@ -315,12 +340,12 @@ void Exporter::emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA,
     if (!pFix->hasFields(FIXFIELD_LATLONG))
       return;
 
-    snapPt.rLatDeg  = pFix->getLatDeg();
-    snapPt.rLongDeg = pFix->getLongDeg();
-    snapPt.bHasAlt  = pFix->hasFields(FIXFIELD_ALT);
-    snapPt.iAltM    = snapPt.bHasAlt ? pFix->iAlt : 0;
+    gizmoPt.rLatDeg  = pFix->getLatDeg();
+    gizmoPt.rLongDeg = pFix->getLongDeg();
+    gizmoPt.bHasAlt  = pFix->hasFields(FIXFIELD_ALT);
+    gizmoPt.iAltM    = gizmoPt.bHasAlt ? pFix->iAlt : 0;
 
-    emit this->sigSnappedPoint(&snapPt);
+    emit this->sigGizmoPoint(&gizmoPt);
   }
   else
   {
@@ -328,9 +353,9 @@ void Exporter::emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA,
 
     // compute normalized time position between A and B
     if (pFixA->hasFields(FIXFIELD_TIME) && pFixB->hasFields(FIXFIELD_TIME) &&
-        snapPt.uiTime >= pFixA->uiTime && snapPt.uiTime <= pFixB->uiTime)
+        gizmoPt.uiTime >= pFixA->uiTime && gizmoPt.uiTime <= pFixB->uiTime)
     {
-      rTimePos = double(snapPt.uiTime - pFixA->uiTime) / double(pFixB->uiTime - pFixA->uiTime);
+      rTimePos = double(gizmoPt.uiTime - pFixA->uiTime) / double(pFixB->uiTime - pFixA->uiTime);
     }
     else
     {
@@ -339,34 +364,34 @@ void Exporter::emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA,
     }
 
     // interpolate position
-    snapPt.rLatDeg  = pFixA->getLatDeg() + ((pFixB->getLatDeg() - pFixA->getLatDeg()) * rTimePos);
-    snapPt.rLongDeg = pFixA->getLongDeg() + ((pFixB->getLongDeg() - pFixA->getLongDeg()) * rTimePos);
+    gizmoPt.rLatDeg  = pFixA->getLatDeg() + ((pFixB->getLatDeg() - pFixA->getLatDeg()) * rTimePos);
+    gizmoPt.rLongDeg = pFixA->getLongDeg() + ((pFixB->getLongDeg() - pFixA->getLongDeg()) * rTimePos);
 
     // interpolate altitude if we can
     if (pFixA->hasFields(FIXFIELD_ALT) && pFixB->hasFields(FIXFIELD_ALT))
     {
       double rAltM = double(pFixA->iAlt) + (double(pFixB->iAlt - pFixA->iAlt) * rTimePos);
 
-      snapPt.bHasAlt = true;
-      snapPt.iAltM   = qint32(rAltM);
+      gizmoPt.bHasAlt = true;
+      gizmoPt.iAltM   = qint32(rAltM);
     }
     else if (pFixA->hasFields(FIXFIELD_ALT))
     {
-      snapPt.bHasAlt = true;
-      snapPt.iAltM   = pFixA->iAlt;
+      gizmoPt.bHasAlt = true;
+      gizmoPt.iAltM   = pFixA->iAlt;
     }
     else if (pFixB->hasFields(FIXFIELD_ALT))
     {
-      snapPt.bHasAlt = true;
-      snapPt.iAltM   = pFixB->iAlt;
+      gizmoPt.bHasAlt = true;
+      gizmoPt.iAltM   = pFixB->iAlt;
     }
     else
     {
-      snapPt.bHasAlt = false;
-      snapPt.iAltM   = 0;
+      gizmoPt.bHasAlt = false;
+      gizmoPt.iAltM   = 0;
     }
 
-    // emit snapped point
-    emit this->sigSnappedPoint(&snapPt);
+    // emit gizmo point
+    emit this->sigGizmoPoint(&gizmoPt);
   }
 }

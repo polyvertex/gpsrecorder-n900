@@ -40,9 +40,17 @@ class Exporter : public QObject
   Q_OBJECT
 
 public :
-  struct SnappedPoint
+  enum GizmoType
+  {
+    GIZMO_SNAP,
+    GIZMO_PAUSE,
+    GIZMO_RESUME,
+  };
+
+  struct GizmoPoint
   {
     time_t     uiTime;
+    GizmoType  eType;
     QByteArray strPointName;
     double     rLatDeg;
     double     rLongDeg;
@@ -66,7 +74,7 @@ public :
 private :
   void clear (void);
 
-  void emitSnappedPoint (SnappedPoint& snapPt, const LocationFix* pFixA, const LocationFix* pFixB);
+  void emitGizmoPoint (GizmoPoint& gizmoPt, const LocationFix* pFixA, const LocationFix* pFixB);
 
 
 private slots :
@@ -77,22 +85,24 @@ private slots :
   void onReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
   void onReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
   void onReadChunkNamedSnap       (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen);
+  void onReadChunkPaused          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName, uint uiPauseNameLen);
+  void onReadChunkResumed         (GPSRFile* pGPSRFile, time_t uiTime);
   void onReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void onReadEOF                  (GPSRFile* pGPSRFile);
 
 
 signals :
-  void sigSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
-  void sigLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
-  void sigSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
-  void sigEOF          (void);
+  void sigSOF         (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
+  void sigLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
+  void sigGizmoPoint  (const Exporter::GizmoPoint* pGizmoPoint);
+  void sigEOF         (void);
 
 
 private :
-  QString               m_strOutputBasePath;
-  GPSRFile              m_GPSRFile;
-  LocationFixContainer  m_FixCont;
-  QVector<SnappedPoint> m_vecSnappedPoints;
+  QString              m_strOutputBasePath;
+  GPSRFile             m_GPSRFile;
+  LocationFixContainer m_FixCont;
+  QVector<GizmoPoint>  m_vecGizmoPoints;
 };
 
 

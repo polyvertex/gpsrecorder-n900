@@ -54,8 +54,8 @@ ExporterSinkKml::ExporterSinkKml (Exporter* pParent)
     SLOT(onLocationFix(time_t, const LocationFixContainer&)) );
   this->connect(
     pParent,
-    SIGNAL(sigSnappedPoint(const Exporter::SnappedPoint*)),
-    SLOT(onSnappedPoint(const Exporter::SnappedPoint*)) );
+    SIGNAL(sigGizmoPoint(const Exporter::GizmoPoint*)),
+    SLOT(onGizmoPoint(const Exporter::GizmoPoint*)) );
   this->connect(
     pParent,
     SIGNAL(sigEOF(void)),
@@ -188,16 +188,16 @@ void ExporterSinkKml::writeEOF (void)
       (fix.hasFields(FIXFIELD_ALT) ? fix.iAlt : 0) );
   }
 
-  // write snapped points
-  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
+  // write gizmo points
+  for (int i = 0; i < m_vecGizmoPoints.size(); ++i)
   {
-    const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
+    const Exporter::GizmoPoint& gizmoPt = m_vecGizmoPoints[i];
     QString strName(QString("Snap %1").arg(i + 1));
 
-    if (!snapPt.strPointName.isEmpty())
+    if (!gizmoPt.strPointName.isEmpty())
     {
       strName += " : ";
-      strName += snapPt.strPointName;
+      strName += gizmoPt.strPointName;
     }
 
     fprintf(m_pFile,
@@ -220,14 +220,14 @@ void ExporterSinkKml::writeEOF (void)
       " </Point>" KML_NL
       "</Placemark>" KML_NL,
       qPrintable(strName),
-      Util::timeString(false, snapPt.uiTime, m_iTimeZoneOffset).constData(),
+      Util::timeString(false, gizmoPt.uiTime, m_iTimeZoneOffset).constData(),
 #ifdef KML_TIMESPAN
-      Util::timeString(false, snapPt.uiTime, m_iTimeZoneOffset).constData(),
+      Util::timeString(false, gizmoPt.uiTime, m_iTimeZoneOffset).constData(),
 #endif
-      (m_bAircraftMode && snapPt.bHasAlt ? "absolute" : "clampToGround"),
-      snapPt.rLongDeg, snapPt.rLatDeg, snapPt.iAltM );
+      (m_bAircraftMode && gizmoPt.bHasAlt ? "absolute" : "clampToGround"),
+      gizmoPt.rLongDeg, gizmoPt.rLatDeg, gizmoPt.iAltM );
   }
-  m_vecSnappedPoints.clear();
+  m_vecGizmoPoints.clear();
 
   // write end of file
   fputs(
@@ -255,7 +255,7 @@ void ExporterSinkKml::close (void)
   m_uiTimeEnd       = 0;
   m_FixContBegin.reset();
   m_FixContEnd.reset();
-  m_vecSnappedPoints.clear();
+  m_vecGizmoPoints.clear();
 
   ExporterSink::close();
 
@@ -379,12 +379,12 @@ void ExporterSinkKml::onLocationFix (time_t uiTime, const LocationFixContainer& 
 }
 
 //---------------------------------------------------------------------------
-// onSnappedPoint
+// onGizmoPoint
 //---------------------------------------------------------------------------
-void ExporterSinkKml::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
+void ExporterSinkKml::onGizmoPoint (const Exporter::GizmoPoint* pGizmoPoint)
 {
-  m_uiTimeEnd = pSnappedPoint->uiTime;
-  m_vecSnappedPoints.append(*pSnappedPoint);
+  m_uiTimeEnd = pGizmoPoint->uiTime;
+  m_vecGizmoPoints.append(*pGizmoPoint);
 }
 
 //---------------------------------------------------------------------------

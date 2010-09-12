@@ -52,8 +52,8 @@ ExporterSinkGpx::ExporterSinkGpx (Exporter* pParent)
     SLOT(onLocationFix(time_t, const LocationFixContainer&)) );
   this->connect(
     pParent,
-    SIGNAL(sigSnappedPoint(const Exporter::SnappedPoint*)),
-    SLOT(onSnappedPoint(const Exporter::SnappedPoint*)) );
+    SIGNAL(sigGizmoPoint(const Exporter::GizmoPoint*)),
+    SLOT(onGizmoPoint(const Exporter::GizmoPoint*)) );
   this->connect(
     pParent,
     SIGNAL(sigEOF(void)),
@@ -82,21 +82,21 @@ void ExporterSinkGpx::writeEOF (void)
     "</trkseg>" GPX_NL
     "</trk>" GPX_NL );
 
-  // write snapped points
-  for (int i = 0; i < m_vecSnappedPoints.size(); ++i)
+  // write gizmo points
+  for (int i = 0; i < m_vecGizmoPoints.size(); ++i)
   {
-    const Exporter::SnappedPoint& snapPt = m_vecSnappedPoints[i];
+    const Exporter::GizmoPoint& gizmoPt = m_vecGizmoPoints[i];
     QString strName(QString("Snap %1").arg(i + 1));
     QString strEle;
 
-    if (!snapPt.strPointName.isEmpty())
+    if (!gizmoPt.strPointName.isEmpty())
     {
       strName += " : ";
-      strName += snapPt.strPointName;
+      strName += gizmoPt.strPointName;
     }
 
-    if (snapPt.bHasAlt)
-      strEle.sprintf(" <ele>%d</ele>" GPX_NL, snapPt.iAltM);
+    if (gizmoPt.bHasAlt)
+      strEle.sprintf(" <ele>%d</ele>" GPX_NL, gizmoPt.iAltM);
 
     fprintf(m_pFile,
       "<wpt lat=\"%.6lf\" lon=\"%.6lf\">" GPX_NL
@@ -104,12 +104,12 @@ void ExporterSinkGpx::writeEOF (void)
       "%s"
       " <name>%s</name>" GPX_NL
       "</wpt>" GPX_NL,
-      snapPt.rLatDeg, snapPt.rLongDeg,
-      Util::timeStringIso8601(true, snapPt.uiTime).constData(),
+      gizmoPt.rLatDeg, gizmoPt.rLongDeg,
+      Util::timeStringIso8601(true, gizmoPt.uiTime).constData(),
       qPrintable(strEle),
       qPrintable(strName) );
   }
-  m_vecSnappedPoints.clear();
+  m_vecGizmoPoints.clear();
 
   // write end of file
   fprintf(m_pFile,
@@ -125,7 +125,7 @@ void ExporterSinkGpx::close (void)
   if (m_pFile)
     this->writeEOF();
 
-  m_vecSnappedPoints.clear();
+  m_vecGizmoPoints.clear();
 
   ExporterSink::close();
 }
@@ -235,11 +235,11 @@ void ExporterSinkGpx::onLocationFix (time_t uiTime, const LocationFixContainer& 
 }
 
 //---------------------------------------------------------------------------
-// onSnappedPoint
+// onGizmoPoint
 //---------------------------------------------------------------------------
-void ExporterSinkGpx::onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint)
+void ExporterSinkGpx::onGizmoPoint (const Exporter::GizmoPoint* pGizmoPoint)
 {
-  m_vecSnappedPoints.append(*pSnappedPoint);
+  m_vecGizmoPoints.append(*pGizmoPoint);
 }
 
 //---------------------------------------------------------------------------

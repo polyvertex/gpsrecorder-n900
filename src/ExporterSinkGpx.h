@@ -52,15 +52,15 @@ private :
 
 
 public slots :
-  void onSOF          (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
-  void onLocationFix  (time_t uiTime, const LocationFixContainer& fixCont);
-  void onSnappedPoint (const Exporter::SnappedPoint* pSnappedPoint);
-  void onEOF          (void);
+  void onSOF         (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
+  void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
+  void onGizmoPoint  (const Exporter::GizmoPoint* pGizmoPoint);
+  void onEOF         (void);
 
 
 private :
   // runtime
-  QVector<Exporter::SnappedPoint> m_vecSnappedPoints;
+  QVector<Exporter::GizmoPoint> m_vecGizmoPoints;
 };
 
 
