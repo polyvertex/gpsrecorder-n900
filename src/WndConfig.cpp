@@ -132,6 +132,9 @@ void WndConfig::setupControls (void)
     m_pChkAskPointName = new QCheckBox(tr("Ask for point name before snap"));
     m_pChkAskPointName->setCheckState(settings.getAskPointName() ? Qt::Checked : Qt::Unchecked);
 
+    m_pChkAskPauseName = new QCheckBox(tr("Ask for a name when pausing"));
+    m_pChkAskPauseName->setCheckState(settings.getAskPauseName() ? Qt::Checked : Qt::Unchecked);
+
     m_pCboUnitSystem = new MaemoComboBox(tr("Unit system"), this);
     m_pCboUnitSystem->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     m_pCboUnitSystem->addItem(AppSettings::unitSystemToName(UNITSYSTEM_METRIC),    QVariant(UNITSYSTEM_METRIC));
@@ -154,6 +157,7 @@ void WndConfig::setupControls (void)
     pVBox->addWidget(m_pChkGpsAlwaysConnected);
     pVBox->addWidget(m_pChkAskTrackName);
     pVBox->addWidget(m_pChkAskPointName);
+    pVBox->addWidget(m_pChkAskPauseName);
     pVBox->addWidget(m_pCboUnitSystem);
     pVBox->addWidget(m_pCboHorizSpeedUnit);
     pVBox->addWidget(m_pChkPreventBlankScreen);
@@ -199,6 +203,7 @@ void WndConfig::onClickedDone (void)
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
   settings.setAskTrackName(m_pChkAskTrackName->checkState() != Qt::Unchecked);
   settings.setAskPointName(m_pChkAskPointName->checkState() != Qt::Unchecked);
+  settings.setAskPauseName(m_pChkAskPauseName->checkState() != Qt::Unchecked);
   settings.setUnitSystem(m_pCboUnitSystem->currentItemData().toUInt());
   settings.setHorizSpeedUnit(m_pCboHorizSpeedUnit->currentItemData().toUInt());
   settings.setPreventBlankScreen(m_pChkPreventBlankScreen->checkState() != Qt::Unchecked);

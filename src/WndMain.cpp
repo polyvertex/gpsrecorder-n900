@@ -77,7 +77,7 @@ WndMain::~WndMain (void)
 //---------------------------------------------------------------------------
 void WndMain::closeEvent (QCloseEvent* pEvent)
 {
-  if (App::instance() && App::instance()->getState() == App::STATE_STARTED)
+  if (App::instance() && App::instance()->getState() != App::STATE_STOPPED)
   {
     QMessageBox::StandardButton eBtn = QMessageBox::question(
       this,
@@ -151,6 +151,9 @@ void WndMain::createWidgets (void)
   m_pLblLastWrittenFixTime = new QLabel();
   m_pLblLastWrittenFixTime->setDisabled(true);
 
+  m_pBtnPauseResume = new QPushButton(QIcon(*App::instance()->pixStart()), QString());
+  this->connect(m_pBtnPauseResume, SIGNAL(clicked()), SLOT(onClickedPauseResume()));
+
   m_pBtnSnap = new QPushButton(QIcon(*App::instance()->pixSnap()), QString());
   m_pBtnSnap->setEnabled(false);
   this->connect(m_pBtnSnap, SIGNAL(clicked()), SLOT(onClickedSnap()));
@@ -210,6 +213,7 @@ void WndMain::showFix (void)
 
     pButtons->setSpacing(5);
     pButtons->addWidget(m_pLblStatusIcon);
+    pButtons->addWidget(m_pBtnPauseResume);
     pButtons->addWidget(m_pBtnSnap);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
@@ -265,10 +269,11 @@ void WndMain::onClickedStartStop (void)
 
     m_pMenuStartStop->setText(tr("Start"));
     m_pMenuSnap->setEnabled(false);
+    m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
     m_pBtnSnap->setEnabled(false);
     m_pMenuConvert->setEnabled(true);
   }
-  else
+  else if (pApp->getState() == App::STATE_STOPPED)
   {
     if (!pApp->setState(App::STATE_STARTED))
       return;
@@ -279,8 +284,44 @@ void WndMain::onClickedStartStop (void)
 
     m_pMenuStartStop->setText(tr("Stop"));
     m_pMenuSnap->setEnabled(true);
+    m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
     m_pBtnSnap->setEnabled(true);
     m_pMenuConvert->setEnabled(false);
+  }
+  else
+  {
+    Q_ASSERT(0);
+  }
+}
+
+//---------------------------------------------------------------------------
+// onClickedPauseResume
+//---------------------------------------------------------------------------
+void WndMain::onClickedPauseResume (void)
+{
+  App* pApp = App::instance();
+
+  if (pApp->getState() == App::STATE_STOPPED)
+  {
+    this->onClickedStartStop();
+  }
+  else if (pApp->getState() == App::STATE_STARTED)
+  {
+    if (!pApp->setState(App::STATE_PAUSED))
+      return;
+
+    m_pMenuSnap->setEnabled(false);
+    m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
+    m_pBtnSnap->setEnabled(false);
+  }
+  else if (pApp->getState() == App::STATE_PAUSED)
+  {
+    if (!pApp->setState(App::STATE_STARTED))
+      return;
+
+    m_pMenuSnap->setEnabled(true);
+    m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
+    m_pBtnSnap->setEnabled(true);
   }
 }
 
@@ -328,7 +369,7 @@ void WndMain::onClickedSnap (void)
     // snap point
     pGPSRFile->writeNamedSnap(uiTime, qPrintable(strName));
 
-    // reset last fix time to get position as soon as possible
+    // reset last fix time to get new fix as soon as possible
     App::instance()->resetFixTime();
 
     // inform user

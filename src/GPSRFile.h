@@ -40,6 +40,9 @@
 //
 // Format V1 :
 // * Appended iTimeZoneOffset field to the Header structure.
+//
+// Format V2 :
+// * Added PAUSED and RESUMED chunks types.
 //---------------------------------------------------------------------------
 class GPSRFile : public QObject
 {
@@ -50,13 +53,16 @@ public :
   {
     FORMAT_VERSION_V0 = 0x00,
     FORMAT_VERSION_V1 = 0x01,
-    FORMAT_VERSION    = FORMAT_VERSION_V1, // current format version
+    FORMAT_VERSION_V2 = 0x02,
+    FORMAT_VERSION    = FORMAT_VERSION_V2, // current format version
 
-    CHUNK_MESSAGE          = 10, // asciiz message (usually a log message)
+    CHUNK_MESSAGE          = 10, // asciiz message (usually a log/event message)
     CHUNK_LOCATIONFIX      = 20, // LocationFix structure (only its storage zone)
     CHUNK_LOCATIONFIX_LOST = 21, // Lost GPS fix
     CHUNK_SNAP             = 30, // obsolete, write NAMEDSNAP chunk instead
     CHUNK_NAMEDSNAP        = 31, // a 'named snap' event (user pushed the 'snap' button while recording)
+    CHUNK_PAUSED           = 40, // (v2+) track paused
+    CHUNK_RESUMED          = 41, // (v2+) track resumed
   };
 
   enum Error
@@ -116,6 +122,8 @@ public :
   void writeLocationFixLost (time_t uiTime);
 //void writeSnap            (time_t uiTime); // obsolete
   void writeNamedSnap       (time_t uiTime, const char* pszName);
+  void writePaused          (time_t uiTime, const char* pszName);
+  void writeResumed         (time_t uiTime);
 
   bool seekFirst    (void); // causes a sigReadSOF or a sigReadError
   bool readNext     (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
@@ -139,14 +147,18 @@ signals :
   void sigReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
   void sigReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
   void sigReadChunkNamedSnap       (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
+  void sigReadChunkPaused          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
+  void sigReadChunkResumed         (GPSRFile* pGPSRFile, time_t uiTime);
   void sigReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void sigReadEOF                  (GPSRFile* pGPSRFile);
 
 
 private :
-  void writeData       (const char* pData, uint uiSize);
-  bool readSize        (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
-  void signalReadError (Error eError);
+  void writeChunkSimple (quint16 uiChunkId, time_t uiTime);
+  void writeChunkAsciiz (quint16 uiChunkId, time_t uiTime, const char* pszText);
+  void writeData        (const char* pData, uint uiSize);
+  bool readSize         (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
+  void signalReadError  (Error eError);
 
 
 private :

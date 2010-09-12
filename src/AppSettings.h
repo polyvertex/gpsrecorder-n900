@@ -67,6 +67,9 @@ public :
   void setAskPointName (bool bEnable);
   bool getAskPointName (void);
 
+  void setAskPauseName (bool bEnable);
+  bool getAskPauseName (void);
+
   void setUnitSystem (uint uiUnitSystem);
   uint getUnitSystem (void);
 
@@ -105,6 +108,7 @@ public :
   static bool             defaultGpsAlwaysConnected (void) { return true; }
   static bool             defaultAskTrackName       (void) { return true; }
   static bool             defaultAskPointName       (void) { return true; }
+  static bool             defaultAskPauseName       (void) { return true; }
   static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
   static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
   static bool             defaultPreventBlankScreen (void) { return false; }

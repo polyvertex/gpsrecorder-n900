@@ -1,8 +1,8 @@
 gpsrecorder (0.1.152) unstable; urgency=low
 
-  * Corrected : the 'deleted empty track file' bug (but application still require a good enough GPS time before recording a track).
+  * Corrected : the 'deleted empty track file' bug (application still require a good enough GPS time before recording a track).
   * Added : 'Time setup' field to indicate when system time has been setup and tracks can be recorded.
-  * Added : 'Waypoints' field which shows the numbers of written fixes into the current output file.
+  * Added : 'Waypoints' field to show the numbers of written fixes into the current output file.
   * Added : 'Last waypoints' field to show the last time a fix has been written.
 
  -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Thu, 02 Sep 2010 20:07:05 -0700

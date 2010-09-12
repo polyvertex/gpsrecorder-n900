@@ -39,6 +39,7 @@ static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
 static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName";
 static const char* SETTINGNAME_ASKPOINTNAME       = "AskPointName";
+static const char* SETTINGNAME_ASKPAUSENAME       = "AskPauseName";
 static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
@@ -263,6 +264,23 @@ bool AppSettings::getAskPointName (void)
     return var.toBool();
 
   return AppSettings::defaultAskPointName();
+}
+
+//---------------------------------------------------------------------------
+// AskPauseName
+//---------------------------------------------------------------------------
+void AppSettings::setAskPauseName (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_ASKPAUSENAME, QVariant(bEnable));
+}
+
+bool AppSettings::getAskPauseName (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_ASKPAUSENAME);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultAskPauseName();
 }
 
 //---------------------------------------------------------------------------

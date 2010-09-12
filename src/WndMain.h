@@ -58,14 +58,15 @@ private :
 
 
 private slots :
-  void onClickedStartStop (void);
-  void onClickedSnap      (void);
-  void onClickedConfig    (void);
-  void onClickedConvert   (void);
-  void onClickedSat       (void);
-  void onClickedSpeed     (void);
-  void onClickedCell      (void);
-  void onClickedAbout     (void);
+  void onClickedStartStop   (void);
+  void onClickedPauseResume (void);
+  void onClickedSnap        (void);
+  void onClickedConfig      (void);
+  void onClickedConvert     (void);
+  void onClickedSat         (void);
+  void onClickedSpeed       (void);
+  void onClickedCell        (void);
+  void onClickedAbout       (void);
 
   void onAppStatePixChanged (QPixmap* pNewStatePixmap);
 
@@ -95,6 +96,7 @@ private :
   QLabel* m_pLblFixesWritten;
   QLabel* m_pLblLastWrittenFixTime;
 
+  QPushButton* m_pBtnPauseResume;
   QPushButton* m_pBtnSnap;
   QPushButton* m_pBtnCell;
 };

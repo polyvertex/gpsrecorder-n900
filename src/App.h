@@ -44,6 +44,7 @@ public :
   {
     STATE_STOPPED,
     STATE_STARTED,
+    STATE_PAUSED,
   };
 
 
@@ -87,6 +88,7 @@ public :
   QPixmap* pixCellMode2G   (void) { return m_pPixCellMode2G; }
   QPixmap* pixCellMode3G   (void) { return m_pPixCellMode3G; }
   QPixmap* pixStart        (void) { return m_pPixStart; }
+  QPixmap* pixPause        (void) { return m_pPixPause; }
   QPixmap* pixStop         (void) { return m_pPixStop; }
   QPixmap* pixSnap         (void) { return m_pPixSnap; }
 
@@ -137,6 +139,7 @@ private :
   QPixmap* m_pPixRecordingRed;
   QPixmap* m_pPixStart;
   QPixmap* m_pPixStop;
+  QPixmap* m_pPixPause;
   QPixmap* m_pPixSnap;
 
   WndMain*  m_pWndMain;

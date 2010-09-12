@@ -74,6 +74,7 @@ App::App (int& nArgc, char** ppszArgv)
   m_pPixRecordingRed    = new QPixmap(":/icons/recording-red-48-nomargin.png");
   m_pPixStart           = new QPixmap(":/icons/start-48.png");
   m_pPixStop            = new QPixmap(":/icons/stop-48.png");
+  m_pPixPause           = new QPixmap(":/icons/pause-48.png");
   m_pPixSnap            = new QPixmap(":/icons/snap-48-nomargin.png");
   m_pPixState           = m_pPixStoppedGrey;
 
@@ -156,6 +157,7 @@ App::~App (void)
   delete m_pPixRecordingRed;
   delete m_pPixStart;
   delete m_pPixStop;
+  delete m_pPixPause;
   delete m_pPixSnap;
 }
 
@@ -270,55 +272,144 @@ bool App::setState (App::State eNewState)
   if (m_eState == eNewState)
     return true;
 
-  if (m_eState == STATE_STOPPED && eNewState == STATE_STARTED)
+  if (m_eState == STATE_STOPPED)
   {
-    QByteArray strPath;
-    QString    strTrackName;
-
-    if (m_Settings.getAskTrackName())
+    if (eNewState == STATE_STARTED)
     {
-      strTrackName = this->askTrackName();
-      if (strTrackName == ".")
+      QByteArray strPath;
+      QString    strTrackName;
+
+      if (m_Settings.getAskTrackName())
+      {
+        strTrackName = this->askTrackName();
+        if (strTrackName == ".")
+        {
+          QMaemo5InformationBox::information(
+            m_pWndMain,
+            tr("Action canceled !"));
+          return false;
+        }
+      }
+
+      m_uiFixesWritten = 0;
+      m_uiLastFixWrite = 0;
+
+      strPath  = App::outputDir().toAscii();
+      strPath += "/gpstrack-";
+      strPath += Util::timeStringForFileName();
+      if (!strTrackName.isEmpty())
+      {
+        strPath += '-';
+        strPath += strTrackName.toAscii();
+      }
+      strPath += ".gpsr";
+
+      if (!m_GPSRFile.openWrite(strPath.constData(), true))
+      {
+        QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath.constData()));
+        return false;
+      }
+
+      m_pPixState = m_pPixRecordingGrey;
+
+      m_pLocation->resetLastFix();
+      m_pLocation->start();
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else if (m_eState == STATE_STARTED)
+  {
+    if (eNewState == STATE_STOPPED)
+    {
+      __Stop :
+
+      if (!m_Settings.getGpsAlwaysConnected())
+        m_pLocation->stop();
+
+      this->closeGPSRFile();
+
+      m_pPixState = m_pPixPausedGrey;
+    }
+    else if (eNewState == STATE_PAUSED)
+    {
+      QString strName;
+      bool    bOk;
+
+      if (m_Settings.getAskPauseName())
+      {
+        bOk = false;
+        strName = QInputDialog::getText(
+          m_pWndMain,
+          tr("Pause name ?"),
+          tr("Please enter the name of your pause or leave blank :"),
+          QLineEdit::Normal,
+          "",
+          &bOk).trimmed();
+      }
+      else
+      {
+        bOk = true;
+      }
+
+      if (!bOk)
       {
         QMaemo5InformationBox::information(
           m_pWndMain,
           tr("Action canceled !"));
+
         return false;
       }
+      else
+      {
+        if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+          m_GPSRFile.writePaused(time(0), qPrintable(strName));
+
+        if (!strName.isEmpty())
+        {
+          strName.prepend(" (<i>");
+          strName.append("</i>)");
+        }
+        QMaemo5InformationBox::information(
+          m_pWndMain,
+          QString(tr("Recording paused%1 !")).arg(strName),
+          3000);
+      }
     }
-
-    m_uiFixesWritten = 0;
-    m_uiLastFixWrite = 0;
-
-    strPath  = App::outputDir().toAscii();
-    strPath += "/gpstrack-";
-    strPath += Util::timeStringForFileName();
-    if (!strTrackName.isEmpty())
+    else
     {
-      strPath += '-';
-      strPath += strTrackName.toAscii();
-    }
-    strPath += ".gpsr";
-
-    if (!m_GPSRFile.openWrite(strPath.constData(), true))
-    {
-      QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath.constData()));
       return false;
     }
-
-    m_pPixState = m_pPixRecordingGrey;
-
-    m_pLocation->resetLastFix();
-    m_pLocation->start();
   }
-  else if (m_eState == STATE_STARTED && eNewState == STATE_STOPPED)
+  else if (m_eState == STATE_PAUSED)
   {
-    if (!m_Settings.getGpsAlwaysConnected())
-      m_pLocation->stop();
+    if (eNewState == STATE_STOPPED)
+    {
+      goto __Stop;
+    }
+    else if (eNewState == STATE_STARTED)
+    {
+      if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+      {
+        m_GPSRFile.writeResumed(time(0));
 
-    this->closeGPSRFile();
+        // reset last fix time to get new fix as soon as possible
+        this->resetFixTime();
+      }
 
-    m_pPixState = m_pPixStoppedGrey;
+      QMaemo5InformationBox::information(m_pWndMain, tr("Recording resumed !"), 3000);
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    Q_ASSERT(0);
+    return false;
   }
 
   m_eState = eNewState;
@@ -339,6 +430,8 @@ const char* App::getStateStr (void) const
       return "Stopped";
     case STATE_STARTED :
       return "Started";
+    case STATE_PAUSED :
+      return "Paused";
 
     default :
       Q_ASSERT(0);
@@ -459,7 +552,7 @@ void App::onSettingsWritten (void)
   m_pLocation->setAssisted(m_Settings.getGpsAssisted());
 
   // start location service if needed
-  if (!m_pLocation->isStarted() && (m_Settings.getGpsAlwaysConnected() || m_eState == STATE_STARTED))
+  if (!m_pLocation->isStarted() && (m_Settings.getGpsAlwaysConnected() || m_eState == STATE_STARTED || m_eState == STATE_PAUSED))
     m_pLocation->start();
 
   // update state pixmap
@@ -523,12 +616,24 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
 
     if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
     {
-      if (bAccurate)
-        m_pPixState = m_pPixRecordingGreen;
-      else if (pLocation->isAcquiring())
-        m_pPixState = m_pPixRecordingOrange;
+      if (m_eState == STATE_PAUSED)
+      {
+        if (bAccurate)
+          m_pPixState = m_pPixPausedGreen;
+        else if (pLocation->isAcquiring())
+          m_pPixState = m_pPixPausedOrange;
+        else
+          m_pPixState = m_pPixPausedRed;
+      }
       else
-        m_pPixState = m_pPixRecordingRed;
+      {
+        if (bAccurate)
+          m_pPixState = m_pPixRecordingGreen;
+        else if (pLocation->isAcquiring())
+          m_pPixState = m_pPixRecordingOrange;
+        else
+          m_pPixState = m_pPixRecordingRed;
+      }
     }
     else
     {
@@ -554,7 +659,10 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
   }
 
   // write location fix
-  if (bAccurate && m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
+  if (m_eState == STATE_STARTED &&
+      bAccurate &&
+      m_GPSRFile.isOpen() &&
+      m_GPSRFile.isWriting())
   {
     // log only if we have to
     bool bCanLog =
