@@ -1,6 +1,16 @@
+gpsrecorder (0.1.160) unstable; urgency=low
+
+  * Added : Pause/Resume feature (request #6287). A pause can be named (optional).
+  * Added : 'Ask for a name when pausing' setting.
+  * Modified : GPSR file format (v1 -> v2) to support Pause/Resume feature. Retro compatibility is OK.
+  * Modified : GPX and KML exporters to support Pause/Resume feature (optional).
+  * Modified : Internal list of allowed GPS fix step values so the GUI does not wait too long for fresh data (5s max instead of 120s).
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Sun, 12 Sep 2010 19:41:47 +0200
+
 gpsrecorder (0.1.152) unstable; urgency=low
 
-  * Corrected : the 'deleted empty track file' bug (application still require a good enough GPS time before recording a track).
+  * Corrected : The 'deleted empty track file' bug #6301 (application still require a good enough GPS time before recording a track).
   * Added : 'Time setup' field to indicate when system time has been setup and tracks can be recorded.
   * Added : 'Waypoints' field to show the numbers of written fixes into the current output file.
   * Added : 'Last waypoints' field to show the last time a fix has been written.
