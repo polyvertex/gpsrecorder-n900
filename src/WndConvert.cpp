@@ -89,7 +89,7 @@ void WndConvert::setupControls (void)
   {
     MaemoGroupBox* pGroupBox = new MaemoGroupBox(tr("Global options"));
 
-    m_pChkExportPauses = new QCheckBox(tr("Show pauses"));
+    m_pChkExportPauses = new QCheckBox(tr("Handle pause/resume events"));
     m_pChkExportPauses->setCheckState(settings.getConvertExportPauses() ? Qt::Checked : Qt::Unchecked);
 
     pGroupBox->addWidget(m_pChkExportPauses);
