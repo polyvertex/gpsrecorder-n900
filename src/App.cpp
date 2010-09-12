@@ -57,21 +57,25 @@ App::App (int& nArgc, char** ppszArgv)
   m_uiLastFixWrite    = 0;
 
   // load pixmaps
-  m_pPixCellModeNone = new QPixmap(":/icons/cellmode-none-170.png");
-  m_pPixCellMode2G   = new QPixmap(":/icons/cellmode-2g-170.png");
-  m_pPixCellMode3G   = new QPixmap(":/icons/cellmode-3g-170.png");
-  m_pPixPauseGrey    = new QPixmap(":/icons/pause-grey-48-nomargin.png");
-  m_pPixPauseGreen   = new QPixmap(":/icons/pause-green-48-nomargin.png");
-  m_pPixPauseOrange  = new QPixmap(":/icons/pause-orange-48-nomargin.png");
-  m_pPixPauseRed     = new QPixmap(":/icons/pause-red-48-nomargin.png");
-  m_pPixRecordGrey   = new QPixmap(":/icons/record-grey-48-nomargin.png");
-  m_pPixRecordGreen  = new QPixmap(":/icons/record-green-48-nomargin.png");
-  m_pPixRecordOrange = new QPixmap(":/icons/record-orange-48-nomargin.png");
-  m_pPixRecordRed    = new QPixmap(":/icons/record-red-48-nomargin.png");
-  m_pPixStart        = new QPixmap(":/icons/start-48.png");
-  m_pPixStop         = new QPixmap(":/icons/stop-48.png");
-  m_pPixSnap         = new QPixmap(":/icons/snap-48-nomargin.png");
-  m_pPixState        = m_pPixPauseGrey;
+  m_pPixCellModeNone    = new QPixmap(":/icons/cellmode-none-170.png");
+  m_pPixCellMode2G      = new QPixmap(":/icons/cellmode-2g-170.png");
+  m_pPixCellMode3G      = new QPixmap(":/icons/cellmode-3g-170.png");
+  m_pPixStoppedGrey     = new QPixmap(":/icons/stopped-grey-48.png");
+  m_pPixStoppedGreen    = new QPixmap(":/icons/stopped-green-48.png");
+  m_pPixStoppedOrange   = new QPixmap(":/icons/stopped-orange-48.png");
+  m_pPixStoppedRed      = new QPixmap(":/icons/stopped-red-48.png");
+  m_pPixPausedGrey      = new QPixmap(":/icons/paused-grey-48-nomargin.png");
+  m_pPixPausedGreen     = new QPixmap(":/icons/paused-green-48-nomargin.png");
+  m_pPixPausedOrange    = new QPixmap(":/icons/paused-orange-48-nomargin.png");
+  m_pPixPausedRed       = new QPixmap(":/icons/paused-red-48-nomargin.png");
+  m_pPixRecordingGrey   = new QPixmap(":/icons/recording-grey-48-nomargin.png");
+  m_pPixRecordingGreen  = new QPixmap(":/icons/recording-green-48-nomargin.png");
+  m_pPixRecordingOrange = new QPixmap(":/icons/recording-orange-48-nomargin.png");
+  m_pPixRecordingRed    = new QPixmap(":/icons/recording-red-48-nomargin.png");
+  m_pPixStart           = new QPixmap(":/icons/start-48.png");
+  m_pPixStop            = new QPixmap(":/icons/stop-48.png");
+  m_pPixSnap            = new QPixmap(":/icons/snap-48-nomargin.png");
+  m_pPixState           = m_pPixStoppedGrey;
 
   // connect to AppSettings signals
   this->connect(
@@ -138,14 +142,18 @@ App::~App (void)
   delete m_pPixCellModeNone;
   delete m_pPixCellMode2G;
   delete m_pPixCellMode3G;
-  delete m_pPixPauseGrey;
-  delete m_pPixPauseGreen;
-  delete m_pPixPauseOrange;
-  delete m_pPixPauseRed;
-  delete m_pPixRecordGrey;
-  delete m_pPixRecordGreen;
-  delete m_pPixRecordOrange;
-  delete m_pPixRecordRed;
+  delete m_pPixStoppedGrey;
+  delete m_pPixStoppedGreen;
+  delete m_pPixStoppedOrange;
+  delete m_pPixStoppedRed;
+  delete m_pPixPausedGrey;
+  delete m_pPixPausedGreen;
+  delete m_pPixPausedOrange;
+  delete m_pPixPausedRed;
+  delete m_pPixRecordingGrey;
+  delete m_pPixRecordingGreen;
+  delete m_pPixRecordingOrange;
+  delete m_pPixRecordingRed;
   delete m_pPixStart;
   delete m_pPixStop;
   delete m_pPixSnap;
@@ -298,7 +306,7 @@ bool App::setState (App::State eNewState)
       return false;
     }
 
-    m_pPixState = m_pPixRecordGrey;
+    m_pPixState = m_pPixRecordingGrey;
 
     m_pLocation->resetLastFix();
     m_pLocation->start();
@@ -310,7 +318,7 @@ bool App::setState (App::State eNewState)
 
     this->closeGPSRFile();
 
-    m_pPixState = m_pPixPauseGrey;
+    m_pPixState = m_pPixStoppedGrey;
   }
 
   m_eState = eNewState;
@@ -458,7 +466,7 @@ void App::onSettingsWritten (void)
   {
     QPixmap* pPrevStatePix = m_pPixState;
 
-    m_pPixState = (m_eState == STATE_STOPPED) ? m_pPixPauseGrey : m_pPixRecordGrey;
+    m_pPixState = (m_eState == STATE_STOPPED) ? m_pPixStoppedGrey : m_pPixRecordingGrey;
     if (m_pPixState != pPrevStatePix)
       emit this->sigAppStatePixChanged(m_pPixState);
   }
@@ -516,20 +524,20 @@ void App::onLocationFix (Location* pLocation, const LocationFixContainer* pFixCo
     if (m_GPSRFile.isOpen() && m_GPSRFile.isWriting())
     {
       if (bAccurate)
-        m_pPixState = m_pPixRecordGreen;
+        m_pPixState = m_pPixRecordingGreen;
       else if (pLocation->isAcquiring())
-        m_pPixState = m_pPixRecordOrange;
+        m_pPixState = m_pPixRecordingOrange;
       else
-        m_pPixState = m_pPixRecordRed;
+        m_pPixState = m_pPixRecordingRed;
     }
     else
     {
       if (bAccurate)
-        m_pPixState = m_pPixPauseGreen;
+        m_pPixState = m_pPixStoppedGreen;
       else if (pLocation->isAcquiring())
-        m_pPixState = m_pPixPauseOrange;
+        m_pPixState = m_pPixStoppedOrange;
       else
-        m_pPixState = m_pPixPauseRed;
+        m_pPixState = m_pPixStoppedRed;
     }
 
     if (m_pPixState != pPrevStatePix)

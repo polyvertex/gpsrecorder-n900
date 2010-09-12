@@ -7,14 +7,18 @@
   <file>icons/cellmode-2g-170.png</file>
   <file>icons/cellmode-3g-170.png</file>
   <file>icons/cellmode-none-170.png</file>
-  <file>icons/pause-green-48-nomargin.png</file>
-  <file>icons/pause-grey-48-nomargin.png</file>
-  <file>icons/pause-orange-48-nomargin.png</file>
-  <file>icons/pause-red-48-nomargin.png</file>
-  <file>icons/record-green-48-nomargin.png</file>
-  <file>icons/record-grey-48-nomargin.png</file>
-  <file>icons/record-orange-48-nomargin.png</file>
-  <file>icons/record-red-48-nomargin.png</file>
+  <file>icons/paused-green-48-nomargin.png</file>
+  <file>icons/paused-grey-48-nomargin.png</file>
+  <file>icons/paused-orange-48-nomargin.png</file>
+  <file>icons/paused-red-48-nomargin.png</file>
+  <file>icons/recording-green-48-nomargin.png</file>
+  <file>icons/recording-grey-48-nomargin.png</file>
+  <file>icons/recording-orange-48-nomargin.png</file>
+  <file>icons/recording-red-48-nomargin.png</file>
+  <file>icons/stopped-green-48.png</file>
+  <file>icons/stopped-grey-48.png</file>
+  <file>icons/stopped-orange-48.png</file>
+  <file>icons/stopped-red-48.png</file>
   <file>icons/start-48.png</file>
   <file>icons/stop-48.png</file>
   <file>icons/snap-48-nomargin.png</file>
