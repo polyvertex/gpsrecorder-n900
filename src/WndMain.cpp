@@ -260,7 +260,8 @@ void WndMain::onClickedStartStop (void)
 {
   App* pApp = App::instance();
 
-  if (pApp->getState() == App::STATE_STARTED)
+  if (pApp->getState() == App::STATE_STARTED ||
+      pApp->getState() == App::STATE_PAUSED)
   {
     //this->clearFixFields();
 
