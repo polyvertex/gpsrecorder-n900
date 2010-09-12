@@ -75,7 +75,7 @@ App::App (int& nArgc, char** ppszArgv)
   m_pPixStart           = new QPixmap(":/icons/start-48.png");
   m_pPixStop            = new QPixmap(":/icons/stop-48.png");
   m_pPixPause           = new QPixmap(":/icons/pause-48.png");
-  m_pPixSnap            = new QPixmap(":/icons/snap-48-nomargin.png");
+  m_pPixSnap            = new QPixmap(":/icons/snap-48.png");
   m_pPixState           = m_pPixStoppedGrey;
 
   // connect to AppSettings signals

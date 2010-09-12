@@ -44,9 +44,10 @@ static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
 //
-static const char* SETTINGNAME_CONVERT_CSV = "ConvertCsv";
-static const char* SETTINGNAME_CONVERT_GPX = "ConvertGpx";
-static const char* SETTINGNAME_CONVERT_KML = "ConvertKml";
+static const char* SETTINGNAME_CONVERT_CSV          = "ConvertCsv";
+static const char* SETTINGNAME_CONVERT_GPX          = "ConvertGpx";
+static const char* SETTINGNAME_CONVERT_KML          = "ConvertKml";
+static const char* SETTINGNAME_CONVERT_EXPORTPAUSES = "ConvertExportPauses";
 //
 static const char* SETTINGNAME_CSV_SEPARATOR = "CsvSeparator";
 //
@@ -399,6 +400,23 @@ bool AppSettings::getConvertKml (void)
     return var.toBool();
 
   return AppSettings::defaultConvertKml();
+}
+
+//---------------------------------------------------------------------------
+// ConvertExportPauses
+//---------------------------------------------------------------------------
+void AppSettings::setConvertExportPauses (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_CONVERT_EXPORTPAUSES, QVariant(bEnable));
+}
+
+bool AppSettings::getConvertExportPauses (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_CONVERT_EXPORTPAUSES);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultConvertExportPauses();
 }
 
 //---------------------------------------------------------------------------

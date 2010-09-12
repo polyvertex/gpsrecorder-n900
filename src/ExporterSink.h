@@ -60,6 +60,10 @@ public slots :
 
 
 protected :
+  // settings
+  bool m_bExportPause;
+
+  // runtime
   FILE*   m_pFile;
   QString m_strFilePath;
 };

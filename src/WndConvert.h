@@ -63,6 +63,7 @@ private :
   QStringList m_InputFiles;
 
   QLineEdit* m_pTxtBrowse;
+  QCheckBox* m_pChkExportPauses;
 
   // csv
   QCheckBox*     m_pChkCsv;

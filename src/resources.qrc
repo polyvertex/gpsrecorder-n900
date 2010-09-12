@@ -22,6 +22,6 @@
   <file>icons/stopped-red-48.png</file>
   <file>icons/start-48.png</file>
   <file>icons/stop-48.png</file>
-  <file>icons/snap-48-nomargin.png</file>
+  <file>icons/snap-48.png</file>
 </qresource>
 </RCC>

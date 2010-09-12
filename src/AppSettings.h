@@ -86,6 +86,9 @@ public :
   void setConvertKml (bool bEnable);
   bool getConvertKml (void);
 
+  void setConvertExportPauses (bool bEnable);
+  bool getConvertExportPauses (void);
+
   void setCsvSeparator (char cSep);
   char getCsvSeparator (void);
 
@@ -116,6 +119,8 @@ public :
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }
   static bool defaultConvertKml (void) { return true; }
+
+  static bool defaultConvertExportPauses (void) { return true; }
 
   static bool        horizSpeedUnitValidate (uint uiHorizSpeedUnit);
   static const char* horizSpeedUnitToName   (uint uiHorizSpeedUnit);

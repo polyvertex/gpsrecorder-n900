@@ -85,6 +85,19 @@ void WndConvert::setupControls (void)
     pLeftLayout->addSpacing(10);
   }
 
+  // global convert settings
+  {
+    MaemoGroupBox* pGroupBox = new MaemoGroupBox(tr("Global options"));
+
+    m_pChkExportPauses = new QCheckBox(tr("Show pauses"));
+    m_pChkExportPauses->setCheckState(settings.getConvertExportPauses() ? Qt::Checked : Qt::Unchecked);
+
+    pGroupBox->addWidget(m_pChkExportPauses);
+
+    pLeftLayout->addLayout(pGroupBox);
+    pLeftLayout->addSpacing(10);
+  }
+
   // output format - csv
   {
     m_pCboCsvSeparator = new MaemoComboBox(tr("Fields separator"), this);
@@ -327,6 +340,8 @@ void WndConvert::onClickedConvert (void)
     settings.setConvertCsv((m_pChkCsv->checkState() == Qt::Unchecked) ? false : true);
     settings.setConvertGpx((m_pChkGpx->checkState() == Qt::Unchecked) ? false : true);
     settings.setConvertKml((m_pChkKml->checkState() == Qt::Unchecked) ? false : true);
+
+    settings.setConvertExportPauses((m_pChkExportPauses->checkState() == Qt::Unchecked) ? false : true);
 
     if (m_pChkCsv->checkState() != Qt::Unchecked)
     {

@@ -101,6 +101,7 @@ void Exporter::clear (void)
   m_GPSRFile.close();
   m_FixCont.reset();
   m_vecGizmoPoints.clear();
+  m_mapGizmoIndexes.clear();
 }
 
 
@@ -254,20 +255,12 @@ void Exporter::onReadChunkSnap (GPSRFile* pGPSRFile, time_t uiTime)
 //---------------------------------------------------------------------------
 void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen)
 {
-  GizmoPoint* pGizmoPoint;
-
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiPointNameLen);
 
-  m_vecGizmoPoints.append(GizmoPoint());
-  pGizmoPoint               = &m_vecGizmoPoints.last();
-  pGizmoPoint->uiTime       = uiTime;
-  pGizmoPoint->eType        = GIZMO_SNAP;
-  pGizmoPoint->strPointName = pszPointName ? pszPointName : "";
-  pGizmoPoint->rLatDeg      = 0.0;
-  pGizmoPoint->rLongDeg     = 0.0;
-  pGizmoPoint->bHasAlt      = false;
-  pGizmoPoint->iAltM        = 0;
+  m_vecGizmoPoints.append(GizmoPoint(GIZMO_SNAP, uiTime, this->gizmoIndex(GIZMO_SNAP)));
+  if (pszPointName)
+    m_vecGizmoPoints.last().strName = pszPointName;
 }
 
 //---------------------------------------------------------------------------
@@ -275,7 +268,12 @@ void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const c
 //---------------------------------------------------------------------------
 void Exporter::onReadChunkPaused (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName, uint uiPauseNameLen)
 {
-  // TODO
+  Q_UNUSED(pGPSRFile);
+  Q_UNUSED(uiPauseNameLen);
+
+  m_vecGizmoPoints.append(GizmoPoint(GIZMO_PAUSE, uiTime, this->gizmoIndex(GIZMO_PAUSE)));
+  if (pszPauseName)
+    m_vecGizmoPoints.last().strName = pszPauseName;
 }
 
 //---------------------------------------------------------------------------
@@ -283,7 +281,9 @@ void Exporter::onReadChunkPaused (GPSRFile* pGPSRFile, time_t uiTime, const char
 //---------------------------------------------------------------------------
 void Exporter::onReadChunkResumed (GPSRFile* pGPSRFile, time_t uiTime)
 {
-  // TODO
+  Q_UNUSED(pGPSRFile);
+
+  m_vecGizmoPoints.append(GizmoPoint(GIZMO_RESUME, uiTime, this->gizmoIndex(GIZMO_RESUME)));
 }
 
 //---------------------------------------------------------------------------
@@ -314,6 +314,23 @@ void Exporter::onReadEOF (GPSRFile* pGPSRFile)
 }
 
 
+
+//---------------------------------------------------------------------------
+// gizmoIndex
+//---------------------------------------------------------------------------
+uint Exporter::gizmoIndex (GizmoType eType)
+{
+  if (!m_mapGizmoIndexes.contains(eType))
+  {
+    m_mapGizmoIndexes[eType] = 0;
+    return 0;
+  }
+  else
+  {
+    m_mapGizmoIndexes[eType] = m_mapGizmoIndexes[eType] + 1;
+    return m_mapGizmoIndexes[eType];
+  }
+}
 
 //---------------------------------------------------------------------------
 // emitGizmoPoint

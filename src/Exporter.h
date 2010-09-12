@@ -49,13 +49,27 @@ public :
 
   struct GizmoPoint
   {
-    time_t     uiTime;
     GizmoType  eType;
-    QByteArray strPointName;
+    time_t     uiTime;
+    QByteArray strName;
+    uint       uiTypeIndex;
     double     rLatDeg;
     double     rLongDeg;
     bool       bHasAlt;
     qint32     iAltM;
+
+    inline GizmoPoint (void) { } // blank contructor to optimize lists resizing
+    GizmoPoint (GizmoType eType_, time_t uiTime_, uint uiTypeIndex_)
+    {
+      eType       = eType_;
+      uiTime      = uiTime_;
+      strName.clear();
+      uiTypeIndex = uiTypeIndex_;
+      rLatDeg     = 0.0;
+      rLongDeg    = 0.0;
+      bHasAlt     = false;
+      iAltM       = 0;
+    }
   };
 
 
@@ -74,6 +88,7 @@ public :
 private :
   void clear (void);
 
+  uint gizmoIndex     (GizmoType eType);
   void emitGizmoPoint (GizmoPoint& gizmoPt, const LocationFix* pFixA, const LocationFix* pFixB);
 
 
@@ -103,6 +118,7 @@ private :
   GPSRFile             m_GPSRFile;
   LocationFixContainer m_FixCont;
   QVector<GizmoPoint>  m_vecGizmoPoints;
+  QMap<GizmoType,uint> m_mapGizmoIndexes;
 };
 
 

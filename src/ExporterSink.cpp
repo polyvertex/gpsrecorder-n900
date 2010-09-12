@@ -38,6 +38,13 @@ ExporterSink::ExporterSink (Exporter* pParent)
   Q_ASSERT(pParent);
 
   m_pFile = 0;
+
+  // read settings
+  {
+    AppSettings& settings = *App::instance()->settings();
+
+    m_bExportPause = settings.getConvertExportPauses();
+  }
 }
 
 //---------------------------------------------------------------------------

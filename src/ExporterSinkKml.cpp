@@ -192,12 +192,29 @@ void ExporterSinkKml::writeEOF (void)
   for (int i = 0; i < m_vecGizmoPoints.size(); ++i)
   {
     const Exporter::GizmoPoint& gizmoPt = m_vecGizmoPoints[i];
-    QString strName(QString("Snap %1").arg(i + 1));
+    QString strName;
 
-    if (!gizmoPt.strPointName.isEmpty())
+    if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
+    {
+      if (!m_bExportPause)
+        continue;
+      strName = QString("Pause %1").arg(gizmoPt.uiTypeIndex + 1);
+    }
+    else if (gizmoPt.eType == Exporter::GIZMO_RESUME)
+    {
+      if (!m_bExportPause)
+        continue;
+      strName = "Resume";
+    }
+    else
+    {
+      strName = QString("Snap %1").arg(gizmoPt.uiTypeIndex + 1);
+    }
+
+    if (!gizmoPt.strName.isEmpty())
     {
       strName += " : ";
-      strName += gizmoPt.strPointName;
+      strName += gizmoPt.strName;
     }
 
     fprintf(m_pFile,
