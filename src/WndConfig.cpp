@@ -87,7 +87,7 @@ void WndConfig::setupControls (void)
         if (auiProposedLogSteps[i] < 60)
         {
           strItem.sprintf(
-            "%u second%s (%u)",
+            "%u second%s (refresh : %us)",
             auiProposedLogSteps[i],
             (auiProposedLogSteps[i] == 1) ? "" : "s",
             uiBestAllowedFixStep);
@@ -97,7 +97,7 @@ void WndConfig::setupControls (void)
           uint uiMinutes = auiProposedLogSteps[i] / 60;
 
           strItem.sprintf(
-            "%u minute%s (%u)",
+            "%u minute%s (refresh : %us)",
             uiMinutes,
             (uiMinutes == 1) ? "" : "s",
             uiBestAllowedFixStep);
@@ -107,7 +107,7 @@ void WndConfig::setupControls (void)
           uint uiHours = auiProposedLogSteps[i] / 3600;
 
           strItem.sprintf(
-            "%u hour%s (%u)",
+            "%u hour%s (refresh : %us)",
             uiHours,
             (uiHours == 1) ? "" : "s",
             uiBestAllowedFixStep);

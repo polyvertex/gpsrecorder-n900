@@ -90,11 +90,11 @@ const QVector<uint>& Location::allowedFixSteps (void)
     vecFixSteps.append(1);
     vecFixSteps.append(2);
     vecFixSteps.append(5);
-    vecFixSteps.append(10);
-    vecFixSteps.append(20);
-    vecFixSteps.append(30);
-    vecFixSteps.append(60);
-    vecFixSteps.append(120);
+    //vecFixSteps.append(10);
+    //vecFixSteps.append(20);
+    //vecFixSteps.append(30);
+    //vecFixSteps.append(60);
+    //vecFixSteps.append(120);
   }
 
   return vecFixSteps;
