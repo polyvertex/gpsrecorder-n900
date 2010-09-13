@@ -1,4 +1,4 @@
-gpsrecorder (0.1.160) unstable; urgency=low
+gpsrecorder (0.1.162) unstable; urgency=low
 
   * Added : Pause/Resume feature (request #6287). A pause can be named (optional).
   * Added : 'Ask for a name when pausing' setting.
@@ -6,7 +6,7 @@ gpsrecorder (0.1.160) unstable; urgency=low
   * Modified : GPX and KML exporters to support Pause/Resume feature (optional).
   * Modified : Internal list of allowed GPS fix step values so the GUI does not wait too long for fresh data (5s max instead of 120s).
 
- -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Sun, 12 Sep 2010 19:41:47 +0200
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 13 Sep 2010 21:02:13 +0200
 
 gpsrecorder (0.1.152) unstable; urgency=low
 
