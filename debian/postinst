@@ -8,4 +8,6 @@ set -e
 gtk-update-icon-cache -f /usr/share/icons/hicolor
 #maemo-select-menu-location gpsrecorder.desktop
 
-exit 0
+# replaced 'exit 0' by this so the maemo-optify script can append some code
+# safely :)
+echo "" > /dev/null
