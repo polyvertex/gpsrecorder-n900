@@ -90,7 +90,7 @@ void GPSRFile::close (void)
 //---------------------------------------------------------------------------
 // openWrite
 //---------------------------------------------------------------------------
-bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
+bool GPSRFile::openWrite (const char* pszFile, bool bForceReplace)
 {
   if (this->isOpen())
   {
@@ -99,7 +99,7 @@ bool GPSRFile::openWrite (const char* pszFile, bool bTruncate)
     this->close();
   }
 
-  if (!bTruncate && Util::fileExists(pszFile))
+  if (!bForceReplace && Util::fileExists(pszFile))
   {
     m_bError = true;
     return false;

@@ -109,7 +109,7 @@ public :
   GPSRFile (void);
   ~GPSRFile (void);
 
-  bool openWrite (const char* pszFile, bool bTruncate);
+  bool openWrite (const char* pszFile, bool bForceReplace);
   bool openRead  (const char* pszFile); // implicit call to seekFirst()
 
   bool              isOpen    (void) const { return m_pFile != 0; }
