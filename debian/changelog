@@ -1,3 +1,10 @@
+gpsrecorder (1.1.168) unstable; urgency=low
+
+  * Application is now considered to be mature.
+  * Source code has been released under the terms of the 'zlib' license.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Sat, 16 Oct 2010 15:52:38 +0200
+
 gpsrecorder (0.1.162) unstable; urgency=low
 
   * Added : Pause/Resume feature (request #6287). A pause can be named (optional).
