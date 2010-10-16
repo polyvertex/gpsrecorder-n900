@@ -10,8 +10,8 @@ XSBC-Bugtracker: http://garage.maemo.org/tracker/?atid=5769&group_id=1620
 Package: gpsrecorder
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: GPS track logger to KML, GPX and/or CSV formats
- Yet another GPS track logger.
+Description: GPS data logger to KML, GPX and CSV formats
+ A GPS data logger for the Maemo platform.
  Main features :
  * Gathers as much information as possible from the GPS subsystem at a desired frequency (time, satellites, fix loss, etc...).
  * Exports your saved tracks to KML/KMZ, GPX and/or CSV files in a single operation.
