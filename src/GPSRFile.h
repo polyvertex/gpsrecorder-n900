@@ -46,6 +46,10 @@
 //
 // Format V2 :
 // * Added PAUSED and RESUMED chunks types.
+//
+// Format V3 :
+// * Added NEWTRACK chunk type.
+// * Added MEANSTRANSPORT chunk type.
 //---------------------------------------------------------------------------
 class GPSRFile : public QObject
 {
@@ -66,6 +70,17 @@ public :
     CHUNK_NAMEDSNAP        = 31, // a 'named snap' event (user pushed the 'snap' button while recording)
     CHUNK_PAUSED           = 40, // (v2+) track paused
     CHUNK_RESUMED          = 41, // (v2+) track resumed
+    CHUNK_NEWTRACK         = 45, // (v3+) a new track is following
+    CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transportation (see the MEANSTRANSPORT_* values)
+
+    MEANSTRANSPORT_FOOT      = 0x01,
+    MEANSTRANSPORT_ROLLER    = 0x02,
+    MEANSTRANSPORT_BIKE      = 0x03,
+    MEANSTRANSPORT_MOTORBIKE = 0x04,
+    MEANSTRANSPORT_CAR       = 0x05,
+    MEANSTRANSPORT_BOAT      = 0x06,
+    MEANSTRANSPORT_PLANE     = 0x07,
+    MEANSTRANSPORT_OTHER     = 0xFA, // then, it can be described into the trailing asciiz field
   };
 
   enum Error
@@ -109,8 +124,9 @@ public :
   GPSRFile (void);
   ~GPSRFile (void);
 
-  bool openWrite (const char* pszFile, bool bForceReplace);
-  bool openRead  (const char* pszFile); // implicit call to seekFirst()
+  bool openNew    (const char* pszFile, bool bForceReplace);
+  bool openAppend (const char* pszFile, const char* pszTrackName);
+  bool openRead   (const char* pszFile); // implicit call to seekFirst()
 
   bool              isOpen    (void) const { return m_pFile != 0; }
   bool              isWriting (void) const { return m_bWriting; }
@@ -120,13 +136,15 @@ public :
 
   void close (void);
 
-  void writeMessage         (time_t uiTime, const char* pszMessage);
-  void writeLocationFix     (time_t uiTime, const LocationFixContainer& fixCont);
-  void writeLocationFixLost (time_t uiTime);
-//void writeSnap            (time_t uiTime); // obsolete
-  void writeNamedSnap       (time_t uiTime, const char* pszName);
-  void writePaused          (time_t uiTime, const char* pszName);
-  void writeResumed         (time_t uiTime);
+  void writeMessage          (time_t uiTime, const char* pszMessage);
+  void writeLocationFix      (time_t uiTime, const LocationFixContainer& fixCont);
+  void writeLocationFixLost  (time_t uiTime);
+//void writeSnap             (time_t uiTime); // obsolete
+  void writeNamedSnap        (time_t uiTime, const char* pszName);
+  void writePaused           (time_t uiTime, const char* pszName);
+  void writeResumed          (time_t uiTime);
+  void writeNewTrack         (time_t uiTime, const char* pszName);
+  void writeMeansOfTransport (time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptionalLabel);
 
   bool seekFirst    (void); // causes a sigReadSOF or a sigReadError
   bool readNext     (void); // causes a sigReadChunk*, a sigReadEOF, or a sigReadError
@@ -143,17 +161,19 @@ public :
 
 
 signals :
-  void sigReadError                (GPSRFile* pGPSRFile, GPSRFile::Error eError);
-  void sigReadSOF                  (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset);
-  void sigReadChunkMessage         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
-  void sigReadChunkLocationFix     (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
-  void sigReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime);
-  void sigReadChunkSnap            (GPSRFile* pGPSRFile, time_t uiTime);
-  void sigReadChunkNamedSnap       (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
-  void sigReadChunkPaused          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
-  void sigReadChunkResumed         (GPSRFile* pGPSRFile, time_t uiTime);
-  void sigReadChunkUnknown         (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
-  void sigReadEOF                  (GPSRFile* pGPSRFile);
+  void sigReadError                 (GPSRFile* pGPSRFile, GPSRFile::Error eError);
+  void sigReadSOF                   (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset);
+  void sigReadChunkMessage          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
+  void sigReadChunkLocationFix      (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
+  void sigReadChunkLocationFixLost  (GPSRFile* pGPSRFile, time_t uiTime);
+  void sigReadChunkSnap             (GPSRFile* pGPSRFile, time_t uiTime);
+  void sigReadChunkNamedSnap        (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
+  void sigReadChunkPaused           (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiMsgLen);
+  void sigReadChunkResumed          (GPSRFile* pGPSRFile, time_t uiTime);
+  void sigReadChunkNewTrack         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszTrackName, uint uiMsgLen);
+  void sigReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel, uint uiOptLabelLen);
+  void sigReadChunkUnknown          (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
+  void sigReadEOF                   (GPSRFile* pGPSRFile);
 
 
 private :

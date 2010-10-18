@@ -307,7 +307,7 @@ bool App::setState (App::State eNewState)
       }
       strPath += ".gpsr";
 
-      if (!m_GPSRFile.openWrite(strPath.constData(), true))
+      if (!m_GPSRFile.openNew(strPath.constData(), true))
       {
         QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath.constData()));
         return false;

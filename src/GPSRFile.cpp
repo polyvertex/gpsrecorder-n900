@@ -88,16 +88,13 @@ void GPSRFile::close (void)
 }
 
 //---------------------------------------------------------------------------
-// openWrite
+// openNew
 //---------------------------------------------------------------------------
-bool GPSRFile::openWrite (const char* pszFile, bool bForceReplace)
+bool GPSRFile::openNew (const char* pszFile, bool bForceReplace)
 {
+  Q_ASSERT(this->isOpen() == false);
   if (this->isOpen())
-  {
-    if (this->isWriting())
-      return true;
-    this->close();
-  }
+    return false;
 
   if (!bForceReplace && Util::fileExists(pszFile))
   {
@@ -136,6 +133,84 @@ bool GPSRFile::openWrite (const char* pszFile, bool bForceReplace)
   }
 
   qDebug("Created GPSR file %s", pszFile);
+
+  return true;
+}
+
+//---------------------------------------------------------------------------
+// openAppend
+//---------------------------------------------------------------------------
+bool GPSRFile::openAppend (const char* pszFile, const char* pszTrackName)
+{
+  uint uiValidSize = 0;
+
+  Q_ASSERT(this->isOpen() == false);
+  if (this->isOpen())
+    return false;
+
+  // check existing file first :
+  // * if file does not exist or is invalid, return error.
+  // * if file is incomplete, truncate right behind the last valid chunk we
+  //   found.
+  {
+    GPSRFile gpsrfile;
+
+    if (!gpsrfile.openRead(pszFile))
+      return false;
+
+    if (gpsrfile.getReadChunksCount() > 0)
+    {
+      const ChunkReadInfo& criLast = gpsrfile.getReadChunksInfo()[gpsrfile.getReadChunksCount() - 1];
+      uiValidSize = criLast.uiOffset + criLast.uiSize;
+    }
+
+    gpsrfile.close();
+  }
+
+  // if no valid chunks were found in existing file, truncate it completely
+  if (uiValidSize == 0)
+  {
+    qWarning("No valid chunk found in %s ! Creating a new file.", pszFile);
+    return this->openNew(pszFile, true);
+  }
+
+  // otherwise, open file to append new data
+  m_pFile = fopen(pszFile, "ab");
+  if (!m_pFile)
+  {
+    m_bError = true;
+    qWarning("Could not create %s ! Error %d : %s", pszFile, errno, strerror(errno));
+    return false;
+  }
+  rewind(m_pFile);
+
+  // truncate file
+  if (ftruncate(fileno(m_pFile), uiValidSize) != 0)
+  {
+    qWarning("Failed to truncate %s at offset %u ! Error %d : %s", pszFile, uiValidSize, errno, strerror(errno));
+    fclose(m_pFile);
+    m_pFile = NULL;
+    return false;
+  }
+
+  // seek to end
+  if (fseek(m_pFile, (int)uiValidSize, SEEK_SET) < 0)
+  {
+    qWarning("Failed to fseek in %s at offset %u ! Error %d : %s", pszFile, uiValidSize, errno, strerror(errno));
+    fclose(m_pFile);
+    m_pFile = NULL;
+    return false;
+  }
+
+  // init members
+  m_strFilePath = pszFile;
+  m_bWriting    = true;
+  m_bError      = false;
+
+  // write 'new track' chunk
+  this->writeNewTrack(time(0), pszTrackName);
+
+  qDebug("Appending to GPSR file %s", pszFile);
 
   return true;
 }
@@ -272,6 +347,52 @@ void GPSRFile::writePaused (time_t uiTime, const char* pszName)
 void GPSRFile::writeResumed (time_t uiTime)
 {
   this->writeChunkSimple(CHUNK_RESUMED, uiTime);
+}
+
+//---------------------------------------------------------------------------
+// writeNewTrack
+//---------------------------------------------------------------------------
+void GPSRFile::writeNewTrack (time_t uiTime, const char* pszName)
+{
+  this->writeChunkAsciiz(CHUNK_NEWTRACK, uiTime, pszName);
+}
+
+//---------------------------------------------------------------------------
+// writeMeansOfTransport
+//---------------------------------------------------------------------------
+void GPSRFile::writeMeansOfTransport (time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptionalLabel)
+{
+  Chunk* pChunk;
+  uint   uiChunkSize;
+
+  Q_ASSERT(this->isOpen());
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
+    return;
+
+  uiChunkSize  = sizeof(Chunk);
+  uiChunkSize += sizeof(ucMeansOfTransport);
+  uiChunkSize += pszOptionalLabel ? strlen(pszOptionalLabel) : 0;
+  uiChunkSize += 1; // +1 for the trailing '\0'
+
+  m_Swap.reserve(uiChunkSize +1);
+  pChunk = (Chunk*)m_Swap.data();
+
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_MEANSTRANSPORT;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
+
+  // data format :
+  // 0 : means of transportation byte
+  // 1-var : asciiz, optional label
+  pChunk->aData[0] = ucMeansOfTransport;
+  if (pszOptionalLabel)
+    memcpy((char*)pChunk->aData[1], pszOptionalLabel, strlen(pszOptionalLabel) + 1);
+  else
+    pChunk->aData[1] = 0;
+
+  this->writeData((char*)pChunk, uiChunkSize);
 }
 
 
@@ -480,6 +601,12 @@ bool GPSRFile::readChunk (int nChunkIndex)
       case CHUNK_RESUMED :
         emit sigReadChunkResumed(this, pChunk->uiTime);
         break;
+      case CHUNK_NEWTRACK :
+        emit sigReadChunkNewTrack(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        break;
+      case CHUNK_MEANSTRANSPORT :
+        emit sigReadChunkMeansOfTransport(this, pChunk->uiTime, pChunk->aData[0], (char*)&(pChunk->aData[1]), pChunk->uiSize - sizeof(*pChunk) - 2);
+        break;
       default :
         qWarning("Unknown chunk #%u @ offset %d in file %s !", (uint)pChunk->uiId, nChunkOffset, m_strFilePath.constData());
         emit sigReadChunkUnknown(this, pChunk);
@@ -561,7 +688,8 @@ void GPSRFile::writeChunkAsciiz (quint16 uiChunkId, time_t uiTime, const char* p
   pChunk->uiSize  = uiChunkSize;
   pChunk->uiTime  = uiTime ? uiTime : time(0);
 
-  memcpy(pChunk->aData, pszText, uiMsgSize);
+  if (pszText)
+    memcpy(pChunk->aData, pszText, uiMsgSize);
   pChunk->aData[uiMsgSize - 1] = 0;
 
   this->writeData((char*)pChunk, uiChunkSize);

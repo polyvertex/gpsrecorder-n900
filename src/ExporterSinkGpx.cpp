@@ -92,7 +92,11 @@ void ExporterSinkGpx::writeEOF (void)
     QString strName;
     QString strEle;
 
-    if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
+    if (gizmoPt.eType == Exporter::GIZMO_TRACK)
+    {
+      strName = QString("Track %1").arg(gizmoPt.uiTypeIndex + 1);
+    }
+    else if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
     {
       if (!m_bExportPause)
         continue;
@@ -104,7 +108,7 @@ void ExporterSinkGpx::writeEOF (void)
         continue;
       strName = "Resume";
     }
-    else
+    else if (gizmoPt.eType != Exporter::GIZMO_MEANSTRANSPORT)
     {
       strName = QString("Snap %1").arg(gizmoPt.uiTypeIndex + 1);
     }

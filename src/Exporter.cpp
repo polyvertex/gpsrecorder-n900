@@ -78,6 +78,14 @@ Exporter::Exporter (void)
     SLOT(onReadChunkResumed(GPSRFile*, time_t)) );
   this->connect(
     &m_GPSRFile,
+    SIGNAL(sigReadChunkNewTrack(GPSRFile*, time_t, const char*, uint)),
+    SLOT(onReadChunkNewTrack(GPSRFile*, time_t, const char*, uint)) );
+  this->connect(
+    &m_GPSRFile,
+    SIGNAL(sigReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*, uint)),
+    SLOT(onReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*, uint)) );
+  this->connect(
+    &m_GPSRFile,
     SIGNAL(sigReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)),
     SLOT(onReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)) );
   this->connect(
@@ -287,6 +295,34 @@ void Exporter::onReadChunkResumed (GPSRFile* pGPSRFile, time_t uiTime)
   Q_UNUSED(pGPSRFile);
 
   m_vecGizmoPoints.append(GizmoPoint(GIZMO_RESUME, uiTime, this->gizmoIndex(GIZMO_RESUME)));
+}
+
+//---------------------------------------------------------------------------
+// onReadChunkNewTrack
+//---------------------------------------------------------------------------
+void Exporter::onReadChunkNewTrack (GPSRFile* pGPSRFile, time_t uiTime, const char* pszTrackName, uint uiTrackNameLen)
+{
+  Q_UNUSED(pGPSRFile);
+  Q_UNUSED(uiTrackNameLen);
+
+  m_vecGizmoPoints.append(GizmoPoint(GIZMO_TRACK, uiTime, this->gizmoIndex(GIZMO_TRACK)));
+  if (pszTrackName)
+    m_vecGizmoPoints.last().strName = pszTrackName;
+}
+
+//---------------------------------------------------------------------------
+// onReadChunkMeansOfTransport
+//---------------------------------------------------------------------------
+void Exporter::onReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel, uint uiOptLabelLen)
+{
+  Q_UNUSED(pGPSRFile);
+  Q_UNUSED(uiOptLabelLen);
+
+  m_vecGizmoPoints.append(GizmoPoint(GIZMO_MEANSTRANSPORT, uiTime, this->gizmoIndex(GIZMO_MEANSTRANSPORT)));
+  if (pszOptLabel)
+    m_vecGizmoPoints.last().strName = pszOptLabel;
+
+  m_vecGizmoPoints.last().data.ucMeansOfTransport = ucMeansOfTransport;
 }
 
 //---------------------------------------------------------------------------

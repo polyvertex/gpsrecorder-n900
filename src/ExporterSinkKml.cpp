@@ -197,7 +197,11 @@ void ExporterSinkKml::writeEOF (void)
     const Exporter::GizmoPoint& gizmoPt = m_vecGizmoPoints[i];
     QString strName;
 
-    if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
+    if (gizmoPt.eType == Exporter::GIZMO_TRACK)
+    {
+      strName = QString("Track %1").arg(gizmoPt.uiTypeIndex + 1);
+    }
+    else if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
     {
       if (!m_bExportPause)
         continue;
@@ -209,7 +213,7 @@ void ExporterSinkKml::writeEOF (void)
         continue;
       strName = "Resume";
     }
-    else
+    else if (gizmoPt.eType != Exporter::GIZMO_MEANSTRANSPORT)
     {
       strName = QString("Snap %1").arg(gizmoPt.uiTypeIndex + 1);
     }
