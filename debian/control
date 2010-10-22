@@ -8,7 +8,7 @@ Homepage: http://gpsrecorder.jcl.name/
 XSBC-Bugtracker: http://garage.maemo.org/tracker/?atid=5769&group_id=1620
 
 Package: gpsrecorder
-Architecture: any
+Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: GPS data logger to KML, GPX and CSV formats
  A GPS data logger for the Maemo platform.
