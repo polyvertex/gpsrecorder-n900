@@ -51,14 +51,29 @@ public :
   void addItem         (const QString& strText, const QVariant& userData=QVariant());
   void setCurrentIndex (int iNewIndex);
 
-  int      count           (void) const;
-  int      currentIndex    (void) const;
+  int count        (void) const;
+  int currentIndex (void) const;
+
+  QString itemText           (int iIndex);
+  QString currentItemText    (void);
+  void    setItemText        (int iIndex, const QString& strText);
+  void    setCurrentItemText (const QString& strText);
+
   QVariant itemData        (int iIndex);
   QVariant currentItemData (void);
 
 
+signals :
+  void sigSelected (int iIndex);
+
+
 private :
   void construct (QWidget* pParent);
+
+
+private slots :
+  void onSelected             (const QString& strText);
+  void onRefreshAfterSelected (void);
 
 
 private :

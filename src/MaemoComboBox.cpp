@@ -61,6 +61,7 @@ void MaemoComboBox::construct (QWidget* pParent)
 
   m_pSelector = new QMaemo5ListPickSelector;
   m_pSelector->setModel(m_pModel);
+  this->connect(m_pSelector, SIGNAL(selected(const QString&)), SLOT(onSelected(const QString&)));
 
   this->setPickSelector(m_pSelector);
 }
@@ -115,6 +116,42 @@ void MaemoComboBox::setCurrentIndex (int iNewIndex)
 }
 
 //---------------------------------------------------------------------------
+// itemText
+//---------------------------------------------------------------------------
+QString MaemoComboBox::itemText (int iIndex)
+{
+  return
+    (iIndex >= 0 || iIndex < this->count()) ?
+    m_pModel->item(iIndex)->text() :
+    QString();
+}
+
+//---------------------------------------------------------------------------
+// currentItemText
+//---------------------------------------------------------------------------
+QString MaemoComboBox::currentItemText (void)
+{
+  return this->itemText(m_pSelector->currentIndex());
+}
+
+//---------------------------------------------------------------------------
+// setItemText
+//---------------------------------------------------------------------------
+void MaemoComboBox::setItemText (int iIndex, const QString& strText)
+{
+  if (iIndex >= 0 || iIndex < this->count())
+    m_pModel->item(iIndex)->setText(strText);
+}
+
+//---------------------------------------------------------------------------
+// setCurrentItemText
+//---------------------------------------------------------------------------
+void MaemoComboBox::setCurrentItemText (const QString& strText)
+{
+  this->setItemText(m_pSelector->currentIndex(), strText);
+}
+
+//---------------------------------------------------------------------------
 // itemData
 //---------------------------------------------------------------------------
 QVariant MaemoComboBox::itemData (int iIndex)
@@ -131,4 +168,30 @@ QVariant MaemoComboBox::itemData (int iIndex)
 QVariant MaemoComboBox::currentItemData (void)
 {
   return this->itemData(m_pSelector->currentIndex());
+}
+
+
+
+//---------------------------------------------------------------------------
+// onSelected
+//---------------------------------------------------------------------------
+void MaemoComboBox::onSelected (const QString& strText)
+{
+  Q_UNUSED(strText);
+
+  this->sigSelected(this->currentIndex());
+
+  // if a called slot has modified the text of the current item, the
+  // valueText of this QMaemo5ValueButton widget will not be refreshed
+  // automatically so we have to do it by ourselves.
+  if (this->currentItemText() != strText)
+    QTimer::singleShot(250, this, SLOT(onRefreshAfterSelected()));
+}
+
+//---------------------------------------------------------------------------
+// onRefreshAfterSelected
+//---------------------------------------------------------------------------
+void MaemoComboBox::onRefreshAfterSelected (void)
+{
+  this->setValueText(this->currentItemText());
 }

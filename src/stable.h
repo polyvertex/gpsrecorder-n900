@@ -199,6 +199,7 @@ class ExporterSink;
 #include "WndConvert.h"
 #include "WndSat.h"
 #include "WndSpeed.h"
+#include "WndStart.h"
 #include "WndMain.h"
 #include "AppSettings.h"
 #include "App.h"

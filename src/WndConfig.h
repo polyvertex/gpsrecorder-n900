@@ -59,7 +59,6 @@ private :
   MaemoComboBox* m_pCboLogStep;
   QCheckBox*     m_pChkGpsAssisted;
   QCheckBox*     m_pChkGpsAlwaysConnected;
-  QCheckBox*     m_pChkAskTrackName;
   QCheckBox*     m_pChkAskPointName;
   QCheckBox*     m_pChkAskPauseName;
   MaemoComboBox* m_pCboUnitSystem;

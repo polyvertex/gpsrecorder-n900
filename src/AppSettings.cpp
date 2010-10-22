@@ -40,7 +40,7 @@ static const char* SETTINGNAME_OUTPUTDIR = "OutputDir";
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
 static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
-static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName";
+static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName"; // obsolete
 static const char* SETTINGNAME_ASKPOINTNAME       = "AskPointName";
 static const char* SETTINGNAME_ASKPAUSENAME       = "AskPauseName";
 static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
@@ -105,6 +105,9 @@ AppSettings::AppSettings (QObject* pParent/*=0*/)
 
   // refresh cloned log step value
   this->getLogStep_Impl();
+
+  // delete obsolete settings to cleanup resulting file/registry
+  m_Settings.remove(SETTINGNAME_ASKTRACKNAME);
 }
 
 //---------------------------------------------------------------------------
@@ -234,23 +237,6 @@ bool AppSettings::getGpsAlwaysConnected (void)
     return var.toBool();
 
   return AppSettings::defaultGpsAlwaysConnected();
-}
-
-//---------------------------------------------------------------------------
-// AskTrackName
-//---------------------------------------------------------------------------
-void AppSettings::setAskTrackName (bool bEnable)
-{
-  m_Settings.setValue(SETTINGNAME_ASKTRACKNAME, QVariant(bEnable));
-}
-
-bool AppSettings::getAskTrackName (void)
-{
-  QVariant var = m_Settings.value(SETTINGNAME_ASKTRACKNAME);
-  if (var.canConvert(QVariant::Bool))
-    return var.toBool();
-
-  return AppSettings::defaultAskTrackName();
 }
 
 //---------------------------------------------------------------------------

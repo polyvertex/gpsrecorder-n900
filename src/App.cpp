@@ -51,7 +51,7 @@ App::App (int& nArgc, char** ppszArgv)
   // force POSIX locale for *printf() calls, this is required by the
   // Exporter classes.  we do this here because the QApplication()
   // constructor seems to apply locale settings by itself.
-  setlocale(LC_NUMERIC, "C");
+  setlocale(LC_NUMERIC, "C"); // QLocale::setDefault(QLocale::c());
 
   // init members
   m_eState            = STATE_STOPPED;
@@ -279,38 +279,55 @@ bool App::setState (App::State eNewState)
   {
     if (eNewState == STATE_STARTED)
     {
-      QByteArray strPath;
-      QString    strTrackName;
+      WndStart wndStart(m_pWndMain);
 
-      if (m_Settings.getAskTrackName())
+      if (!wndStart.doExec())
       {
-        strTrackName = this->askTrackName();
-        if (strTrackName == ".")
-        {
-          QMaemo5InformationBox::information(
-            m_pWndMain,
-            tr("Action canceled !"));
-          return false;
-        }
+        QMaemo5InformationBox::information(
+          m_pWndMain,
+          tr("Action canceled !"));
+        return false;
       }
 
       m_uiFixesWritten = 0;
       m_uiLastFixWrite = 0;
 
-      strPath  = App::outputDir().toAscii();
-      strPath += "/gpstrack-";
-      strPath += Util::timeStringForFileName();
-      if (!strTrackName.isEmpty())
+      // open/create file
+      if (wndStart.startMode() == WndStart::STARTMODE_APPENDTRACK)
       {
-        strPath += '-';
-        strPath += strTrackName.toAscii();
+        if (!m_GPSRFile.openAppend(qPrintable(wndStart.filePath()), qPrintable(wndStart.trackName())))
+        {
+          QMessageBox::critical(
+            m_pWndMain,
+            "",
+            tr("Could not append track to file %1 !").arg(qPrintable(wndStart.filePath())));
+          return false;
+        }
       }
-      strPath += ".gpsr";
-
-      if (!m_GPSRFile.openNew(strPath.constData(), true))
+      else
       {
-        QMessageBox::critical(m_pWndMain, "", tr("Could not create output file at %1 !").arg(strPath.constData()));
-        return false;
+        if (!m_GPSRFile.openNew(qPrintable(wndStart.filePath()), qPrintable(wndStart.trackName()), true))
+        {
+          QMessageBox::critical(
+            m_pWndMain,
+            "",
+            tr("Could not create output file %1 !").arg(qPrintable(wndStart.filePath())));
+          return false;
+        }
+      }
+
+      // write means of transportation if user selected it
+      if (wndStart.meansOfTransport() != 0)
+      {
+        QString strOtherName =
+          wndStart.meansOfTransport() == GPSRFile::MEANSTRANSPORT_OTHER ?
+          wndStart.otherMeansOfTransportName() :
+          "";
+
+        m_GPSRFile.writeMeansOfTransport(
+          time(0),
+          wndStart.meansOfTransport(),
+          qPrintable(strOtherName));
       }
 
       m_pPixState = m_pPixRecordingGrey;
@@ -443,30 +460,6 @@ const char* App::getStateStr (void) const
 }
 
 
-
-//---------------------------------------------------------------------------
-// askTrackName
-//---------------------------------------------------------------------------
-QString App::askTrackName (void)
-{
-  QString strTrackName;
-  bool bOk = false;
-
-  strTrackName = QInputDialog::getText(
-    m_pWndMain,
-    tr("Track name ?"),
-    tr("Please enter track name or leave blank :"),
-    QLineEdit::Normal,
-    "",
-    &bOk).trimmed();
-
-  if (!bOk)
-    return QString(".");
-
-  strTrackName.replace('.', '_');
-
-  return strTrackName;
-}
 
 //---------------------------------------------------------------------------
 // closeGPSRFile

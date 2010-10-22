@@ -108,9 +108,8 @@ public slots :
 
 
 private :
-  QString askTrackName  (void);
-  void    closeGPSRFile (void);
-  bool    applyGpsTime  (uint uiGpsTime);
+  void closeGPSRFile (void);
+  bool applyGpsTime  (uint uiGpsTime);
 
 
 private :

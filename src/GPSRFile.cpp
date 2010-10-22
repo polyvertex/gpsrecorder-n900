@@ -90,7 +90,7 @@ void GPSRFile::close (void)
 //---------------------------------------------------------------------------
 // openNew
 //---------------------------------------------------------------------------
-bool GPSRFile::openNew (const char* pszFile, bool bForceReplace)
+bool GPSRFile::openNew (const char* pszFile, const char* pszTrackName, bool bForceReplace)
 {
   Q_ASSERT(this->isOpen() == false);
   if (this->isOpen())
@@ -132,6 +132,9 @@ bool GPSRFile::openNew (const char* pszFile, bool bForceReplace)
     this->writeData((char*)pHeader, sizeof(*pHeader));
   }
 
+  // write 'new track' chunk
+  this->writeNewTrack(time(0), pszTrackName);
+
   qDebug("Created GPSR file %s", pszFile);
 
   return true;
@@ -171,7 +174,7 @@ bool GPSRFile::openAppend (const char* pszFile, const char* pszTrackName)
   if (uiValidSize == 0)
   {
     qWarning("No valid chunk found in %s ! Creating a new file.", pszFile);
-    return this->openNew(pszFile, true);
+    return this->openNew(pszFile, pszTrackName, true);
   }
 
   // otherwise, open file to append new data

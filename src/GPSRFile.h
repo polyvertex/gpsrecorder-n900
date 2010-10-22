@@ -73,6 +73,7 @@ public :
     CHUNK_NEWTRACK         = 45, // (v3+) a new track is following
     CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transportation (see the MEANSTRANSPORT_* values)
 
+    MEANSTRANSPORT__unused__ = 0,
     MEANSTRANSPORT_FOOT      = 0x01,
     MEANSTRANSPORT_ROLLER    = 0x02,
     MEANSTRANSPORT_BIKE      = 0x03,
@@ -124,7 +125,7 @@ public :
   GPSRFile (void);
   ~GPSRFile (void);
 
-  bool openNew    (const char* pszFile, bool bForceReplace);
+  bool openNew    (const char* pszFile, const char* pszTrackName, bool bForceReplace);
   bool openAppend (const char* pszFile, const char* pszTrackName);
   bool openRead   (const char* pszFile); // implicit call to seekFirst()
 

@@ -64,9 +64,6 @@ public :
   void setGpsAlwaysConnected (bool bEnable);
   bool getGpsAlwaysConnected (void);
 
-  void setAskTrackName (bool bEnable);
-  bool getAskTrackName (void);
-
   void setAskPointName (bool bEnable);
   bool getAskPointName (void);
 
@@ -112,7 +109,6 @@ public :
   static QPair<uint,uint> logStepBounds             (void) { return QPair<uint,uint>(1, 10800); }
   static bool             defaultGpsAssisted        (void) { return true; }
   static bool             defaultGpsAlwaysConnected (void) { return true; }
-  static bool             defaultAskTrackName       (void) { return true; }
   static bool             defaultAskPointName       (void) { return true; }
   static bool             defaultAskPauseName       (void) { return true; }
   static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
