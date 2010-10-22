@@ -229,10 +229,8 @@ void WndStart::onSelectedMeansOfTransport (int iIndex)
 
     if (bOk)
     {
-      strInput.replace(QRegExp("[^A-Za-z0-9_]"), " ");
+      strInput.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
       strInput = strInput.simplified();
-      strInput = strInput.trimmed();
-      strInput.replace(" ", "_");
 
       m_strOtherMeansOfTransport = strInput;
 
