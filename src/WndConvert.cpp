@@ -90,7 +90,7 @@ void WndConvert::setupControls (void)
 
   // global convert settings
   {
-    MaemoGroupBox* pGroupBox = new MaemoGroupBox(tr("Global options"));
+    QMaemoGroupBox* pGroupBox = new QMaemoGroupBox(tr("Global options"));
 
     m_pChkExportPauses = new QCheckBox(tr("Handle pause/resume events"));
     m_pChkExportPauses->setCheckState(settings.getConvertExportPauses() ? Qt::Checked : Qt::Unchecked);
@@ -103,7 +103,7 @@ void WndConvert::setupControls (void)
 
   // output format - csv
   {
-    m_pCboCsvSeparator = new MaemoComboBox(tr("Fields separator"), this);
+    m_pCboCsvSeparator = new QMaemoComboBox(tr("Fields separator"), this);
     m_pCboCsvSeparator->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     for (int i = 0; i < (int)strlen(ExporterSinkCsv::supportedSeparators()); ++i)
     {
@@ -114,7 +114,7 @@ void WndConvert::setupControls (void)
     }
     m_pCboCsvSeparator->setCurrentIndex(ExporterSinkCsv::separatorIndex(settings.getCsvSeparator()));
 
-    m_pGroupBoxCsv = new MaemoGroupBox(tr("CSV options"));
+    m_pGroupBoxCsv = new QMaemoGroupBox(tr("CSV options"));
     m_pGroupBoxCsv->addWidget(m_pCboCsvSeparator);
     m_pGroupBoxCsv->setEnabled(settings.getConvertCsv());
 
@@ -126,7 +126,7 @@ void WndConvert::setupControls (void)
   //{
   //  QFormLayout* pForm = new QFormLayout;
   //
-  //  m_pGroupBoxGpx = new MaemoGroupBox(tr("GPX options"));
+  //  m_pGroupBoxGpx = new QMaemoGroupBox(tr("GPX options"));
   //  m_pGroupBoxGpx->setEnabled(settings.getConvertGpx());
   //  m_pGroupBoxGpx->addLayout(pForm);
   //
@@ -145,7 +145,7 @@ void WndConvert::setupControls (void)
     m_pBtnKmlLineColor->setStyleSheet(QString("background-color:rgb(%1,%2,%3)").arg(m_KmlLineColor.red()).arg(m_KmlLineColor.green()).arg(m_KmlLineColor.blue()));
     this->connect(m_pBtnKmlLineColor, SIGNAL(clicked()), SLOT(onClickedKmlLineColor()));
 
-    m_pCboKmlLineWidth = new MaemoComboBox(tr("Line width"), this);
+    m_pCboKmlLineWidth = new QMaemoComboBox(tr("Line width"), this);
     m_pCboKmlLineWidth->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     for (int i = 1; i < 6; ++i)
       m_pCboKmlLineWidth->addItem(QString("%1").arg(i));
@@ -157,7 +157,7 @@ void WndConvert::setupControls (void)
     m_pChkKmlZipped = new QCheckBox(tr("Zipped KML (KMZ)"));
     m_pChkKmlZipped->setCheckState(settings.getKmlZipped() ? Qt::Checked : Qt::Unchecked);
 
-    m_pGroupBoxKml = new MaemoGroupBox(tr("KML options"));
+    m_pGroupBoxKml = new QMaemoGroupBox(tr("KML options"));
     m_pGroupBoxKml->addWidget(m_pBtnKmlLineColor);
     m_pGroupBoxKml->addWidget(m_pCboKmlLineWidth);
     m_pGroupBoxKml->addWidget(m_pChkKmlAircraft);

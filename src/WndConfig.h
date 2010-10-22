@@ -56,14 +56,14 @@ private slots :
 
 
 private :
-  MaemoComboBox* m_pCboLogStep;
-  QCheckBox*     m_pChkGpsAssisted;
-  QCheckBox*     m_pChkGpsAlwaysConnected;
-  QCheckBox*     m_pChkAskPointName;
-  QCheckBox*     m_pChkAskPauseName;
-  MaemoComboBox* m_pCboUnitSystem;
-  MaemoComboBox* m_pCboHorizSpeedUnit;
-  QCheckBox*     m_pChkPreventBlankScreen;
+  QMaemoComboBox* m_pCboLogStep;
+  QCheckBox*      m_pChkGpsAssisted;
+  QCheckBox*      m_pChkGpsAlwaysConnected;
+  QCheckBox*      m_pChkAskPointName;
+  QCheckBox*      m_pChkAskPauseName;
+  QMaemoComboBox* m_pCboUnitSystem;
+  QMaemoComboBox* m_pCboHorizSpeedUnit;
+  QCheckBox*      m_pChkPreventBlankScreen;
 };
 
 

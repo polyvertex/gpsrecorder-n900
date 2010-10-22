@@ -177,8 +177,8 @@ class ExporterSink;
 //---------------------------------------------------------------------------
 #ifdef __cplusplus
 
-#include "MaemoComboBox.h"
-#include "MaemoGroupBox.h"
+#include "QMaemoComboBox.h"
+#include "QMaemoGroupBox.h"
 
 #include "Util.h"
 #include "LocationFix.h"

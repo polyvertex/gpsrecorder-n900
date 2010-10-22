@@ -69,22 +69,22 @@ private :
   QCheckBox* m_pChkExportPauses;
 
   // csv
-  QCheckBox*     m_pChkCsv;
-  MaemoGroupBox* m_pGroupBoxCsv;
-  MaemoComboBox* m_pCboCsvSeparator;
+  QCheckBox*      m_pChkCsv;
+  QMaemoGroupBox* m_pGroupBoxCsv;
+  QMaemoComboBox* m_pCboCsvSeparator;
 
   // gpx
-  QCheckBox*     m_pChkGpx;
-  MaemoGroupBox* m_pGroupBoxGpx;
+  QCheckBox*      m_pChkGpx;
+  QMaemoGroupBox* m_pGroupBoxGpx;
 
   // kml
-  QCheckBox*       m_pChkKml;
-  MaemoGroupBox*   m_pGroupBoxKml;
-  QCheckBox*       m_pChkKmlZipped;
-  QPushButton*     m_pBtnKmlLineColor;
-  QColor           m_KmlLineColor;
-  MaemoComboBox*   m_pCboKmlLineWidth;
-  QCheckBox*       m_pChkKmlAircraft;
+  QCheckBox*      m_pChkKml;
+  QMaemoGroupBox* m_pGroupBoxKml;
+  QCheckBox*      m_pChkKmlZipped;
+  QPushButton*    m_pBtnKmlLineColor;
+  QColor          m_KmlLineColor;
+  QMaemoComboBox* m_pCboKmlLineWidth;
+  QCheckBox*      m_pChkKmlAircraft;
 };
 
 

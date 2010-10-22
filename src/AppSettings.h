@@ -79,6 +79,9 @@ public :
   void setPreventBlankScreen (bool bEnable);
   bool getPreventBlankScreen (void);
 
+  void       setLastOtherMeansOfTransport (const QByteArray& strOtherMeansOfTransport);
+  QByteArray getLastOtherMeansOfTransport (void);
+
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);

@@ -23,64 +23,45 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-08-04 17:51:17
+// Created On : 2010-08-04 18:45:02
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __MAEMOCOMBOBOX_H__
-#define __MAEMOCOMBOBOX_H__
+#ifndef __MAEMOGROUPBOX_H__
+#define __MAEMOGROUPBOX_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// MaemoComboBox
+// QMaemoGroupBox
 //---------------------------------------------------------------------------
-class MaemoComboBox : public QMaemo5ValueButton
+class QMaemoGroupBox : public QVBoxLayout
 {
   Q_OBJECT
 
 public :
-  MaemoComboBox (QWidget* pParent=0);
-  MaemoComboBox (const QString& strText, QWidget* pParent=0);
+  QMaemoGroupBox (QWidget* pParent=0);
+  QMaemoGroupBox (const QString& strText, QWidget* pParent=0);
 
-  void setTextAlignment (Qt::Alignment eAlign);
+  void setText    (const QString& strText);
+  void setEnabled (bool bEnabled);
 
-  void addItem         (const QString& strText, const QVariant& userData=QVariant());
-  void setCurrentIndex (int iNewIndex);
-
-  int count        (void) const;
-  int currentIndex (void) const;
-
-  QString itemText           (int iIndex);
-  QString currentItemText    (void);
-  void    setItemText        (int iIndex, const QString& strText);
-  void    setCurrentItemText (const QString& strText);
-
-  QVariant itemData        (int iIndex);
-  QVariant currentItemData (void);
-
-
-signals :
-  void sigSelected (int iIndex);
+  QLabel* label (void) { return m_pLabel; }
+  QFrame* frame (void) { return m_pFrame; }
 
 
 private :
-  void construct (QWidget* pParent);
-
-
-private slots :
-  void onSelected             (const QString& strText);
-  void onRefreshAfterSelected (void);
+  void construct        (QWidget* pParent);
+  void setLayoutEnabled (QLayout* pLayout, bool bEnabled);
 
 
 private :
-  Qt::Alignment            m_eAlign;
-  QStandardItemModel*      m_pModel;
-  QMaemo5ListPickSelector* m_pSelector;
+  QLabel* m_pLabel;
+  QFrame* m_pFrame;
 };
 
 
-#endif // #ifndef __MAEMOCOMBOBOX_H__
+#endif // #ifndef __MAEMOGROUPBOX_H__

@@ -113,12 +113,20 @@ bool WndStart::doExec (void)
 //---------------------------------------------------------------------------
 void WndStart::setupControls (void)
 {
+  AppSettings& settings = *App::instance()->settings();
   QPushButton* pBtnStart;
+  QString      strOtherLabel;
 
   m_pTxtTrackName = new QLineEdit();
   m_pTxtTrackName->setValidator(new QTrackNameValidator);
 
-  m_pCboMeansOfTransport = new MaemoComboBox(tr("Means of transportation"), this);
+  strOtherLabel = tr("Other : ");
+  if (settings.getLastOtherMeansOfTransport().isEmpty())
+    strOtherLabel += '?';
+  else
+    strOtherLabel += QString("\"%1\"").arg(settings.getLastOtherMeansOfTransport());
+
+  m_pCboMeansOfTransport = new QMaemoComboBox(tr("Means of transportation"), this);
   this->connect(m_pCboMeansOfTransport, SIGNAL(sigSelected(int)), SLOT(onSelectedMeansOfTransport(int)));
   m_pCboMeansOfTransport->setValueLayout(QMaemo5ValueButton::ValueUnderText);
   m_pCboMeansOfTransport->addItem(tr("N/A"),       (int)0);
@@ -129,7 +137,7 @@ void WndStart::setupControls (void)
   m_pCboMeansOfTransport->addItem(tr("Car"),       (int)GPSRFile::MEANSTRANSPORT_CAR);
   m_pCboMeansOfTransport->addItem(tr("Boat"),      (int)GPSRFile::MEANSTRANSPORT_BOAT);
   m_pCboMeansOfTransport->addItem(tr("Plane"),     (int)GPSRFile::MEANSTRANSPORT_PLANE);
-  m_pCboMeansOfTransport->addItem(tr("Other ?"),   (int)GPSRFile::MEANSTRANSPORT_OTHER);
+  m_pCboMeansOfTransport->addItem(strOtherLabel,   (int)GPSRFile::MEANSTRANSPORT_OTHER);
   m_pCboMeansOfTransport->setCurrentIndex(0);
 
   pBtnStart = new QPushButton(tr("Start"));
@@ -229,10 +237,11 @@ void WndStart::onSelectedMeansOfTransport (int iIndex)
 
     if (bOk)
     {
-      strInput.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
-      strInput = strInput.simplified();
+      AppSettings& settings = *App::instance()->settings();
 
-      m_strOtherMeansOfTransport = strInput;
+      // reformat input string
+      settings.setLastOtherMeansOfTransport(qPrintable(strInput));
+      m_strOtherMeansOfTransport = settings.getLastOtherMeansOfTransport();
 
       m_pCboMeansOfTransport->setItemText(
         iIndex,
@@ -255,6 +264,8 @@ void WndStart::onSelectedMeansOfTransport (int iIndex)
 //---------------------------------------------------------------------------
 void WndStart::onClickedStart (void)
 {
+  AppSettings& settings = *App::instance()->settings();
+
   m_bCanceled = false;
 
   m_strTrackName = m_pTxtTrackName->text();

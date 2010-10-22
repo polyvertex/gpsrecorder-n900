@@ -47,6 +47,8 @@ static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
 //
+static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransportation";
+//
 static const char* SETTINGNAME_CONVERT_CSV          = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX          = "ConvertGpx";
 static const char* SETTINGNAME_CONVERT_KML          = "ConvertKml";
@@ -338,6 +340,35 @@ bool AppSettings::getPreventBlankScreen (void)
     return var.toBool();
 
   return AppSettings::defaultPreventBlankScreen();
+}
+
+//---------------------------------------------------------------------------
+// LastOtherMeansOfTransport
+//---------------------------------------------------------------------------
+void AppSettings::setLastOtherMeansOfTransport (const QByteArray& strOtherMeansOfTransport)
+{
+  QString str(strOtherMeansOfTransport);
+
+  str.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
+  str = str.simplified();
+
+  m_Settings.setValue(SETTINGNAME_LASTOTHERMEANSOFTRANSPORT, QVariant(QLatin1String(qPrintable(str))));
+}
+
+QByteArray AppSettings::getLastOtherMeansOfTransport (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_LASTOTHERMEANSOFTRANSPORT);
+  if (var.type() == QVariant::String)
+  {
+    QString str(var.toString());
+
+    str.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
+    str = str.simplified();
+
+    return qPrintable(var.toString());
+  }
+
+  return QByteArray();
 }
 
 //---------------------------------------------------------------------------

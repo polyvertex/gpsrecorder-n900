@@ -33,18 +33,18 @@
 
 
 //---------------------------------------------------------------------------
-// MaemoGroupBox
+// QMaemoGroupBox
 //---------------------------------------------------------------------------
-MaemoGroupBox::MaemoGroupBox (QWidget* pParent/*=0*/)
+QMaemoGroupBox::QMaemoGroupBox (QWidget* pParent/*=0*/)
 : QVBoxLayout(pParent)
 {
   this->construct(pParent);
 }
 
 //---------------------------------------------------------------------------
-// MaemoGroupBox
+// QMaemoGroupBox
 //---------------------------------------------------------------------------
-MaemoGroupBox::MaemoGroupBox (const QString& strText, QWidget* pParent/*=0*/)
+QMaemoGroupBox::QMaemoGroupBox (const QString& strText, QWidget* pParent/*=0*/)
 : QVBoxLayout(pParent)
 {
   this->construct(pParent);
@@ -54,7 +54,7 @@ MaemoGroupBox::MaemoGroupBox (const QString& strText, QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 // construct
 //---------------------------------------------------------------------------
-void MaemoGroupBox::construct (QWidget* pParent)
+void QMaemoGroupBox::construct (QWidget* pParent)
 {
   m_pLabel = new QLabel;
   m_pLabel->setAlignment(Qt::AlignHCenter);
@@ -72,7 +72,7 @@ void MaemoGroupBox::construct (QWidget* pParent)
 //---------------------------------------------------------------------------
 // setText
 //---------------------------------------------------------------------------
-void MaemoGroupBox::setText (const QString& strText)
+void QMaemoGroupBox::setText (const QString& strText)
 {
   m_pLabel->setText(strText);
 }
@@ -80,7 +80,7 @@ void MaemoGroupBox::setText (const QString& strText)
 //---------------------------------------------------------------------------
 // setEnabled
 //---------------------------------------------------------------------------
-void MaemoGroupBox::setEnabled (bool bEnabled)
+void QMaemoGroupBox::setEnabled (bool bEnabled)
 {
   this->setLayoutEnabled(this, bEnabled);
 }
@@ -90,7 +90,7 @@ void MaemoGroupBox::setEnabled (bool bEnabled)
 //---------------------------------------------------------------------------
 // setLayoutEnabled
 //---------------------------------------------------------------------------
-void MaemoGroupBox::setLayoutEnabled (QLayout* pLayout, bool bEnabled)
+void QMaemoGroupBox::setLayoutEnabled (QLayout* pLayout, bool bEnabled)
 {
   // recursively enable/disable all widgets and layouts inside this layout
   for (int i = 0; i < pLayout->count(); ++i)

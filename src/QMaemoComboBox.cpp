@@ -33,18 +33,18 @@
 
 
 //---------------------------------------------------------------------------
-// MaemoComboBox
+// QMaemoComboBox
 //---------------------------------------------------------------------------
-MaemoComboBox::MaemoComboBox (QWidget* pParent/*=0*/)
+QMaemoComboBox::QMaemoComboBox (QWidget* pParent/*=0*/)
 : QMaemo5ValueButton(pParent)
 {
   this->construct(pParent);
 }
 
 //---------------------------------------------------------------------------
-// MaemoComboBox
+// QMaemoComboBox
 //---------------------------------------------------------------------------
-MaemoComboBox::MaemoComboBox (const QString& strText, QWidget* pParent/*=0*/)
+QMaemoComboBox::QMaemoComboBox (const QString& strText, QWidget* pParent/*=0*/)
 : QMaemo5ValueButton(strText, pParent)
 {
   this->construct(pParent);
@@ -53,7 +53,7 @@ MaemoComboBox::MaemoComboBox (const QString& strText, QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 // construct
 //---------------------------------------------------------------------------
-void MaemoComboBox::construct (QWidget* pParent)
+void QMaemoComboBox::construct (QWidget* pParent)
 {
   m_eAlign = Qt::AlignCenter; // the Maemo5 design spec recommends this
 
@@ -71,7 +71,7 @@ void MaemoComboBox::construct (QWidget* pParent)
 //---------------------------------------------------------------------------
 // setTextAlignment
 //---------------------------------------------------------------------------
-void MaemoComboBox::setTextAlignment (Qt::Alignment eAlign)
+void QMaemoComboBox::setTextAlignment (Qt::Alignment eAlign)
 {
   m_eAlign = eAlign;
 }
@@ -79,7 +79,7 @@ void MaemoComboBox::setTextAlignment (Qt::Alignment eAlign)
 //---------------------------------------------------------------------------
 // addItem
 //---------------------------------------------------------------------------
-void MaemoComboBox::addItem (const QString& strText, const QVariant& userData/*=QVariant()*/)
+void QMaemoComboBox::addItem (const QString& strText, const QVariant& userData/*=QVariant()*/)
 {
   QStandardItem* pItem = new QStandardItem;
 
@@ -94,7 +94,7 @@ void MaemoComboBox::addItem (const QString& strText, const QVariant& userData/*=
 //---------------------------------------------------------------------------
 // currentIndex
 //---------------------------------------------------------------------------
-int MaemoComboBox::currentIndex (void) const
+int QMaemoComboBox::currentIndex (void) const
 {
   return m_pSelector->currentIndex();
 }
@@ -102,7 +102,7 @@ int MaemoComboBox::currentIndex (void) const
 //---------------------------------------------------------------------------
 // count
 //---------------------------------------------------------------------------
-int MaemoComboBox::count (void) const
+int QMaemoComboBox::count (void) const
 {
   return m_pModel->rowCount();
 }
@@ -110,7 +110,7 @@ int MaemoComboBox::count (void) const
 //---------------------------------------------------------------------------
 // setCurrentIndex
 //---------------------------------------------------------------------------
-void MaemoComboBox::setCurrentIndex (int iNewIndex)
+void QMaemoComboBox::setCurrentIndex (int iNewIndex)
 {
   return m_pSelector->setCurrentIndex(iNewIndex);
 }
@@ -118,7 +118,7 @@ void MaemoComboBox::setCurrentIndex (int iNewIndex)
 //---------------------------------------------------------------------------
 // itemText
 //---------------------------------------------------------------------------
-QString MaemoComboBox::itemText (int iIndex)
+QString QMaemoComboBox::itemText (int iIndex)
 {
   return
     (iIndex >= 0 || iIndex < this->count()) ?
@@ -129,7 +129,7 @@ QString MaemoComboBox::itemText (int iIndex)
 //---------------------------------------------------------------------------
 // currentItemText
 //---------------------------------------------------------------------------
-QString MaemoComboBox::currentItemText (void)
+QString QMaemoComboBox::currentItemText (void)
 {
   return this->itemText(m_pSelector->currentIndex());
 }
@@ -137,7 +137,7 @@ QString MaemoComboBox::currentItemText (void)
 //---------------------------------------------------------------------------
 // setItemText
 //---------------------------------------------------------------------------
-void MaemoComboBox::setItemText (int iIndex, const QString& strText)
+void QMaemoComboBox::setItemText (int iIndex, const QString& strText)
 {
   if (iIndex >= 0 || iIndex < this->count())
     m_pModel->item(iIndex)->setText(strText);
@@ -146,7 +146,7 @@ void MaemoComboBox::setItemText (int iIndex, const QString& strText)
 //---------------------------------------------------------------------------
 // setCurrentItemText
 //---------------------------------------------------------------------------
-void MaemoComboBox::setCurrentItemText (const QString& strText)
+void QMaemoComboBox::setCurrentItemText (const QString& strText)
 {
   this->setItemText(m_pSelector->currentIndex(), strText);
 }
@@ -154,7 +154,7 @@ void MaemoComboBox::setCurrentItemText (const QString& strText)
 //---------------------------------------------------------------------------
 // itemData
 //---------------------------------------------------------------------------
-QVariant MaemoComboBox::itemData (int iIndex)
+QVariant QMaemoComboBox::itemData (int iIndex)
 {
   return
     (iIndex >= 0 || iIndex < this->count()) ?
@@ -165,7 +165,7 @@ QVariant MaemoComboBox::itemData (int iIndex)
 //---------------------------------------------------------------------------
 // currentItemData
 //---------------------------------------------------------------------------
-QVariant MaemoComboBox::currentItemData (void)
+QVariant QMaemoComboBox::currentItemData (void)
 {
   return this->itemData(m_pSelector->currentIndex());
 }
@@ -175,7 +175,7 @@ QVariant MaemoComboBox::currentItemData (void)
 //---------------------------------------------------------------------------
 // onSelected
 //---------------------------------------------------------------------------
-void MaemoComboBox::onSelected (const QString& strText)
+void QMaemoComboBox::onSelected (const QString& strText)
 {
   Q_UNUSED(strText);
 
@@ -191,7 +191,7 @@ void MaemoComboBox::onSelected (const QString& strText)
 //---------------------------------------------------------------------------
 // onRefreshAfterSelected
 //---------------------------------------------------------------------------
-void MaemoComboBox::onRefreshAfterSelected (void)
+void QMaemoComboBox::onRefreshAfterSelected (void)
 {
   this->setValueText(this->currentItemText());
 }

@@ -75,7 +75,7 @@ void WndConfig::setupControls (void)
     pVBox = new QVBoxLayout;
     pVBox->setSpacing(1);
 
-    m_pCboLogStep = new MaemoComboBox(tr("Log step"), this);
+    m_pCboLogStep = new QMaemoComboBox(tr("Log step"), this);
     m_pCboLogStep->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     m_pCboLogStep->setTextAlignment(Qt::AlignLeft);
 
@@ -135,13 +135,13 @@ void WndConfig::setupControls (void)
     m_pChkAskPauseName = new QCheckBox(tr("Ask for a name when pausing"));
     m_pChkAskPauseName->setCheckState(settings.getAskPauseName() ? Qt::Checked : Qt::Unchecked);
 
-    m_pCboUnitSystem = new MaemoComboBox(tr("Unit system"), this);
+    m_pCboUnitSystem = new QMaemoComboBox(tr("Unit system"), this);
     m_pCboUnitSystem->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     m_pCboUnitSystem->addItem(AppSettings::unitSystemToName(UNITSYSTEM_METRIC),    QVariant(UNITSYSTEM_METRIC));
     m_pCboUnitSystem->addItem(AppSettings::unitSystemToName(UNITSYSTEM_IMPERIAL),  QVariant(UNITSYSTEM_IMPERIAL));
     m_pCboUnitSystem->setCurrentIndex(settings.getUnitSystem());
 
-    m_pCboHorizSpeedUnit = new MaemoComboBox(tr("Horizontal speed unit"), this);
+    m_pCboHorizSpeedUnit = new QMaemoComboBox(tr("Horizontal speed unit"), this);
     m_pCboHorizSpeedUnit->setValueLayout(QMaemo5ValueButton::ValueBesideText);
     m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_KMH),   QVariant(HORIZSPEEDUNIT_KMH));
     m_pCboHorizSpeedUnit->addItem(AppSettings::horizSpeedUnitToName(HORIZSPEEDUNIT_MPH),   QVariant(HORIZSPEEDUNIT_MPH));

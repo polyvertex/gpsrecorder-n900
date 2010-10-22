@@ -23,45 +23,64 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-08-04 18:45:02
+// Created On : 2010-08-04 17:51:17
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __MAEMOGROUPBOX_H__
-#define __MAEMOGROUPBOX_H__
+#ifndef __MAEMOCOMBOBOX_H__
+#define __MAEMOCOMBOBOX_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// MaemoGroupBox
+// QMaemoComboBox
 //---------------------------------------------------------------------------
-class MaemoGroupBox : public QVBoxLayout
+class QMaemoComboBox : public QMaemo5ValueButton
 {
   Q_OBJECT
 
 public :
-  MaemoGroupBox (QWidget* pParent=0);
-  MaemoGroupBox (const QString& strText, QWidget* pParent=0);
+  QMaemoComboBox (QWidget* pParent=0);
+  QMaemoComboBox (const QString& strText, QWidget* pParent=0);
 
-  void setText    (const QString& strText);
-  void setEnabled (bool bEnabled);
+  void setTextAlignment (Qt::Alignment eAlign);
 
-  QLabel* label (void) { return m_pLabel; }
-  QFrame* frame (void) { return m_pFrame; }
+  void addItem         (const QString& strText, const QVariant& userData=QVariant());
+  void setCurrentIndex (int iNewIndex);
+
+  int count        (void) const;
+  int currentIndex (void) const;
+
+  QString itemText           (int iIndex);
+  QString currentItemText    (void);
+  void    setItemText        (int iIndex, const QString& strText);
+  void    setCurrentItemText (const QString& strText);
+
+  QVariant itemData        (int iIndex);
+  QVariant currentItemData (void);
+
+
+signals :
+  void sigSelected (int iIndex);
 
 
 private :
-  void construct        (QWidget* pParent);
-  void setLayoutEnabled (QLayout* pLayout, bool bEnabled);
+  void construct (QWidget* pParent);
+
+
+private slots :
+  void onSelected             (const QString& strText);
+  void onRefreshAfterSelected (void);
 
 
 private :
-  QLabel* m_pLabel;
-  QFrame* m_pFrame;
+  Qt::Alignment            m_eAlign;
+  QStandardItemModel*      m_pModel;
+  QMaemo5ListPickSelector* m_pSelector;
 };
 
 
-#endif // #ifndef __MAEMOGROUPBOX_H__
+#endif // #ifndef __MAEMOCOMBOBOX_H__

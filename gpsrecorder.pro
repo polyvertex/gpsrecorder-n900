@@ -68,8 +68,8 @@ HEADERS += \
   src/LocationFix.h \
   src/LocationGPSRFile.h \
   src/LocationMaemo.h \
-  src/MaemoComboBox.h \
-  src/MaemoGroupBox.h \
+  src/QMaemoComboBox.h \
+  src/QMaemoGroupBox.h \
   src/Util.h \
   src/WndAbout.h \
   src/WndBase.h \
@@ -97,8 +97,8 @@ SOURCES += \
   src/LocationFix.cpp \
   src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
-  src/MaemoComboBox.cpp \
-  src/MaemoGroupBox.cpp \
+  src/QMaemoComboBox.cpp \
+  src/QMaemoGroupBox.cpp \
   src/Util.cpp \
   src/WndAbout.cpp \
   src/WndBase.cpp \

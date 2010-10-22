@@ -87,9 +87,9 @@ private :
   QString m_strOtherMeansOfTransport;
 
   // dialog widgets
-  QLineEdit*     m_pTxtTrackName;
-  MaemoComboBox* m_pCboMeansOfTransport;
-  QLineEdit*     m_pTxtFilePath;
+  QLineEdit*      m_pTxtTrackName;
+  QMaemoComboBox* m_pCboMeansOfTransport;
+  QLineEdit*      m_pTxtFilePath;
 };
 
 
