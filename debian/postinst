@@ -10,4 +10,4 @@ gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # replaced 'exit 0' by this so the maemo-optify script can append some code
 # safely :)
-echo "" > /dev/null
+echo > /dev/null
