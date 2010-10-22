@@ -23,74 +23,65 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-10-20 18:33:21
+// Created On : 2010-10-22 14:37:43
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDSTART_H__
-#define __WNDSTART_H__
+#ifndef __QLABELEDLINEEDIT_H__
+#define __QLABELEDLINEEDIT_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndStart
+// QLabeledLineEdit
+//
+// This is a utility class to allow displaying a grayed out dummy label when
+// the 'real' content is empty.
+// As soon as user is typing something in this widget, the label will vanish
+// to let real content to be displayed.
+// This works barely like 'search' input controls on some websites except for
+// the fact that dummy content do not vanish when widget gains focus : only
+// when content is not empty.
+//
+// CAUTION : To ensure you get the content value, you *must* use the
+// content() method instead of the regular QLineEdit::text() method because
+// the latest will sometimes return the label() value !
 //---------------------------------------------------------------------------
-class WndStart : public QDialog
+class QLabeledLineEdit : public QLineEdit
 {
   Q_OBJECT
 
 public :
-  enum StartMode
-  {
-    STARTMODE_NEWTRACK,
-    STARTMODE_APPENDTRACK,
-  };
+  QLabeledLineEdit (QWidget* pParent=0);
+  QLabeledLineEdit (const QString& strContent, QWidget* pParent=0);
+  QLabeledLineEdit (const QString& strLabel, const QString& strContent, QWidget* pParent=0);
 
-
-public :
-  WndStart (QWidget* pParent=0);
-  virtual ~WndStart (void);
-
-  // run dialog
-  // use this method instead of QDialog::exec() !
-  bool doExec (void);
-
-  // result available for all start modes
-  StartMode      startMode                 (void) const { return m_eStartMode; }
-  const QString& trackName                 (void) const { return m_strTrackName; }
-  const QString& filePath                  (void) const { return m_strFilePath; }
-  quint8         meansOfTransport          (void) const { return m_ucMeansOfTransport; }
-  const QString& otherMeansOfTransportName (void) const { return m_strOtherMeansOfTransport; }
+  QString label    (void) const { return m_strLabel; }
+  void    setLabel (const QString& strLabel);
+  QString content  (void) const { return m_strContent; }
 
 
 private :
-  void setupControls (void);
+  void updateDisplay (void);
+
+
+protected :
+  // from QWidget
+  void keyPressEvent (QKeyEvent* pKeyEvent);
+  void focusOutEvent (QFocusEvent* pFocusEvent);
 
 
 private slots :
-  void onClickedBrowseFile        (void);
-  void onSelectedMeansOfTransport (int iIndex);
-  void onClickedStart             (void);
+  void onTextChanged_QLLE (const QString& strText);
 
 
 private :
-  StartMode m_eStartMode;
-
-  // result
-  bool    m_bCanceled;
-  QString m_strTrackName;
-  QString m_strFilePath;
-  quint8  m_ucMeansOfTransport;
-  QString m_strOtherMeansOfTransport;
-
-  // dialog widgets
-  QLabeledLineEdit* m_pTxtTrackName;
-  QMaemoComboBox*   m_pCboMeansOfTransport;
-  QLabeledLineEdit* m_pTxtFilePath;
+  QString m_strLabel;
+  QString m_strContent;
 };
 
 
-#endif // #ifndef __WNDSTART_H__
+#endif // #ifndef __QLABELEDLINEEDIT_H__

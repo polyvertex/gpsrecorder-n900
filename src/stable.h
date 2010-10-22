@@ -177,6 +177,7 @@ class ExporterSink;
 //---------------------------------------------------------------------------
 #ifdef __cplusplus
 
+#include "QLabeledLineEdit.h"
 #include "QMaemoComboBox.h"
 #include "QMaemoGroupBox.h"
 

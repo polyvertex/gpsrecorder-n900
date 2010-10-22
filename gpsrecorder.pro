@@ -68,6 +68,7 @@ HEADERS += \
   src/LocationFix.h \
   src/LocationGPSRFile.h \
   src/LocationMaemo.h \
+  src/QLabeledLineEdit.h \
   src/QMaemoComboBox.h \
   src/QMaemoGroupBox.h \
   src/Util.h \
@@ -97,6 +98,7 @@ SOURCES += \
   src/LocationFix.cpp \
   src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
+  src/QLabeledLineEdit.cpp \
   src/QMaemoComboBox.cpp \
   src/QMaemoGroupBox.cpp \
   src/Util.cpp \

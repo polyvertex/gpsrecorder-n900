@@ -117,14 +117,14 @@ void WndStart::setupControls (void)
   QPushButton* pBtnStart;
   QString      strOtherLabel;
 
-  m_pTxtTrackName = new QLineEdit();
+  m_pTxtTrackName = new QLabeledLineEdit(tr("TrackName"), "");
   m_pTxtTrackName->setValidator(new QTrackNameValidator);
 
   strOtherLabel = tr("Other : ");
   if (settings.getLastOtherMeansOfTransport().isEmpty())
     strOtherLabel += '?';
   else
-    strOtherLabel += QString("\"%1\"").arg(settings.getLastOtherMeansOfTransport());
+    strOtherLabel += QString("\"%1\"").arg(settings.getLastOtherMeansOfTransport().constData());
 
   m_pCboMeansOfTransport = new QMaemoComboBox(tr("Means of transportation"), this);
   this->connect(m_pCboMeansOfTransport, SIGNAL(sigSelected(int)), SLOT(onSelectedMeansOfTransport(int)));
@@ -174,7 +174,7 @@ void WndStart::setupControls (void)
       "then choose an existing file to append your new track :"));
     pLabel->setWordWrap(true);
 
-    m_pTxtFilePath = new QLineEdit();
+    m_pTxtFilePath = new QLabeledLineEdit(tr("Existing GPSR file path"), "");
     m_pTxtFilePath->setReadOnly(true);
 
     pBtnBrowseFile = new QToolButton();
@@ -268,7 +268,7 @@ void WndStart::onClickedStart (void)
 
   m_bCanceled = false;
 
-  m_strTrackName = m_pTxtTrackName->text();
+  m_strTrackName = m_pTxtTrackName->content();
 
   if (m_eStartMode == STARTMODE_NEWTRACK)
   {
@@ -285,7 +285,7 @@ void WndStart::onClickedStart (void)
   }
   else if (m_eStartMode == STARTMODE_APPENDTRACK)
   {
-    m_strFilePath = m_pTxtFilePath->text();
+    m_strFilePath = m_pTxtFilePath->content();
   }
 
   m_ucMeansOfTransport = (quint8)m_pCboMeansOfTransport->currentItemData().toInt();
