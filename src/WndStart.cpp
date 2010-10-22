@@ -33,6 +33,34 @@
 
 
 //---------------------------------------------------------------------------
+// QTrackNameValidator
+//---------------------------------------------------------------------------
+class QTrackNameValidator : public QValidator
+{
+public :
+  QTrackNameValidator (QObject* pParent=0)
+  : QValidator(pParent)
+  {
+    this->setLocale(QLocale::c());
+  }
+
+  void fixup (QString& strInput) const
+  {
+    strInput.replace(QRegExp("[^A-Za-z0-9_]"), "_");
+  }
+
+  State validate (QString& strInput, int& iPos) const
+  {
+    return
+      strInput.contains(QRegExp("[^A-Za-z0-9_]")) ?
+      QValidator::Invalid :
+      QValidator::Acceptable;
+  }
+};
+
+
+
+//---------------------------------------------------------------------------
 // WndStart
 //---------------------------------------------------------------------------
 WndStart::WndStart (QWidget* pParent/*=0*/)
@@ -251,7 +279,7 @@ void WndStart::onClickedStart (void)
     m_strFilePath = m_pTxtFilePath->text();
   }
 
-  m_ucMeansOfTransport = (quint8)m_pCboMeansOfTransport.currentItemData().toInt();
+  m_ucMeansOfTransport = (quint8)m_pCboMeansOfTransport->currentItemData().toInt();
   if (m_ucMeansOfTransport != GPSRFile::MEANSTRANSPORT_OTHER)
     m_strOtherMeansOfTransport.clear();
 

@@ -49,29 +49,6 @@ public :
     STARTMODE_APPENDTRACK,
   };
 
-  class QTrackNameValidator : public QValidator
-  {
-  public :
-    QTrackNameValidator (QObject* pParent=0)
-    : QValidator(pParent)
-    {
-      this->setLocale(QLocale::c());
-    }
-
-    void fixup (QString& strInput) const
-    {
-      strInput.replace(QRegExp("[^A-Za-z0-9_]"), "_");
-    }
-
-    State validate (QString& strInput, int& iPos) const
-    {
-      return
-        strInput.contains(QRegExp("[^A-Za-z0-9_]")) ?
-        QValidator::Invalid :
-        QValidator::Acceptable;
-    }
-  };
-
 
 public :
   WndStart (QWidget* pParent=0);
