@@ -111,16 +111,16 @@ void WndAbout::createWidgets (void)
   {
     QWidget*     pRootWidget = new QWidget;
     QHBoxLayout* pHBox = new QHBoxLayout;
-    QScrollArea* pScrollArea = new QScrollArea;
 
-    pScrollArea->setWidgetResizable(true);
-    pScrollArea->setWidget(pLblAbout);
-    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pScrollArea->setProperty("FingerScrollable", true);
+    m_pScrollArea = new QScrollArea;
+    m_pScrollArea->setWidgetResizable(true);
+    m_pScrollArea->setWidget(pLblAbout);
+    m_pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_pScrollArea->setProperty("FingerScrollable", true);
 
     pHBox->setSpacing(1);
     pHBox->addWidget(pLblIcon, 0, Qt::AlignLeft | Qt::AlignTop);
-    pHBox->addWidget(pScrollArea);
+    pHBox->addWidget(m_pScrollArea);
 
     pRootWidget->setLayout(pHBox);
 
@@ -174,4 +174,15 @@ void WndAbout::readChangeLog (void)
   }
 
   file.close();
+}
+
+
+
+//---------------------------------------------------------------------------
+// showEvent
+//---------------------------------------------------------------------------
+void WndAbout::showEvent (QShowEvent* pEvent)
+{
+  m_pScrollArea->ensureVisible(0, 0); // scroll to the top
+  WndBase::showEvent(pEvent);
 }

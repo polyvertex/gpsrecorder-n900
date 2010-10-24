@@ -52,8 +52,13 @@ private :
   void readChangeLog (void);
 
 
+protected :
+  void showEvent (QShowEvent* pEvent);
+
+
 private :
   QMap<QString,QString> m_mapChangeLog;
+  QScrollArea*          m_pScrollArea;
 };
 
 
