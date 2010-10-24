@@ -90,7 +90,7 @@ QByteArray Util::timeString (bool bUTC/*=false*/, time_t uiTime/*=0*/, int iSeco
   if (iSecondsOffset != iAppliedOffset)
     iSecondsOffset = iAppliedOffset;
 
-  dt.setTimeSpec(bUTC || iSecondsOffset ? Qt::UTC : Qt::LocalTime);
+  dt.setTimeSpec((bUTC || iSecondsOffset) ? Qt::UTC : Qt::LocalTime);
   dt.setTime_t(uiTime);
 
   return QByteArray(dt.toString("yyyy-MM-dd hh:mm:ss").toLatin1());
