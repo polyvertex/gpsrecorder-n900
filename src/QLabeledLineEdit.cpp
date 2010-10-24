@@ -131,7 +131,7 @@ void QLabeledLineEdit::keyPressEvent (QKeyEvent* pKeyEvent)
 //---------------------------------------------------------------------------
 void QLabeledLineEdit::focusOutEvent (QFocusEvent* pFocusEvent)
 {
-  pFocusEvent->accept();
+  pFocusEvent->accept(); // not sure if it is required...
   this->updateDisplay();
   QLineEdit::focusOutEvent(pFocusEvent);
 }

@@ -129,13 +129,15 @@ public :
   bool openAppend (const char* pszFile, const char* pszTrackName);
   bool openRead   (const char* pszFile); // implicit call to seekFirst()
 
-  bool              isOpen    (void) const { return m_pFile != 0; }
-  bool              isWriting (void) const { return m_bWriting; }
-  bool              isError   (void) const { return m_bError; }
-  bool              isEOF     (void) const { return m_bEOF; }
-  const QByteArray& getPath   (void) const { return m_strFilePath; }
+  bool              isOpen      (void) const { return m_pFile != 0; }
+  bool              isWriting   (void) const { return m_bWriting; }
+  bool              isAppending (void) const { return m_bWriting && (m_uiAppendOffset > 0); }
+  bool              isError     (void) const { return m_bError; }
+  bool              isEOF       (void) const { return m_bEOF; }
+  const QByteArray& getPath     (void) const { return m_strFilePath; }
 
-  void close (void);
+  void close               (void);
+  bool discardedAfterClose (void) const { return !m_pFile && m_bDiscardAfterClose; }
 
   void writeMessage          (time_t uiTime, const char* pszMessage);
   void writeLocationFix      (time_t uiTime, const LocationFixContainer& fixCont);
@@ -188,10 +190,12 @@ private :
 private :
   FILE*      m_pFile;
   QByteArray m_strFilePath;
+  bool       m_bDiscardAfterClose;
   bool       m_bWriting;
+  uint       m_uiAppendOffset; // if writing in 'append' mode, this indicates the size of valid prepending data
   bool       m_bError;
-  bool       m_bEOF;        // only used in 'read' mode
-  bool       m_bIncomplete; // only used in 'read' mode
+  bool       m_bEOF;           // only used in 'read' mode
+  bool       m_bIncomplete;    // only used in 'read' mode
   QByteArray m_Swap;
 
   // 'read' mode state

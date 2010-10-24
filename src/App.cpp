@@ -474,19 +474,21 @@ void App::closeGPSRFile (void)
     }
     else
     {
-      QByteArray strPath;
+      QByteArray strPath(m_GPSRFile.getPath());
+      bool bAppend = m_GPSRFile.isAppending();
 
-      strPath = m_GPSRFile.getPath();
       m_GPSRFile.close();
 
-      if (!m_uiFixesWritten)
+      if (m_GPSRFile.discardedAfterClose())
       {
-        QMaemo5InformationBox::information(
-          m_pWndMain,
-          tr("Deleting track file because nothing was written in it !"),
-          5000);
-        qDebug("Deleting %s because nothing was written in it.", strPath.constData());
-        QFile::remove(strPath);
+        QString strMsg;
+
+        if (bAppend)
+          strMsg = tr("Removed track data from this file because no location fix was received while recording !");
+        else
+          strMsg = tr("Deleted track file because no location fix was received while recording !");
+
+        QMaemo5InformationBox::information(m_pWndMain, strMsg, 5000);
       }
     }
   }

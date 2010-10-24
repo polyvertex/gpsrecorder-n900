@@ -90,15 +90,15 @@ bool WndStart::doExec (void)
 {
   QMessageBox::StandardButton eBtn = QMessageBox::question(
     static_cast<QWidget*>(this->parent()),
-    tr("Append to a file ?"),
-    tr("Do you want to append your track to an existing GPSR file instead of creating a new file ?"),
+    tr("Create a new file ?"),
+    tr("Do you want to create a new file for your track ?\nIf you answer No, your track will be appended to an existing GPSR file of your choice."),
     QMessageBox::Yes | QMessageBox::No,
     QMessageBox::No);
 
   m_eStartMode =
     (eBtn == QMessageBox::Yes) ?
-    STARTMODE_APPENDTRACK :
-    STARTMODE_NEWTRACK;
+    STARTMODE_NEWTRACK :
+    STARTMODE_APPENDTRACK;
 
   this->setupControls();
   this->exec();
@@ -122,9 +122,14 @@ void WndStart::setupControls (void)
 
   strOtherLabel = tr("Other : ");
   if (settings.getLastOtherMeansOfTransport().isEmpty())
+  {
     strOtherLabel += '?';
+  }
   else
-    strOtherLabel += QString("\"%1\"").arg(settings.getLastOtherMeansOfTransport().constData());
+  {
+    m_strOtherMeansOfTransport = settings.getLastOtherMeansOfTransport();
+    strOtherLabel += QString("\"%1\"").arg(qPrintable(m_strOtherMeansOfTransport));
+  }
 
   m_pCboMeansOfTransport = new QMaemoComboBox(tr("Means of transportation"), this);
   this->connect(m_pCboMeansOfTransport, SIGNAL(sigSelected(int)), SLOT(onSelectedMeansOfTransport(int)));
@@ -266,8 +271,6 @@ void WndStart::onClickedStart (void)
 {
   AppSettings& settings = *App::instance()->settings();
 
-  m_bCanceled = false;
-
   m_strTrackName = m_pTxtTrackName->content();
 
   if (m_eStartMode == STARTMODE_NEWTRACK)
@@ -286,11 +289,19 @@ void WndStart::onClickedStart (void)
   else if (m_eStartMode == STARTMODE_APPENDTRACK)
   {
     m_strFilePath = m_pTxtFilePath->content();
+    if (m_strFilePath.isEmpty())
+    {
+      QMaemo5InformationBox::information(
+        this,
+        tr("You must choose an existing GPSR file to append your track !"));
+      return;
+    }
   }
 
   m_ucMeansOfTransport = (quint8)m_pCboMeansOfTransport->currentItemData().toInt();
   if (m_ucMeansOfTransport != GPSRFile::MEANSTRANSPORT_OTHER)
     m_strOtherMeansOfTransport.clear();
 
+  m_bCanceled = false;
   this->done(0);
 }

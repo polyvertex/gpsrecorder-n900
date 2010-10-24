@@ -43,10 +43,12 @@ GPSRFile::GPSRFile (void)
 {
   m_pFile = 0;
 
-  m_bWriting    = false;
-  m_bError      = false;
-  m_bEOF        = false;
-  m_bIncomplete = false;
+  m_bDiscardAfterClose = false;
+  m_bWriting           = false;
+  m_uiAppendOffset     = 0;
+  m_bError             = false;
+  m_bEOF               = false;
+  m_bIncomplete        = false;
 
   m_bDiscoveryRead = false;
   m_nReadIndex     = -1;
@@ -69,18 +71,56 @@ void GPSRFile::close (void)
 {
   if (m_pFile)
   {
-    qDebug("Closing GPSR file %s", m_strFilePath.constData());
+    if (m_bWriting && m_bDiscardAfterClose)
+    {
+      if (m_uiAppendOffset > 0)
+      {
+        // here, we want to truncate this file since no location fix was
+        // written in it. file is not deleted because we are writing in
+        // 'append' mode so we want to restore the file as it was before
+        // we opened it.
 
-    fclose(m_pFile);
-    m_pFile = 0;
+        qDebug("Truncating %s because track was inconsistent (no location fix) !", m_strFilePath.constData());
+        rewind(m_pFile);
+        if (ftruncate(fileno(m_pFile), m_uiAppendOffset) != 0)
+          qWarning("Failed to truncate %s at offset %u ! Error %d : %s", m_strFilePath.constData(), m_uiAppendOffset, errno, strerror(errno));
+
+        fclose(m_pFile);
+        m_pFile = 0;
+      }
+      else
+      {
+        // here, we want to delete this file since no location fix was
+        // written in it.
+
+        qDebug("Deleting %s because track was inconsistent (no location fix) !", m_strFilePath.constData());
+        fclose(m_pFile);
+        m_pFile = 0;
+        QFile::remove(m_strFilePath);
+      }
+    }
+
+    if (m_pFile)
+    {
+      qDebug("Closing %s", m_strFilePath.constData());
+      fclose(m_pFile);
+      m_pFile = 0;
+    }
   }
 
+  m_pFile = 0;
   m_strFilePath.clear();
 
-  m_bWriting    = false;
-  m_bError      = false;
-  m_bEOF        = false;
-  m_bIncomplete = false;
+  // we do not reset the m_bDiscardAfterClose flag because it can be read
+  // between a close() and an open*() calls with the discardedAfterClose()
+  // method.
+  //m_bDiscardAfterClose = false;
+
+  m_bWriting          = false;
+  m_uiAppendOffset    = 0;
+  m_bError            = false;
+  m_bEOF              = false;
+  m_bIncomplete       = false;
 
   m_bDiscoveryRead = false;
   m_nReadIndex     = -1;
@@ -110,9 +150,11 @@ bool GPSRFile::openNew (const char* pszFile, const char* pszTrackName, bool bFor
     return false;
   }
 
-  m_strFilePath = pszFile;
-  m_bWriting    = true;
-  m_bError      = false;
+  m_strFilePath        = pszFile;
+  m_bDiscardAfterClose = true;
+  m_bWriting           = true;
+  m_uiAppendOffset     = 0;
+  m_bError             = false;
 
   // write header
   {
@@ -135,7 +177,7 @@ bool GPSRFile::openNew (const char* pszFile, const char* pszTrackName, bool bFor
   // write 'new track' chunk
   this->writeNewTrack(time(0), pszTrackName);
 
-  qDebug("Created GPSR file %s", pszFile);
+  qDebug("Created %s", pszFile);
 
   return true;
 }
@@ -206,14 +248,16 @@ bool GPSRFile::openAppend (const char* pszFile, const char* pszTrackName)
   }
 
   // init members
-  m_strFilePath = pszFile;
-  m_bWriting    = true;
-  m_bError      = false;
+  m_strFilePath        = pszFile;
+  m_bDiscardAfterClose = true;
+  m_bWriting           = true;
+  m_uiAppendOffset     = uiValidSize;
+  m_bError             = false;
 
   // write 'new track' chunk
   this->writeNewTrack(time(0), pszTrackName);
 
-  qDebug("Appending to GPSR file %s", pszFile);
+  qDebug("Appending to %s", pszFile);
 
   return true;
 }
@@ -238,13 +282,15 @@ bool GPSRFile::openRead (const char* pszFile)
     qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
-  qDebug("Opened  GPSR file %s", pszFile);
+  qDebug("Opened %s", pszFile);
 
   // setup members
-  m_strFilePath = pszFile;
-  m_bWriting    = false;
-  m_bError      = false;
-  m_bEOF        = false;
+  m_strFilePath        = pszFile;
+  m_bDiscardAfterClose = false;
+  m_bWriting           = false;
+  m_uiAppendOffset     = 0;
+  m_bError             = false;
+  m_bEOF               = false;
 
   // first, silently read the entire file in one pass to discover its content
   // and to give us the ability to navigate easily through chunks
@@ -308,6 +354,10 @@ void GPSRFile::writeLocationFix (time_t uiTime, const LocationFixContainer& fixC
   memcpy(pChunk->aData, fixCont.getFix(), fixCont.getFixSize());
 
   this->writeData((char*)pChunk, uiChunkSize);
+
+  // this tells to the close() method not to delete or discard this track
+  // because it is now consistent since we've got at least one location fix
+  m_bDiscardAfterClose = false;
 }
 
 //---------------------------------------------------------------------------
@@ -391,7 +441,7 @@ void GPSRFile::writeMeansOfTransport (time_t uiTime, quint8 ucMeansOfTransport, 
   // 1-var : asciiz, optional label
   pChunk->aData[0] = ucMeansOfTransport;
   if (pszOptionalLabel)
-    memcpy((char*)pChunk->aData[1], pszOptionalLabel, strlen(pszOptionalLabel) + 1);
+    memcpy((char*)&pChunk->aData[1], pszOptionalLabel, strlen(pszOptionalLabel) + 1);
   else
     pChunk->aData[1] = 0;
 
@@ -431,7 +481,7 @@ bool GPSRFile::seekFirst (void)
   m_nReadIndex = -1;
 
   // prepare swap buffer
-  m_Swap.reserve(sizeof(*pHeader) +1);
+  m_Swap.reserve(sizeof(*pHeader) + 1);
   pHeader = (Header*)m_Swap.data();
 
   // read file header
@@ -764,6 +814,9 @@ bool GPSRFile::readSize (char* pOutData, uint uiExpectedSize, bool bIsFileHeader
 
         if (uiRes == 0 && uiRead == 0)
         {
+          if (bIsFileHeader)
+            qWarning("Empty GPSR file %s !", m_strFilePath.constData());
+
           if (!m_bDiscoveryRead)
             emit sigReadEOF(this);
         }

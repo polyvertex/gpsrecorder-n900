@@ -154,7 +154,6 @@ private :
   time_t m_uiSystemTimeSetup; // last time the system time has been setup
 
   GPSRFile m_GPSRFile;
-  bool     m_bVirginOutput;
   uint     m_uiFixesWritten;
   time_t   m_uiLastFixWrite;
 };
