@@ -39,6 +39,31 @@
 //---------------------------------------------------------------------------
 // GPSRFile
 //---------------------------------------------------------------------------
+static const struct
+{
+  quint16     id;
+  const char* label;
+}
+CHUNKNAMES[] =
+{
+  { GPSRFile::CHUNK_MESSAGE,          "Message" },
+  { GPSRFile::CHUNK_LOCATIONFIX,      "LocationFix" },
+  { GPSRFile::CHUNK_LOCATIONFIX_LOST, "LocationFixLost" },
+  { GPSRFile::CHUNK_SNAP,             "Snap" },
+  { GPSRFile::CHUNK_NAMEDSNAP,        "NamedSnap" },
+  { GPSRFile::CHUNK_PAUSED,           "Paused" },
+  { GPSRFile::CHUNK_RESUMED,          "Resumed" },
+  { GPSRFile::CHUNK_NEWTRACK,         "NewTrack" },
+  { GPSRFile::CHUNK_MEANSTRANSPORT,   "MeansOfTransportation" },
+};
+
+static const int CHUNKNAMES_COUNT = sizeof(CHUNKNAMES) / sizeof(CHUNKNAMES[0]);
+
+
+
+//---------------------------------------------------------------------------
+// GPSRFile
+//---------------------------------------------------------------------------
 GPSRFile::GPSRFile (void)
 {
   m_pFile = 0;
@@ -102,7 +127,8 @@ void GPSRFile::close (void)
 
     if (m_pFile)
     {
-      qDebug("Closing %s", m_strFilePath.constData());
+      if (m_bWriting)
+        qDebug("Closing %s", m_strFilePath.constData());
       fclose(m_pFile);
       m_pFile = 0;
     }
@@ -205,7 +231,7 @@ bool GPSRFile::openAppend (const char* pszFile, const char* pszTrackName)
 
     if (gpsrfile.getReadChunksCount() > 0)
     {
-      const ChunkReadInfo& criLast = gpsrfile.getReadChunksInfo()[gpsrfile.getReadChunksCount() - 1];
+      const ChunkReadInfo& criLast = gpsrfile.getReadChunksInfo().last();
       uiValidSize = criLast.uiOffset + criLast.uiSize;
     }
 
@@ -282,7 +308,7 @@ bool GPSRFile::openRead (const char* pszFile)
     qWarning("Could not open %s ! Error %d : %s", pszFile, errno, strerror(errno));
     return false;
   }
-  qDebug("Opened %s", pszFile);
+  //qDebug("Opened %s", pszFile);
 
   // setup members
   m_strFilePath        = pszFile;
@@ -673,19 +699,27 @@ bool GPSRFile::readChunk (int nChunkIndex)
 
 
 //---------------------------------------------------------------------------
-// getReadChunksCount
+// chunksCount
 //---------------------------------------------------------------------------
-int GPSRFile::getReadChunksCount (quint16 uiChunkId) const
+int GPSRFile::chunksCount (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId)
 {
   int nCount = 0;
 
-  for (int i = 0; i < m_vecReadChunks.count(); ++i)
+  for (int i = 0; i < vecChunks.count(); ++i)
   {
-    if (m_vecReadChunks[i].uiId == uiChunkId)
+    if (vecChunks[i].uiId == uiChunkId)
       ++nCount;
   }
 
   return nCount;
+}
+
+//---------------------------------------------------------------------------
+// getReadChunksCount
+//---------------------------------------------------------------------------
+int GPSRFile::getReadChunksCount (quint16 uiChunkId) const
+{
+  return GPSRFile::chunksCount(m_vecReadChunks, uiChunkId);
 }
 
 
@@ -861,4 +895,198 @@ void GPSRFile::signalReadError (Error eError)
 {
   m_bError = true;
   emit sigReadError(this, eError);
+}
+
+
+
+//---------------------------------------------------------------------------
+// chunkIdToLabel
+//---------------------------------------------------------------------------
+const char* GPSRFile::chunkIdToLabel (quint16 uiChunkId)
+{
+  static const char* c_pszUnknown = "?";
+
+  for (int i = 0; i < CHUNKNAMES_COUNT; ++i)
+  {
+    if (CHUNKNAMES[i].id == uiChunkId)
+      return CHUNKNAMES[i].label;
+  }
+
+  return c_pszUnknown;
+}
+
+//---------------------------------------------------------------------------
+// cleanupIncomplete
+//---------------------------------------------------------------------------
+bool GPSRFile::cleanupIncomplete (const char* pszFile)
+{
+  GPSRFile gpsrFile;
+  uint     uiValidSize = 0;
+
+  if (!gpsrFile.openRead(pszFile))
+    return false;
+
+  if (gpsrFile.getReadChunksCount(GPSRFile::CHUNK_LOCATIONFIX) > 0)
+  {
+    const ChunkReadInfo& criLast = gpsrFile.getReadChunksInfo().last();
+    uiValidSize = criLast.uiOffset + criLast.uiSize;
+  }
+
+  gpsrFile.close();
+
+  if (uiValidSize > 0)
+  {
+    // here, file is incomplete and just need to be truncated so only valid
+    // data remains in file.
+
+    if (!QFile::resize(pszFile, (qint64)uiValidSize))
+    {
+      qWarning("Failed to truncate incomplete file %s !", pszFile);
+      return false;
+    }
+
+    qDebug("Truncated incomplete file %s !", pszFile);
+  }
+  else
+  {
+    // here, delete file because it is empty or does not contains any
+    // location fix.
+
+    if (!QFile::remove(pszFile))
+    {
+      qWarning("Failed to delete empty file %s !", pszFile);
+      return false;
+    }
+
+    qDebug("Deleted empty file %s !", pszFile);
+  }
+
+  return true;
+}
+
+//---------------------------------------------------------------------------
+// dump
+//---------------------------------------------------------------------------
+bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocationFix)
+{
+  QVector<ChunkReadInfo>         vecChunks;
+  QVectorIterator<ChunkReadInfo> itChunk(vecChunks);
+  bool       bReturn = false;
+  QFile*     pFile = 0;
+  QByteArray swap;
+  qint64     iRes;
+  uint       uiSkippedFix;
+
+  strDump.clear();
+
+  // validate file and truncate it if it is incomplete
+  if (!GPSRFile::cleanupIncomplete(pszFile))
+    return false;
+
+  // read entire file to get list of chunks
+  {
+    GPSRFile gpsrFile;
+    if (gpsrFile.openRead(pszFile))
+      vecChunks = gpsrFile.getReadChunksInfo();
+    if (vecChunks.isEmpty())
+      return false;
+  }
+
+  // open file
+  pFile = new QFile(pFile);
+  if (!pFile)
+    return false;
+  if (!pFile->open(QIODevice::ReadOnly))
+    goto __end;
+
+  // dump header
+  {
+    Header* pHeader;
+
+    swap.reserve(sizeof(*pHeader) + 1);
+    pHeader = (Header*)swap.data();
+
+    iRes = pFile->read((char*)pHeader, sizeof(*pHeader));
+    if (iRes != sizeof(*pHeader))
+      goto __end;
+
+    strDump = QString(
+      "Header :\n"
+      "\tFile           %1\n"
+      "\tFormat         %2\n"
+      "\tTime           %3 UTC (%4)\n" )
+      .arg(pszFile)
+      .arg((int)pHeader->ucFormat)
+      .arg(Util::timeString(true, pHeader->uiTime).constData())
+      .arg(pHeader->uiTime);
+
+    if (pHeader->ucFormat >= 1)
+    {
+      strDump +=
+        QString("\tTimeZoneOffset %1\n")
+        .arg(pHeader->iTimeZoneOffset);
+    }
+
+    strDump += "\n";
+  }
+
+  // dump chunks statistics
+  strDump += QString(
+    "Chunks statistics :\n"
+    "\t%1 %2\n")
+    .arg("Total", 25)
+    .arg(vecChunks.size());
+  for (int i = 0; i < CHUNKNAMES_COUNT; ++i)
+  {
+    strDump +=
+      QString("\t%1 %2\n")
+      .arg(CHUNKNAMES[i].label, 25)
+      .arg(GPSRFile::chunksCount(vecChunks, CHUNKNAMES[i].id));
+  }
+  strDump += "\n";
+
+  // dump chunks
+  itChunk.toFront();
+  uiSkippedFix = 0;
+  while (itChunk.hasNext())
+  {
+    const ChunkReadInfo& cri = itChunk.next();
+
+    // skip location fix if we don't want it
+    if (cri.uiId == CHUNK_LOCATIONFIX)
+    {
+      ++uiSkippedFix;
+      if (!bIncludeLocationFix)
+        continue;
+    }
+    else if (!bIncludeLocationFix && (uiSkippedFix > 0))
+    {
+      strDump +=
+        QString("Skipped %1 LocationFix chunks.\n\n")
+        .arg(uiSkippedFix);
+      uiSkippedFix = 0;
+    }
+
+    // chunk header
+    strDump += QString(
+      "Chunk %1 (%2) :\n"
+      "\tOffset %3\n"
+      "\tSize   %4\n"
+      "\tTime   %5 UTC (%6)\n"
+      "\n")
+      .arg(GPSRFile::chunkIdToLabel(cri.uiId))
+      .arg((uint)cri.uiId)
+      .arg(cri.uiOffset)
+      .arg(cri.uiSize)
+      .arg(Util::timeString(true, cri.uiTime).constData())
+      .arg(cri.uiTime);
+  }
+
+  strDump += "EOF\n";
+  bReturn = true;
+
+__end :
+  if (pFile)
+    delete pFile;
+  return bReturn;
 }

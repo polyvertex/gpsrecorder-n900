@@ -64,6 +64,9 @@ public :
     FORMAT_VERSION_V3 = 0x03,
     FORMAT_VERSION    = FORMAT_VERSION_V3, // current format version
 
+    // CAUTION : Do not forget to modify the CHUNKNAMES structure and the
+    // GPSRFile::dump() method in source file according to your changes
+    // here !
     CHUNK_MESSAGE          = 10, // asciiz message (usually a log/event message)
     CHUNK_LOCATIONFIX      = 20, // LocationFix structure (only its storage zone)
     CHUNK_LOCATIONFIX_LOST = 21, // Lost GPS fix
@@ -126,6 +129,10 @@ public :
   GPSRFile (void);
   ~GPSRFile (void);
 
+  static const char* chunkIdToLabel    (quint16 uiChunkId);
+  static bool        cleanupIncomplete (const char* pszFile);
+  static bool        dump              (const char* pszFile, QString& strDump, bool bIncludeLocationFix);
+
   bool openNew    (const char* pszFile, const char* pszTrackName, bool bForceReplace);
   bool openAppend (const char* pszFile, const char* pszTrackName);
   bool openRead   (const char* pszFile); // implicit call to seekFirst()
@@ -186,6 +193,8 @@ private :
   void writeData        (const char* pData, uint uiSize);
   bool readSize         (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
   void signalReadError  (Error eError);
+
+  static int chunksCount (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId);
 
 
 private :
