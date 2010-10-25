@@ -61,7 +61,8 @@ public :
     FORMAT_VERSION_V0 = 0x00,
     FORMAT_VERSION_V1 = 0x01,
     FORMAT_VERSION_V2 = 0x02,
-    FORMAT_VERSION    = FORMAT_VERSION_V2, // current format version
+    FORMAT_VERSION_V3 = 0x03,
+    FORMAT_VERSION    = FORMAT_VERSION_V3, // current format version
 
     CHUNK_MESSAGE          = 10, // asciiz message (usually a log/event message)
     CHUNK_LOCATIONFIX      = 20, // LocationFix structure (only its storage zone)
