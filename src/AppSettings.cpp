@@ -449,7 +449,7 @@ void AppSettings::setCsvSeparator (char cSep)
 
 char AppSettings::getCsvSeparator (void)
 {
-  QVariant var = m_Settings.value(SETTINGNAME_KML_LINECOLOR);
+  QVariant var = m_Settings.value(SETTINGNAME_CSV_SEPARATOR);
   if (var.canConvert(QVariant::Char))
   {
     char c = var.toChar().toAscii();
