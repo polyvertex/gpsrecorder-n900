@@ -486,7 +486,7 @@ void App::closeGPSRFile (void)
         if (bAppend)
           strMsg = tr("Removed track data from this file because no location fix was received while recording !");
         else
-          strMsg = tr("Deleted track file because no location fix was received while recording !");
+          strMsg = tr("File was deleted because no location fix was received while recording !");
 
         QMaemo5InformationBox::information(m_pWndMain, strMsg, 5000);
       }

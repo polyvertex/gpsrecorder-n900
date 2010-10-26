@@ -41,14 +41,26 @@
 // This is a utility class to allow displaying a grayed out dummy label when
 // the 'real' content is empty.
 // As soon as user is typing something in this widget, the label will vanish
-// to let real content to be displayed.
+// to let real content being displayed.
 // This works barely like 'search' input controls on some websites except for
 // the fact that dummy content do not vanish when widget gains focus : only
 // when content is not empty.
 //
-// CAUTION : To ensure you get the content value, you *must* use the
-// content() method instead of the regular QLineEdit::text() method because
-// the latest will sometimes return the label() value !
+// CAUTION :
+// To ensure you get the content value, you *must* use the content() method
+// instead of the regular QLineEdit::text() method because the latest will
+// sometimes return the label() value !
+//
+// KNOWN BUGS/LIMITATIONS :
+// This class is a bit hacky and Qt does not seem to properly support the way
+// it works. I observed some weird behavior at runtime and I don't know Qt
+// enough to know how/where to correct those problems :
+// * Auto-capitalization does not work when it is activated from OS'
+//   settings.
+// * Sometimes, cursor cannot be completely moved to the beginning of the
+//   content using arrow keys.
+// * 'Greyed' color is hard-coded and does not reflect global theme colors
+//   since I don't know how to get global theme settings.
 //---------------------------------------------------------------------------
 class QLabeledLineEdit : public QLineEdit
 {
