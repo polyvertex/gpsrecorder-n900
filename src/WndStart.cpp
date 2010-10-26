@@ -122,35 +122,11 @@ void WndStart::setupControls (void)
 {
   AppSettings& settings = *App::instance()->settings();
   QPushButton* pBtnStart;
-  QString      strOtherLabel;
 
   m_pTxtTrackName = new QLabeledLineEdit(tr("TrackName"), "");
   m_pTxtTrackName->setValidator(new QTrackNameValidator);
 
-  strOtherLabel = tr("Other : ");
-  if (settings.getLastOtherMeansOfTransport().isEmpty())
-  {
-    strOtherLabel += '?';
-  }
-  else
-  {
-    m_strOtherMeansOfTransport = settings.getLastOtherMeansOfTransport();
-    strOtherLabel += QString("\"%1\"").arg(qPrintable(m_strOtherMeansOfTransport));
-  }
-
-  m_pCboMeansOfTransport = new QMaemoComboBox(tr("Means of transportation"), this);
-  this->connect(m_pCboMeansOfTransport, SIGNAL(sigSelected(int)), SLOT(onSelectedMeansOfTransport(int)));
-  m_pCboMeansOfTransport->setValueLayout(QMaemo5ValueButton::ValueUnderText);
-  m_pCboMeansOfTransport->addItem(tr("N/A"),       (int)0);
-  m_pCboMeansOfTransport->addItem(tr("Foot"),      (int)GPSRFile::MEANSTRANSPORT_FOOT);
-  m_pCboMeansOfTransport->addItem(tr("Roller"),    (int)GPSRFile::MEANSTRANSPORT_ROLLER);
-  m_pCboMeansOfTransport->addItem(tr("Bike"),      (int)GPSRFile::MEANSTRANSPORT_BIKE);
-  m_pCboMeansOfTransport->addItem(tr("Motorbike"), (int)GPSRFile::MEANSTRANSPORT_MOTORBIKE);
-  m_pCboMeansOfTransport->addItem(tr("Car"),       (int)GPSRFile::MEANSTRANSPORT_CAR);
-  m_pCboMeansOfTransport->addItem(tr("Boat"),      (int)GPSRFile::MEANSTRANSPORT_BOAT);
-  m_pCboMeansOfTransport->addItem(tr("Plane"),     (int)GPSRFile::MEANSTRANSPORT_PLANE);
-  m_pCboMeansOfTransport->addItem(strOtherLabel,   (int)GPSRFile::MEANSTRANSPORT_OTHER);
-  m_pCboMeansOfTransport->setCurrentIndex(0);
+  m_pCboMeansOfTransport = new QMeansOfTransportation(this);
 
   pBtnStart = new QPushButton(tr("Start"));
   this->connect(pBtnStart, SIGNAL(clicked()), SLOT(onClickedStart()));
@@ -226,52 +202,6 @@ void WndStart::onClickedBrowseFile (void)
 }
 
 //---------------------------------------------------------------------------
-// onSelectedMeansOfTransport
-//---------------------------------------------------------------------------
-void WndStart::onSelectedMeansOfTransport (int iIndex)
-{
-  static int iLastIndex = -1;
-
-  if (m_pCboMeansOfTransport->itemData(iIndex).toInt() == (int)GPSRFile::MEANSTRANSPORT_OTHER)
-  {
-    // here, user wants to specify its own means of transportation
-
-    QString strInput;
-    bool bOk = false;
-
-    strInput = QInputDialog::getText(
-      this,
-      tr("Name ?"),
-      tr("Please enter your means of transportation or leave blank :"),
-      QLineEdit::Normal,
-      m_strOtherMeansOfTransport,
-      &bOk);
-
-    if (bOk)
-    {
-      AppSettings& settings = *App::instance()->settings();
-
-      // reformat input string
-      settings.setLastOtherMeansOfTransport(qPrintable(strInput));
-      m_strOtherMeansOfTransport = settings.getLastOtherMeansOfTransport();
-
-      m_pCboMeansOfTransport->setItemText(
-        iIndex,
-        tr("Other : ") +
-        QString(" \"") +
-        m_strOtherMeansOfTransport +
-        QString("\""));
-    }
-    else if (iLastIndex >= 0)
-    {
-      m_pCboMeansOfTransport->setCurrentIndex(iLastIndex);
-    }
-  }
-
-  iLastIndex = iIndex;
-}
-
-//---------------------------------------------------------------------------
 // onClickedStart
 //---------------------------------------------------------------------------
 void WndStart::onClickedStart (void)
@@ -305,9 +235,8 @@ void WndStart::onClickedStart (void)
     }
   }
 
-  m_ucMeansOfTransport = (quint8)m_pCboMeansOfTransport->currentItemData().toInt();
-  if (m_ucMeansOfTransport != GPSRFile::MEANSTRANSPORT_OTHER)
-    m_strOtherMeansOfTransport.clear();
+  m_ucMeansOfTransport       = m_pCboMeansOfTransport->getMeansOfTransportation();
+  m_strOtherMeansOfTransport = m_pCboMeansOfTransport->getOtherMeansOfTransportation();
 
   m_bCanceled = false;
   this->done(0);

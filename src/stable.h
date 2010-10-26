@@ -180,6 +180,7 @@ class ExporterSink;
 #include "QLabeledLineEdit.h"
 #include "QMaemoComboBox.h"
 #include "QMaemoGroupBox.h"
+#include "QMeansOfTransportation.h"
 
 #include "Util.h"
 #include "LocationFix.h"

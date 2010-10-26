@@ -23,73 +23,35 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-10-20 18:33:21
+// Created On : 2010-10-26 17:13:01
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDSTART_H__
-#define __WNDSTART_H__
+#ifndef __QMEANSOFTRANSPORTATION_H__
+#define __QMEANSOFTRANSPORTATION_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndStart
+// QMeansOfTransportation
 //---------------------------------------------------------------------------
-class WndStart : public QDialog
+class QMeansOfTransportation : public QMaemoComboBox
 {
   Q_OBJECT
 
 public :
-  enum StartMode
-  {
-    STARTMODE_NEWTRACK,
-    STARTMODE_APPENDTRACK,
-  };
+  QMeansOfTransportation (QWidget* pParent=0);
 
-
-public :
-  WndStart (QWidget* pParent=0);
-  virtual ~WndStart (void);
-
-  // run dialog
-  // use this method instead of QDialog::exec() !
-  bool doExec (void);
-
-  // result available for all start modes
-  StartMode      startMode                 (void) const { return m_eStartMode; }
-  const QString& trackName                 (void) const { return m_strTrackName; }
-  const QString& filePath                  (void) const { return m_strFilePath; }
-  quint8         meansOfTransport          (void) const { return m_ucMeansOfTransport; }
-  const QString& otherMeansOfTransportName (void) const { return m_strOtherMeansOfTransport; }
-
-
-private :
-  void setupControls (void);
-
+  bool    setMeansOfTransportation      (quint8 ucMeansOfTransportation);
+  quint8  getMeansOfTransportation      (void);
+  QString getOtherMeansOfTransportation (void);
 
 private slots :
-  void onClickedBrowseFile (void);
-  void onClickedStart      (void);
-
-
-private :
-  StartMode m_eStartMode;
-
-  // result
-  bool    m_bCanceled;
-  QString m_strTrackName;
-  QString m_strFilePath;
-  quint8  m_ucMeansOfTransport;
-  QString m_strOtherMeansOfTransport;
-
-  // dialog widgets
-  QLabeledLineEdit*       m_pTxtTrackName;
-  QMeansOfTransportation* m_pCboMeansOfTransport;
-  QLabeledLineEdit*       m_pTxtFilePath;
+  void onSelected (int iIndex);
 };
 
 
-#endif // #ifndef __WNDSTART_H__
+#endif // #ifndef __QMEANSOFTRANSPORTATION_H__

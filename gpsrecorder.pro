@@ -72,6 +72,7 @@ HEADERS += \
   src/QLabeledLineEdit.h \
   src/QMaemoComboBox.h \
   src/QMaemoGroupBox.h \
+  src/QMeansOfTransportation.h \
   src/Util.h \
   src/WndAbout.h \
   src/WndBase.h \
@@ -103,6 +104,7 @@ SOURCES += \
   src/QLabeledLineEdit.cpp \
   src/QMaemoComboBox.cpp \
   src/QMaemoGroupBox.cpp \
+  src/QMeansOfTransportation.cpp \
   src/Util.cpp \
   src/WndAbout.cpp \
   src/WndBase.cpp \
