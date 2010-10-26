@@ -92,16 +92,23 @@ bool WndStart::doExec (void)
     static_cast<QWidget*>(this->parent()),
     tr("Create a new file ?"),
     tr("Do you want to create a new file for your track ?\nIf you answer No, your track will be appended to an existing GPSR file of your choice."),
-    QMessageBox::Yes | QMessageBox::No,
-    QMessageBox::No);
+    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+    QMessageBox::Cancel);
 
-  m_eStartMode =
-    (eBtn == QMessageBox::Yes) ?
-    STARTMODE_NEWTRACK :
-    STARTMODE_APPENDTRACK;
+  if (eBtn == QMessageBox::Cancel)
+  {
+    m_bCanceled = true;
+  }
+  else
+  {
+    m_eStartMode =
+      (eBtn == QMessageBox::Yes) ?
+      STARTMODE_NEWTRACK :
+      STARTMODE_APPENDTRACK;
 
-  this->setupControls();
-  this->exec();
+    this->setupControls();
+    this->exec();
+  }
 
   return m_bCanceled ? false : true;
 }
