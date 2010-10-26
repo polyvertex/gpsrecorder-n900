@@ -204,6 +204,8 @@ class ExporterSink;
 #include "WndSpeed.h"
 #include "WndStart.h"
 #include "WndMain.h"
+#include "WndMeansOfTransportation.h"
+
 #include "AppSettings.h"
 #include "App.h"
 

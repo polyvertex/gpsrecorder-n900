@@ -80,6 +80,7 @@ HEADERS += \
   src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h \
+  src/WndMeansOfTransportation.h \
   src/WndSat.h \
   src/WndSpeed.h \
   src/WndStart.h
@@ -112,6 +113,7 @@ SOURCES += \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp \
+  src/WndMeansOfTransportation.cpp \
   src/WndSat.cpp \
   src/WndSpeed.cpp \
   src/WndStart.cpp
