@@ -51,6 +51,7 @@ public :
   static QByteArray timeStringIso8601     (bool bUTC=false, time_t uiTime=0, int iSecondsOffset=0);
   static QByteArray timeStringForFileName (time_t uiTime=0);
   static int        timeDiff              (uint uiTimeOld, uint uiTimeNew, bool bAbsolute=false);
+  static QByteArray timeDiffHuman         (uint uiDiffSeconds);
   static time_t     timeApplyOffset       (int iSecondsOffset, time_t uiTime=0, int* piAppliedOffset=0);
   static bool       timeSetup             (uint uiNewTime, int* pnTimeDiff=0);
   static int        timeZoneOffset        (void); // current time zone

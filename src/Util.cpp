@@ -142,6 +142,36 @@ int Util::timeDiff (uint uiOldTime, uint uiNewTime, bool bAbsolute/*=false*/)
 }
 
 //---------------------------------------------------------------------------
+// timeDiffHuman
+//---------------------------------------------------------------------------
+QByteArray Util::timeDiffHuman (uint uiDiffSeconds)
+{
+  QByteArray strDiff;
+
+  if (uiDiffSeconds > 86400)
+  {
+    strDiff += QString("%1d ").arg(uiDiffSeconds / 86400);
+    uiDiffSeconds %= 86400;
+  }
+
+  if (uiDiffSeconds > 3600)
+  {
+    strDiff += QString("%1h ").arg(uiDiffSeconds / 3600);
+    uiDiffSeconds %= 3600;
+  }
+
+  if (uiDiffSeconds > 60)
+  {
+    strDiff += QString("%1m ").arg(uiDiffSeconds / 60);
+    uiDiffSeconds %= 60;
+  }
+
+  strDiff += QString("%1s").arg(uiDiffSeconds);
+
+  return strDiff;
+}
+
+//---------------------------------------------------------------------------
 // timeApplyOffset
 //---------------------------------------------------------------------------
 time_t Util::timeApplyOffset (int iSecondsOffset, time_t uiTime/*=0*/, int* piAppliedOffset/*=0*/)
