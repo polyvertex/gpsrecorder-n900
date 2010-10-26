@@ -45,9 +45,9 @@ class QMeansOfTransportation : public QMaemoComboBox
 public :
   QMeansOfTransportation (QWidget* pParent=0);
 
-  bool    setMeansOfTransportation      (quint8 ucMeansOfTransportation);
-  quint8  getMeansOfTransportation      (void);
-  QString getOtherMeansOfTransportation (void);
+  bool    selectCurrentMeansOfTransport (quint8 ucMeansOfTransport);
+  quint8  meansOfTransport              (void);
+  QString otherMeansOfTransport         (void);
 
 private slots :
   void onSelected (int iIndex);

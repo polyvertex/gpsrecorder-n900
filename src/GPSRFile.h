@@ -77,15 +77,15 @@ public :
     CHUNK_NEWTRACK         = 45, // (v3+) a new track is following
     CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transportation (see the MEANSTRANSPORT_* values)
 
-    MEANSTRANSPORT__unused__ = 0,
-    MEANSTRANSPORT_FOOT      = 0x01,
-    MEANSTRANSPORT_ROLLER    = 0x02,
-    MEANSTRANSPORT_BIKE      = 0x03,
-    MEANSTRANSPORT_MOTORBIKE = 0x04,
-    MEANSTRANSPORT_CAR       = 0x05,
-    MEANSTRANSPORT_BOAT      = 0x06,
-    MEANSTRANSPORT_PLANE     = 0x07,
-    MEANSTRANSPORT_OTHER     = 0xFA, // an "other" means of transportation can be described into the trailing asciiz field
+    MEANSTRANSPORT__INVALID__ = 0,
+    MEANSTRANSPORT_FOOT       = 0x01,
+    MEANSTRANSPORT_ROLLER     = 0x02,
+    MEANSTRANSPORT_BIKE       = 0x03,
+    MEANSTRANSPORT_MOTORBIKE  = 0x04,
+    MEANSTRANSPORT_CAR        = 0x05,
+    MEANSTRANSPORT_BOAT       = 0x06,
+    MEANSTRANSPORT_PLANE      = 0x07,
+    MEANSTRANSPORT_OTHER      = 0xFA, // an "other" means of transportation can be described into the trailing asciiz field
   };
 
   enum Error

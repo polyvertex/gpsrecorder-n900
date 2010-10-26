@@ -53,7 +53,7 @@ QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
       .arg(settings.getLastOtherMeansOfTransport().constData());
   }
 
-  this->addItem(tr("N/A"),       (int)GPSRFile::MEANSTRANSPORT__unused__);
+  this->addItem(tr("N/A"),       (int)GPSRFile::MEANSTRANSPORT__INVALID__);
   this->addItem(tr("Foot"),      (int)GPSRFile::MEANSTRANSPORT_FOOT);
   this->addItem(tr("Roller"),    (int)GPSRFile::MEANSTRANSPORT_ROLLER);
   this->addItem(tr("Bike"),      (int)GPSRFile::MEANSTRANSPORT_BIKE);
@@ -71,13 +71,13 @@ QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
 
 
 //---------------------------------------------------------------------------
-// setMeansOfTransportation
+// selectCurrentMeansOfTransport
 //---------------------------------------------------------------------------
-bool QMeansOfTransportation::setMeansOfTransportation (quint8 ucMeansOfTransportation)
+bool QMeansOfTransportation::selectCurrentMeansOfTransport (quint8 ucMeansOfTransport)
 {
   for (int i = 0; i < this->count(); ++i)
   {
-    if (this->itemData(i).toInt() == (int)ucMeansOfTransportation)
+    if (this->itemData(i).toInt() == (int)ucMeansOfTransport)
     {
       this->setCurrentIndex(0);
       return true;
@@ -88,19 +88,19 @@ bool QMeansOfTransportation::setMeansOfTransportation (quint8 ucMeansOfTransport
 }
 
 //---------------------------------------------------------------------------
-// getMeansOfTransportation
+// meansOfTransport
 //---------------------------------------------------------------------------
-quint8 QMeansOfTransportation::getMeansOfTransportation (void)
+quint8 QMeansOfTransportation::meansOfTransport (void)
 {
   return (quint8)this->currentItemData().toInt();
 }
 
 //---------------------------------------------------------------------------
-// getOtherMeansOfTransportation
+// otherMeansOfTransport
 //---------------------------------------------------------------------------
-QString QMeansOfTransportation::getOtherMeansOfTransportation (void)
+QString QMeansOfTransportation::otherMeansOfTransport (void)
 {
-  if ((this->getMeansOfTransportation() == GPSRFile::MEANSTRANSPORT_OTHER) &&
+  if ((this->meansOfTransport() == GPSRFile::MEANSTRANSPORT_OTHER) &&
     App::instance() &&
     App::instance()->settings())
   {

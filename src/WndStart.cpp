@@ -228,8 +228,8 @@ void WndStart::onClickedStart (void)
     }
   }
 
-  m_ucMeansOfTransport       = m_pCboMeansOfTransport->getMeansOfTransportation();
-  m_strOtherMeansOfTransport = m_pCboMeansOfTransport->getOtherMeansOfTransportation();
+  m_ucMeansOfTransport       = m_pCboMeansOfTransport->meansOfTransport();
+  m_strOtherMeansOfTransport = m_pCboMeansOfTransport->otherMeansOfTransport();
 
   m_bCanceled = false;
   this->done(0);
