@@ -94,7 +94,6 @@ public :
   QPixmap* pixPause        (void) { return m_pPixPause; }
   QPixmap* pixStop         (void) { return m_pPixStop; }
   QPixmap* pixSnap         (void) { return m_pPixSnap; }
-  QPixmap* pixSatellites   (void) { return m_pPixSatellites; }
 
 
 signals :
@@ -144,7 +143,6 @@ private :
   QPixmap* m_pPixStop;
   QPixmap* m_pPixPause;
   QPixmap* m_pPixSnap;
-  QPixmap* m_pPixSatellites;
 
 
   WndMain*  m_pWndMain;

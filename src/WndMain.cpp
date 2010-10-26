@@ -161,7 +161,7 @@ void WndMain::createWidgets (void)
   m_pBtnSnap->setEnabled(false);
   this->connect(m_pBtnSnap, SIGNAL(clicked()), SLOT(onClickedSnap()));
 
-  m_pBtnCell = new QPushButton(tr("Cell Tower"));
+  m_pBtnCell = new QPushButton(tr("CELL"));
   m_pBtnCell->setEnabled(false);
   this->connect(m_pBtnCell, SIGNAL(clicked()), SLOT(onClickedCell()));
 }
@@ -208,8 +208,8 @@ void WndMain::showFix (void)
   pForm3->addRow(tr("Last waypoint :"), m_pLblLastWrittenFixTime);
 
   {
-    QPushButton* pBtnSat   = new QPushButton(QIcon(*App::instance()->pixSatellites()), "");
-    QPushButton* pBtnSpeed = new QPushButton(tr("Speed"));
+    QPushButton* pBtnSat   = new QPushButton(tr("SAT"));
+    QPushButton* pBtnSpeed = new QPushButton(tr("SPD"));
 
     this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onClickedSat()));
     this->connect(pBtnSpeed, SIGNAL(clicked()), SLOT(onClickedSpeed()));
