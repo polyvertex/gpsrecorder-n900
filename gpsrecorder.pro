@@ -63,6 +63,7 @@ HEADERS += \
   src/ExporterSinkCsv.h \
   src/ExporterSinkGpx.h \
   src/ExporterSinkKml.h \
+  src/ExporterSinkTxt.h \
   src/GPSRFile.h \
   src/Location.h \
   src/LocationFix.h \
@@ -93,6 +94,7 @@ SOURCES += \
   src/ExporterSinkCsv.cpp \
   src/ExporterSinkGpx.cpp \
   src/ExporterSinkKml.cpp \
+  src/ExporterSinkTxt.cpp \
   src/GPSRFile.cpp \
   src/Location.cpp \
   src/LocationFix.cpp \

@@ -23,75 +23,45 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-04-20 15:39:18
+// Created On : 2010-10-25 08:30:51
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __WNDCONVERT_H__
-#define __WNDCONVERT_H__
+#ifndef __EXPORTERSINKTXT_H__
+#define __EXPORTERSINKTXT_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// WndConvert
+// ExporterSinkTxt
 //---------------------------------------------------------------------------
-class WndConvert : public QDialog
+class ExporterSinkTxt : public ExporterSink
 {
-  Q_OBJECT
-
 public :
-  WndConvert (QWidget* pParent=0);
-  virtual ~WndConvert (void);
+  ExporterSinkTxt (Exporter* pParent);
+  virtual ~ExporterSinkTxt (void);
+
+  const char* label     (void) const { return "TXT"; }
+  const char* extension (void) const { return "txt"; }
+
+  void close (void);
+
+  // default settings
+  static bool defaultIncludelocationFix (void) { return false; }
+
+
+public slots :
+  void onSOF         (const char* pszFilePath, time_t uiTime, qint32 iTimeZoneOffset);
+  void onLocationFix (time_t uiTime, const LocationFixContainer& fixCont);
+  void onEOF         (void);
 
 
 private :
-  void setupControls            (void);
-  void refreshInputFilesControl (void);
-
-
-private slots :
-  void onClickedBrowseFiles  (void);
-  void onClickedBrowseDir    (void);
-  void onClickedKmlLineColor (void);
-  void onStateChangedTxt     (int nNewState);
-  void onStateChangedCsv     (int nNewState);
-  void onStateChangedGpx     (int nNewState);
-  void onStateChangedKml     (int nNewState);
-  void onClickedConvert      (void);
-
-
-private :
-  QStringList m_InputFiles;
-
-  QLineEdit* m_pTxtBrowse;
-  QCheckBox* m_pChkExportPauses;
-
-  // txt
-  QCheckBox*      m_pChkTxt;
-  QMaemoGroupBox* m_pGroupBoxTxt;
-  QCheckBox*      m_pChkTxtIncludeLocFix;
-
-  // csv
-  QCheckBox*      m_pChkCsv;
-  QMaemoGroupBox* m_pGroupBoxCsv;
-  QMaemoComboBox* m_pCboCsvSeparator;
-
-  // gpx
-  QCheckBox*      m_pChkGpx;
-  QMaemoGroupBox* m_pGroupBoxGpx;
-
-  // kml
-  QCheckBox*      m_pChkKml;
-  QMaemoGroupBox* m_pGroupBoxKml;
-  QCheckBox*      m_pChkKmlZipped;
-  QPushButton*    m_pBtnKmlLineColor;
-  QColor          m_KmlLineColor;
-  QMaemoComboBox* m_pCboKmlLineWidth;
-  QCheckBox*      m_pChkKmlAircraft;
+  bool m_bIncludeLocationFix;
 };
 
 
-#endif // #ifndef __WNDCONVERT_H__
+#endif // #ifndef __EXPORTERSINKTXT_H__

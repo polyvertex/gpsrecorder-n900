@@ -525,7 +525,7 @@ bool GPSRFile::seekFirst (void)
       return false;
     }
 
-    if (pHeader->ucFormat < FORMAT_VERSION)
+    if (pHeader->ucFormat < FORMAT_VERSION_V1)
     {
       this->signalReadError(ERROR_FORMAT_VERSION);
       return false;
@@ -697,22 +697,6 @@ bool GPSRFile::readChunk (int nChunkIndex)
 }
 
 
-
-//---------------------------------------------------------------------------
-// chunksCount
-//---------------------------------------------------------------------------
-int GPSRFile::chunksCount (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId)
-{
-  int nCount = 0;
-
-  for (int i = 0; i < vecChunks.count(); ++i)
-  {
-    if (vecChunks[i].uiId == uiChunkId)
-      ++nCount;
-  }
-
-  return nCount;
-}
 
 //---------------------------------------------------------------------------
 // getReadChunksCount
@@ -975,6 +959,7 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
   QFile*     pFile = 0;
   QByteArray swap;
   qint64     iRes;
+  uint       uiTrackStartTime;
   uint       uiSkippedFix;
 
   strDump.clear();
@@ -993,7 +978,7 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
   }
 
   // open file
-  pFile = new QFile(pFile);
+  pFile = new QFile(pszFile);
   if (!pFile)
     return false;
   if (!pFile->open(QIODevice::ReadOnly))
@@ -1010,7 +995,9 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
     if (iRes != sizeof(*pHeader))
       goto __end;
 
-    strDump = QString(
+    uiTrackStartTime = pHeader->uiTime;
+
+    strDump += QString(
       "Header :\n"
       "\tFile           %1\n"
       "\tFormat         %2\n"
@@ -1022,38 +1009,68 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
 
     if (pHeader->ucFormat >= 1)
     {
+      int iAbsOffset =
+        (pHeader->iTimeZoneOffset < 0) ?
+        -pHeader->iTimeZoneOffset :
+        pHeader->iTimeZoneOffset;
+
       strDump +=
-        QString("\tTimeZoneOffset %1\n")
+        QString("\tTimeZoneOffset %1%2:%3 (%4)\n")
+        .arg((pHeader->iTimeZoneOffset < 0) ? '-' : '+')
+        .arg(uint(iAbsOffset / 3600), 2, 10, QLatin1Char('0'))
+        .arg(uint(iAbsOffset % 3600 / 60), 2, 10, QLatin1Char('0'))
         .arg(pHeader->iTimeZoneOffset);
     }
 
     strDump += "\n";
   }
 
-  // dump chunks statistics
+  // tracks statistics
+  {
+    int iTracks = GPSRFile::chunksCount(vecChunks, CHUNK_NEWTRACK);
+    if (!iTracks)
+      ++iTracks;
+
+    uint uiTotalDuration =
+      (vecChunks.last().uiTime > uiTrackStartTime) ?
+      vecChunks.last().uiTime - uiTrackStartTime :
+      0;
+
+    strDump += QString(
+      "Tracks :\n"
+      "\tTracksCount    %1\n"
+      "\tTracksDuration %2 (%3 seconds)\n"
+      "\n")
+      .arg(iTracks)
+      .arg(Util::timeDiffHuman(uiTotalDuration).constData())
+      .arg(uiTotalDuration);
+  }
+
+  // chunks statistics
   strDump += QString(
     "Chunks statistics :\n"
-    "\t%1 %2\n")
-    .arg("Total", 25)
+    "\t%1 %2\n" )
+    .arg("TotalChunks", -27)
     .arg(vecChunks.size());
   for (int i = 0; i < CHUNKNAMES_COUNT; ++i)
   {
     strDump +=
       QString("\t%1 %2\n")
-      .arg(CHUNKNAMES[i].label, 25)
+      .arg(QString("Chunk") + CHUNKNAMES[i].label, -27)
       .arg(GPSRFile::chunksCount(vecChunks, CHUNKNAMES[i].id));
   }
   strDump += "\n";
 
   // dump chunks
-  itChunk.toFront();
+  itChunk = vecChunks;
   uiSkippedFix = 0;
   while (itChunk.hasNext())
   {
     const ChunkReadInfo& cri = itChunk.next();
 
     // skip location fix if we don't want it
-    if (cri.uiId == CHUNK_LOCATIONFIX)
+    if ((cri.uiId == CHUNK_LOCATIONFIX) ||
+      (cri.uiId == CHUNK_LOCATIONFIX_LOST))
     {
       ++uiSkippedFix;
       if (!bIncludeLocationFix)
@@ -1062,14 +1079,14 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
     else if (!bIncludeLocationFix && (uiSkippedFix > 0))
     {
       strDump +=
-        QString("Skipped %1 LocationFix chunks.\n\n")
+        QString("Skipped %1 LocationFix and LocationFixLost chunks.\n\n")
         .arg(uiSkippedFix);
       uiSkippedFix = 0;
     }
 
     // chunk header
     strDump += QString(
-      "Chunk %1 (%2) :\n"
+      "CHUNK %1 (id %2) :\n"
       "\tOffset %3\n"
       "\tSize   %4\n"
       "\tTime   %5 UTC (%6)\n"
@@ -1089,4 +1106,68 @@ __end :
   if (pFile)
     delete pFile;
   return bReturn;
+}
+
+//---------------------------------------------------------------------------
+// chunksCount
+//---------------------------------------------------------------------------
+int GPSRFile::chunksCount (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId)
+{
+  int nCount = 0;
+
+  for (int i = 0; i < vecChunks.count(); ++i)
+  {
+    if (vecChunks[i].uiId == uiChunkId)
+      ++nCount;
+  }
+
+  return nCount;
+}
+
+//---------------------------------------------------------------------------
+// chunksNext
+//---------------------------------------------------------------------------
+int GPSRFile::chunksNext (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId, int iPos/*=0*/)
+{
+  for (int i = iPos; i < vecChunks.count(); ++i)
+  {
+    if (vecChunks[i].uiId == uiChunkId)
+      return i;
+  }
+
+  return -1;
+}
+
+//---------------------------------------------------------------------------
+// chunksLast
+//---------------------------------------------------------------------------
+int GPSRFile::chunksLast (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId)
+{
+  int iLastKnownPos = -1;
+
+  for (int i = 0; i < vecChunks.count(); ++i)
+  {
+    if (vecChunks[i].uiId == uiChunkId)
+      iLastKnownPos = i;
+  }
+
+  return iLastKnownPos;
+}
+
+//---------------------------------------------------------------------------
+// chunksLastBefore
+//---------------------------------------------------------------------------
+int GPSRFile::chunksLastBefore (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkIdLast, quint16 uiChunkIdBefore, int iPos/*=0*/)
+{
+  int iLastKnownPos = -1;
+
+  for (int i = iPos; i < vecChunks.count(); ++i)
+  {
+    if (vecChunks[i].uiId == uiChunkIdBefore)
+      break;
+    else if (vecChunks[i].uiId == uiChunkIdLast)
+      iLastKnownPos = i;
+  }
+
+  return iLastKnownPos;
 }

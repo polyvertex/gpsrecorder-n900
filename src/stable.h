@@ -192,6 +192,7 @@ class ExporterSink;
 #include "ExporterSinkCsv.h"
 #include "ExporterSinkGpx.h"
 #include "ExporterSinkKml.h"
+#include "ExporterSinkTxt.h"
 
 #include "WndBase.h"
 #include "WndAbout.h"

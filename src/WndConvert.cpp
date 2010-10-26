@@ -101,6 +101,19 @@ void WndConvert::setupControls (void)
     pLeftLayout->addSpacing(10);
   }
 
+  // output format - txt
+  {
+    m_pChkTxtIncludeLocFix = new QCheckBox(tr("Include Location Fix"));
+    m_pChkTxtIncludeLocFix->setCheckState(settings.getTxtIncludeLocationFix() ? Qt::Checked : Qt::Unchecked);
+
+    m_pGroupBoxTxt = new QMaemoGroupBox(tr("TXT options"));
+    m_pGroupBoxTxt->addWidget(m_pChkTxtIncludeLocFix);
+    m_pGroupBoxTxt->setEnabled(settings.getConvertTxt());
+
+    pLeftLayout->addLayout(m_pGroupBoxTxt);
+    pLeftLayout->addSpacing(10);
+  }
+
   // output format - csv
   {
     m_pCboCsvSeparator = new QMaemoComboBox(tr("Fields separator"), this);
@@ -174,6 +187,10 @@ void WndConvert::setupControls (void)
     QWidget*     pScrollWidget = new QWidget();
     QPushButton* pBtnConvert = new QPushButton(tr("Convert"));
 
+    m_pChkTxt = new QCheckBox("TXT");
+    m_pChkTxt->setCheckState(settings.getConvertTxt() ? Qt::Checked : Qt::Unchecked);
+    this->connect(m_pChkTxt, SIGNAL(stateChanged(int)), SLOT(onStateChangedTxt(int)));
+
     m_pChkCsv = new QCheckBox("CSV");
     m_pChkCsv->setCheckState(settings.getConvertCsv() ? Qt::Checked : Qt::Unchecked);
     this->connect(m_pChkCsv, SIGNAL(stateChanged(int)), SLOT(onStateChangedCsv(int)));
@@ -198,11 +215,12 @@ void WndConvert::setupControls (void)
 
     pRootLayout->setSpacing(1);
     pRootLayout->setColumnMinimumWidth(1, 150);
-    pRootLayout->addWidget(pScrollArea, 0, 0, 5, 1);
-    pRootLayout->addWidget(m_pChkCsv,   0, 1);
-    pRootLayout->addWidget(m_pChkGpx,   1, 1);
-    pRootLayout->addWidget(m_pChkKml,   2, 1);
-    pRootLayout->addWidget(pBtnConvert, 4, 1);
+    pRootLayout->addWidget(pScrollArea, 0, 0, 6, 1);
+    pRootLayout->addWidget(m_pChkTxt,   0, 1);
+    pRootLayout->addWidget(m_pChkCsv,   1, 1);
+    pRootLayout->addWidget(m_pChkGpx,   2, 1);
+    pRootLayout->addWidget(m_pChkKml,   3, 1);
+    pRootLayout->addWidget(pBtnConvert, 5, 1);
   }
 
   // apply layout
@@ -284,6 +302,14 @@ void WndConvert::onClickedKmlLineColor (void)
 }
 
 //---------------------------------------------------------------------------
+// onStateChangedTxt
+//---------------------------------------------------------------------------
+void WndConvert::onStateChangedTxt (int nNewState)
+{
+  m_pGroupBoxTxt->setEnabled((nNewState == Qt::Unchecked) ? false : true);
+}
+
+//---------------------------------------------------------------------------
 // onStateChangedCsv
 //---------------------------------------------------------------------------
 void WndConvert::onStateChangedCsv (int nNewState)
@@ -314,6 +340,7 @@ void WndConvert::onStateChangedKml (int nNewState)
 void WndConvert::onClickedConvert (void)
 {
   Exporter exporter;
+  ExporterSinkTxt* pSinkTxt = 0;
   ExporterSinkCsv* pSinkCsv = 0;
   ExporterSinkGpx* pSinkGpx = 0;
   ExporterSinkKml* pSinkKml = 0;
@@ -327,7 +354,8 @@ void WndConvert::onClickedConvert (void)
       return;
     }
 
-    if (m_pChkCsv->checkState() == Qt::Unchecked &&
+    if (m_pChkTxt->checkState() == Qt::Unchecked &&
+        m_pChkCsv->checkState() == Qt::Unchecked &&
         m_pChkGpx->checkState() == Qt::Unchecked &&
         m_pChkKml->checkState() == Qt::Unchecked)
     {
@@ -340,11 +368,17 @@ void WndConvert::onClickedConvert (void)
   {
     AppSettings& settings = *App::instance()->settings();
 
+    settings.setConvertTxt((m_pChkTxt->checkState() == Qt::Unchecked) ? false : true);
     settings.setConvertCsv((m_pChkCsv->checkState() == Qt::Unchecked) ? false : true);
     settings.setConvertGpx((m_pChkGpx->checkState() == Qt::Unchecked) ? false : true);
     settings.setConvertKml((m_pChkKml->checkState() == Qt::Unchecked) ? false : true);
 
     settings.setConvertExportPauses((m_pChkExportPauses->checkState() == Qt::Unchecked) ? false : true);
+
+    if (m_pChkTxt->checkState() != Qt::Unchecked)
+    {
+      settings.setTxtIncludeLocationFix(m_pChkTxtIncludeLocFix->checkState() != Qt::Unchecked);
+    }
 
     if (m_pChkCsv->checkState() != Qt::Unchecked)
     {
@@ -368,6 +402,8 @@ void WndConvert::onClickedConvert (void)
   }
 
   // create needed export sinks
+  if (m_pChkTxt->checkState() != Qt::Unchecked)
+    pSinkTxt = new ExporterSinkTxt(&exporter);
   if (m_pChkCsv->checkState() != Qt::Unchecked)
     pSinkCsv = new ExporterSinkCsv(&exporter);
   if (m_pChkGpx->checkState() != Qt::Unchecked)
@@ -382,6 +418,7 @@ void WndConvert::onClickedConvert (void)
     uiSuccessCount = exporter.exportFiles(m_InputFiles);
 
   // free export sinks
+  delete pSinkTxt;
   delete pSinkCsv;
   delete pSinkGpx;
   delete pSinkKml;

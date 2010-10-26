@@ -82,6 +82,8 @@ public :
   void       setLastOtherMeansOfTransport (const QByteArray& strOtherMeansOfTransport);
   QByteArray getLastOtherMeansOfTransport (void);
 
+  void setConvertTxt (bool bEnable);
+  bool getConvertTxt (void);
   void setConvertCsv (bool bEnable);
   bool getConvertCsv (void);
   void setConvertGpx (bool bEnable);
@@ -91,6 +93,9 @@ public :
 
   void setConvertExportPauses (bool bEnable);
   bool getConvertExportPauses (void);
+
+  void setTxtIncludeLocationFix (bool bInclude);
+  bool getTxtIncludeLocationFix (void);
 
   void setCsvSeparator (char cSep);
   char getCsvSeparator (void);
@@ -118,6 +123,7 @@ public :
   static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
   static bool             defaultPreventBlankScreen (void) { return false; }
 
+  static bool defaultConvertTxt (void) { return false; }
   static bool defaultConvertCsv (void) { return true; }
   static bool defaultConvertGpx (void) { return true; }
   static bool defaultConvertKml (void) { return true; }

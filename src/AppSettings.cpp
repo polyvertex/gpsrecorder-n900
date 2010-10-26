@@ -36,7 +36,7 @@
 // Static Members
 //---------------------------------------------------------------------------
 static const char* SETTINGNAME_OUTPUTDIR = "OutputDir";
-//
+
 static const char* SETTINGNAME_LOGSTEP            = "LogStep";
 static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
 static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
@@ -46,16 +46,19 @@ static const char* SETTINGNAME_ASKPAUSENAME       = "AskPauseName";
 static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
-//
+
 static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransportation";
-//
+
+static const char* SETTINGNAME_CONVERT_TXT          = "ConvertTxt";
 static const char* SETTINGNAME_CONVERT_CSV          = "ConvertCsv";
 static const char* SETTINGNAME_CONVERT_GPX          = "ConvertGpx";
 static const char* SETTINGNAME_CONVERT_KML          = "ConvertKml";
 static const char* SETTINGNAME_CONVERT_EXPORTPAUSES = "ConvertExportPauses";
-//
+
+static const char* SETTINGNAME_TXT_INCLUDELOCFIX = "TxtIncludeLocationFix";
+
 static const char* SETTINGNAME_CSV_SEPARATOR = "CsvSeparator";
-//
+
 static const char* SETTINGNAME_KML_ZIPPED       = "KmlZipped";
 static const char* SETTINGNAME_KML_LINECOLOR    = "KmlLineColor";
 static const char* SETTINGNAME_KML_LINEWIDTH    = "KmlLineWidth";
@@ -372,6 +375,23 @@ QByteArray AppSettings::getLastOtherMeansOfTransport (void)
 }
 
 //---------------------------------------------------------------------------
+// ConvertTxt
+//---------------------------------------------------------------------------
+void AppSettings::setConvertTxt (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_CONVERT_TXT, QVariant(bEnable));
+}
+
+bool AppSettings::getConvertTxt (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_CONVERT_TXT);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultConvertTxt();
+}
+
+//---------------------------------------------------------------------------
 // ConvertCsv
 //---------------------------------------------------------------------------
 void AppSettings::setConvertCsv (bool bEnable)
@@ -437,6 +457,23 @@ bool AppSettings::getConvertExportPauses (void)
     return var.toBool();
 
   return AppSettings::defaultConvertExportPauses();
+}
+
+//---------------------------------------------------------------------------
+// TxtIncludeLocationFix
+//---------------------------------------------------------------------------
+void AppSettings::setTxtIncludeLocationFix (bool bInclude)
+{
+  m_Settings.setValue(SETTINGNAME_TXT_INCLUDELOCFIX, QVariant(bInclude));
+}
+
+bool AppSettings::getTxtIncludeLocationFix (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_TXT_INCLUDELOCFIX);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return ExporterSinkTxt::defaultIncludelocationFix();
 }
 
 //---------------------------------------------------------------------------

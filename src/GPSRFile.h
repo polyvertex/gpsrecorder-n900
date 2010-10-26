@@ -85,7 +85,7 @@ public :
     MEANSTRANSPORT_CAR       = 0x05,
     MEANSTRANSPORT_BOAT      = 0x06,
     MEANSTRANSPORT_PLANE     = 0x07,
-    MEANSTRANSPORT_OTHER     = 0xFA, // then, it can be described into the trailing asciiz field
+    MEANSTRANSPORT_OTHER     = 0xFA, // an "other" means of transportation can be described into the trailing asciiz field
   };
 
   enum Error
@@ -194,7 +194,10 @@ private :
   bool readSize         (char* pOutData, uint uiExpectedSize, bool bIsFileHeader, bool* pbGotEOF);
   void signalReadError  (Error eError);
 
-  static int chunksCount (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId);
+  static int chunksCount      (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId);
+  static int chunksNext       (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId, int iPos=0);
+  static int chunksLast       (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkId);
+  static int chunksLastBefore (const QVector<ChunkReadInfo>& vecChunks, quint16 uiChunkIdLast, quint16 uiChunkIdBefore, int iPos=0);
 
 
 private :
