@@ -29,8 +29,8 @@
 //
 //***************************************************************************
 
-#ifndef __MAEMOCOMBOBOX_H__
-#define __MAEMOCOMBOBOX_H__
+#ifndef __QMAEMOCOMBOBOX_H__
+#define __QMAEMOCOMBOBOX_H__
 
 #include "stable.h"
 
@@ -83,4 +83,4 @@ private :
 };
 
 
-#endif // #ifndef __MAEMOCOMBOBOX_H__
+#endif // #ifndef __QMAEMOCOMBOBOX_H__

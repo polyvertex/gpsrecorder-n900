@@ -29,8 +29,8 @@
 //
 //***************************************************************************
 
-#ifndef __MAEMOGROUPBOX_H__
-#define __MAEMOGROUPBOX_H__
+#ifndef __QMAEMOGROUPBOX_H__
+#define __QMAEMOGROUPBOX_H__
 
 #include "stable.h"
 
@@ -64,4 +64,4 @@ private :
 };
 
 
-#endif // #ifndef __MAEMOGROUPBOX_H__
+#endif // #ifndef __QMAEMOGROUPBOX_H__

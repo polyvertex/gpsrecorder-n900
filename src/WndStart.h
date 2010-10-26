@@ -52,7 +52,6 @@ public :
 
 public :
   WndStart (QWidget* pParent=0);
-  virtual ~WndStart (void);
 
   // run dialog
   // use this method instead of QDialog::exec() !
