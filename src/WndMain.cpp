@@ -45,11 +45,9 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   this->menuBar()->clear();
   m_pMenuStartStop = this->menuBar()->addAction(tr("Start"), this, SLOT(onClickedStartStop()));
-  m_pMenuSnap      = this->menuBar()->addAction(tr("Snap"), this, SLOT(onClickedSnap()));
   m_pMenuConfig    = this->menuBar()->addAction(tr("Settings"), this, SLOT(onClickedConfig()));
   m_pMenuConvert   = this->menuBar()->addAction(tr("Convert"), this, SLOT(onClickedConvert()));
   m_pMenuAbout     = this->menuBar()->addAction(tr("About"), this, SLOT(onClickedAbout()));
-  m_pMenuSnap->setEnabled(false);
 
   this->createWidgets();
   this->clearFixFields();
@@ -272,7 +270,6 @@ void WndMain::onClickedStartStop (void)
     m_pLblStatus->setText(tr("Stopped"));
 
     m_pMenuStartStop->setText(tr("Start"));
-    m_pMenuSnap->setEnabled(false);
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
     m_pBtnSnap->setEnabled(false);
     m_pMenuConvert->setEnabled(true);
@@ -287,7 +284,6 @@ void WndMain::onClickedStartStop (void)
     m_pLblStatus->setText(tr("Started"));
 
     m_pMenuStartStop->setText(tr("Stop"));
-    m_pMenuSnap->setEnabled(true);
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
     m_pBtnSnap->setEnabled(true);
     m_pMenuConvert->setEnabled(false);
@@ -314,7 +310,6 @@ void WndMain::onClickedPauseResume (void)
     if (!pApp->setState(App::STATE_PAUSED))
       return;
 
-    m_pMenuSnap->setEnabled(false);
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
     m_pBtnSnap->setEnabled(false);
   }
@@ -323,7 +318,6 @@ void WndMain::onClickedPauseResume (void)
     if (!pApp->setState(App::STATE_STARTED))
       return;
 
-    m_pMenuSnap->setEnabled(true);
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
     m_pBtnSnap->setEnabled(true);
   }

@@ -78,7 +78,6 @@ private slots :
 
 private :
   QAction* m_pMenuStartStop;
-  QAction* m_pMenuSnap;
   QAction* m_pMenuConfig;
   QAction* m_pMenuConvert;
   QAction* m_pMenuAbout;
