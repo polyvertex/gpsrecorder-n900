@@ -208,7 +208,7 @@ void WndMain::showFix (void)
   pForm3->addRow(tr("Last waypoint :"), m_pLblLastWrittenFixTime);
 
   {
-    QPushButton* pBtnSat   = new QPushButton(tr("Satellites"));
+    QPushButton* pBtnSat   = new QPushButton(QIcon(*App::instance()->pixSatellites()), "");
     QPushButton* pBtnSpeed = new QPushButton(tr("Speed"));
 
     this->connect(pBtnSat, SIGNAL(clicked()), SLOT(onClickedSat()));

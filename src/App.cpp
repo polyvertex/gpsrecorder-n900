@@ -79,6 +79,7 @@ App::App (int& nArgc, char** ppszArgv)
   m_pPixStop            = new QPixmap(":/icons/stop-48.png");
   m_pPixPause           = new QPixmap(":/icons/pause-48.png");
   m_pPixSnap            = new QPixmap(":/icons/snap-48.png");
+  m_pPixSatellites      = new QPixmap(":/icons/satellites-48.png");
   m_pPixState           = m_pPixStoppedGrey;
 
   // connect to AppSettings signals
@@ -162,6 +163,7 @@ App::~App (void)
   delete m_pPixStop;
   delete m_pPixPause;
   delete m_pPixSnap;
+  delete m_pPixSatellites;
 }
 
 
