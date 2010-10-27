@@ -47,6 +47,7 @@ static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
 
+static const char* SETTINGNAME_LASTMEANSOFTRANSPORT      = "LastMeansOfTransportation";
 static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransportation";
 
 static const char* SETTINGNAME_CONVERT_TXT          = "ConvertTxt";
@@ -346,15 +347,36 @@ bool AppSettings::getPreventBlankScreen (void)
 }
 
 //---------------------------------------------------------------------------
+// LastMeansOfTransport
+//---------------------------------------------------------------------------
+void AppSettings::setLastMeansOfTransport (quint8 ucMeansOfTransport)
+{
+  m_Settings.setValue(SETTINGNAME_LASTMEANSOFTRANSPORT, QVariant((int)ucMeansOfTransport));
+}
+
+quint8 AppSettings::getLastMeansOfTransport (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_LASTMEANSOFTRANSPORT);
+  if (var.canConvert(QVariant::Int))
+  {
+    bool bOk = false;
+    int  i = var.toInt(&bOk);
+
+    if (bOk && GPSRFile::isValidMeansOfTransport((quint8)i))
+      return (quint8)i;
+    else
+      this->setLastMeansOfTransport(AppSettings::defaultMeansOfTransport());
+  }
+
+  return AppSettings::defaultMeansOfTransport();
+}
+
+//---------------------------------------------------------------------------
 // LastOtherMeansOfTransport
 //---------------------------------------------------------------------------
 void AppSettings::setLastOtherMeansOfTransport (const QByteArray& strOtherMeansOfTransport)
 {
-  QString str(strOtherMeansOfTransport);
-
-  str.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
-  str = str.simplified();
-
+  QString str = GPSRFile::validateOtherMeansOfTransport(strOtherMeansOfTransport.constData());
   m_Settings.setValue(SETTINGNAME_LASTOTHERMEANSOFTRANSPORT, QVariant(QLatin1String(qPrintable(str))));
 }
 
@@ -363,12 +385,9 @@ QByteArray AppSettings::getLastOtherMeansOfTransport (void)
   QVariant var = m_Settings.value(SETTINGNAME_LASTOTHERMEANSOFTRANSPORT);
   if (var.type() == QVariant::String)
   {
-    QString str(var.toString());
-
-    str.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
-    str = str.simplified();
-
-    return qPrintable(var.toString());
+    QString str = GPSRFile::validateOtherMeansOfTransport(var.toString());
+    this->setLastOtherMeansOfTransport(qPrintable(str));
+    return qPrintable(str);
   }
 
   return QByteArray();

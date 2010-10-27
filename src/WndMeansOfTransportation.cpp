@@ -42,6 +42,8 @@ WndMeansOfTransportation::WndMeansOfTransportation (QWidget* pParent/*=0*/)
   Q_ASSERT(App::instance());
   Q_ASSERT(pParent);
 
+  m_bCanceled = true;
+
   this->setWindowTitle(tr("Means of transportation"));
   this->setModal(true);
 }
@@ -51,14 +53,17 @@ WndMeansOfTransportation::WndMeansOfTransportation (QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 // doExec
 //---------------------------------------------------------------------------
-quint8 WndMeansOfTransportation::doExec (quint8 ucDefaultMeansOfTransport)
+bool WndMeansOfTransportation::doExec (quint8 ucDefaultMeansOfTransport, const QString& strOtherMotLabel)
 {
   m_comboBox.selectCurrentMeansOfTransport(ucDefaultMeansOfTransport);
+  m_comboBox.setOtherMeansOfTransport(strOtherMotLabel);
+
   this->setupControls();
 
+  m_bCanceled = true;
   this->exec();
 
-  return this->meansOfTransport();
+  return m_bCanceled ? false : true;
 }
 
 
@@ -80,7 +85,7 @@ void WndMeansOfTransportation::setupControls (void)
 
   pGrid = new QGridLayout;
   pGrid->addWidget(pLabel,      0, 0, 1, 6);
-  pGrid->addWidget(&m_comboBox, 1, 0, 1, 6);
+  pGrid->addWidget(&m_comboBox, 1, 0, 1, 5);
   pGrid->addWidget(pBtnDone,    1, 5);
 
   this->setLayout(pGrid);
@@ -93,5 +98,12 @@ void WndMeansOfTransportation::setupControls (void)
 //---------------------------------------------------------------------------
 void WndMeansOfTransportation::onClickedDone (void)
 {
+  AppSettings& settings = *App::instance()->settings();
+
+  settings.setLastMeansOfTransport(this->meansOfTransport());
+  if (this->meansOfTransport() == GPSRFile::MEANSTRANSPORT_OTHER)
+    settings.setLastOtherMeansOfTransport(qPrintable(this->otherMeansOfTransportName()));
+
+  m_bCanceled = false;
   this->done(0);
 }

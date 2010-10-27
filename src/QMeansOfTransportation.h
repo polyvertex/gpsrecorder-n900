@@ -45,12 +45,23 @@ class QMeansOfTransportation : public QMaemoComboBox
 public :
   QMeansOfTransportation (QWidget* pParent=0);
 
-  bool    selectCurrentMeansOfTransport (quint8 ucMeansOfTransport);
-  quint8  meansOfTransport              (void);
-  QString otherMeansOfTransport         (void);
+  bool selectCurrentMeansOfTransport (quint8 ucMeansOfTransport);
+  void setOtherMeansOfTransport      (const QString& strOtherMOT);
+
+  quint8  meansOfTransport      (void);
+  QString otherMeansOfTransport (void) const { return m_strOtherMOT; }
+
+
+  static QString buildOtherLabel (const QString& strOtherMeansOfTransport);
+
 
 private slots :
   void onSelected (int iIndex);
+
+
+private :
+  QString m_strOtherMOT;
+  int     m_iOtherMotIndex;
 };
 
 

@@ -120,6 +120,8 @@ void WndStart::setupControls (void)
   m_pTxtTrackName->setValidator(new QTrackNameValidator);
 
   m_pCboMeansOfTransport = new QMeansOfTransportation(this);
+  m_pCboMeansOfTransport->selectCurrentMeansOfTransport(settings.getLastMeansOfTransport());
+  m_pCboMeansOfTransport->setOtherMeansOfTransport(settings.getLastOtherMeansOfTransport().constData());
 
   pBtnStart = new QPushButton(tr("Start"));
   this->connect(pBtnStart, SIGNAL(clicked()), SLOT(onClickedStart()));
@@ -230,6 +232,10 @@ void WndStart::onClickedStart (void)
 
   m_ucMeansOfTransport       = m_pCboMeansOfTransport->meansOfTransport();
   m_strOtherMeansOfTransport = m_pCboMeansOfTransport->otherMeansOfTransport();
+
+  settings.setLastMeansOfTransport(m_ucMeansOfTransport);
+  if (m_ucMeansOfTransport == GPSRFile::MEANSTRANSPORT_OTHER)
+    settings.setLastOtherMeansOfTransport(qPrintable(m_strOtherMeansOfTransport));
 
   m_bCanceled = false;
   this->done(0);

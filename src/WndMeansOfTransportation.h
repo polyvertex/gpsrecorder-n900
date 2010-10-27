@@ -47,7 +47,7 @@ public :
 
   // run dialog
   // use this method instead of QDialog::exec() !
-  quint8 doExec (quint8 ucDefaultMeansOfTransport);
+  bool doExec (quint8 ucDefaultMeansOfTransport, const QString& strOtherMotLabel);
 
   // result
   quint8  meansOfTransport          (void) { return m_comboBox.meansOfTransport(); }
@@ -63,6 +63,7 @@ private slots :
 
 
 private :
+  bool                   m_bCanceled;
   QMeansOfTransportation m_comboBox;
 };
 

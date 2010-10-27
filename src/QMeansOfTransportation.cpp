@@ -38,30 +38,32 @@
 QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
 : QMaemoComboBox(tr("Means of transportation"), pParent)
 {
-  AppSettings& settings = *App::instance()->settings();
-  QString strOtherLabel;
+  QVector<quint8>         vecMOT(GPSRFile::meansOfTransportList());
+  QVectorIterator<quint8> itMOT(vecMOT);
+  int iIndex;
 
-  strOtherLabel = tr("Other : ");
-  if (settings.getLastOtherMeansOfTransport().isEmpty())
-  {
-    strOtherLabel += '?';
-  }
-  else
-  {
-    strOtherLabel +=
-      QString("\"%1\"")
-      .arg(settings.getLastOtherMeansOfTransport().constData());
-  }
+  if (App::instance() && App::instance()->settings())
+    m_strOtherMOT = App::instance()->settings()->getLastOtherMeansOfTransport();
 
-  this->addItem(tr("N/A"),       (int)GPSRFile::MEANSTRANSPORT__INVALID__);
-  this->addItem(tr("Foot"),      (int)GPSRFile::MEANSTRANSPORT_FOOT);
-  this->addItem(tr("Roller"),    (int)GPSRFile::MEANSTRANSPORT_ROLLER);
-  this->addItem(tr("Bike"),      (int)GPSRFile::MEANSTRANSPORT_BIKE);
-  this->addItem(tr("Motorbike"), (int)GPSRFile::MEANSTRANSPORT_MOTORBIKE);
-  this->addItem(tr("Car"),       (int)GPSRFile::MEANSTRANSPORT_CAR);
-  this->addItem(tr("Boat"),      (int)GPSRFile::MEANSTRANSPORT_BOAT);
-  this->addItem(tr("Plane"),     (int)GPSRFile::MEANSTRANSPORT_PLANE);
-  this->addItem(strOtherLabel,   (int)GPSRFile::MEANSTRANSPORT_OTHER);
+  iIndex = 0;
+  while (itMOT.hasNext())
+  {
+    quint8 ucMOT = itMOT.next();
+
+    if (ucMOT == GPSRFile::MEANSTRANSPORT_OTHER)
+    {
+      m_iOtherMotIndex = iIndex;
+      this->addItem(
+        QMeansOfTransportation::buildOtherLabel(m_strOtherMOT),
+        (int)ucMOT);
+    }
+    else
+    {
+      this->addItem(GPSRFile::meansOfTransportToLabel(ucMOT), (int)ucMOT);
+    }
+
+    ++iIndex;
+  }
 
   this->connect(this, SIGNAL(sigSelected(int)), SLOT(onSelected(int)));
   this->setValueLayout(QMaemo5ValueButton::ValueUnderText);
@@ -79,7 +81,7 @@ bool QMeansOfTransportation::selectCurrentMeansOfTransport (quint8 ucMeansOfTran
   {
     if (this->itemData(i).toInt() == (int)ucMeansOfTransport)
     {
-      this->setCurrentIndex(0);
+      this->setCurrentIndex(i);
       return true;
     }
   }
@@ -88,26 +90,23 @@ bool QMeansOfTransportation::selectCurrentMeansOfTransport (quint8 ucMeansOfTran
 }
 
 //---------------------------------------------------------------------------
+// setOtherMeansOfTransport
+//---------------------------------------------------------------------------
+void QMeansOfTransportation::setOtherMeansOfTransport (const QString& strOtherMOT)
+{
+  m_strOtherMOT = strOtherMOT;
+
+  this->setItemText(
+    m_iOtherMotIndex,
+    QMeansOfTransportation::buildOtherLabel(m_strOtherMOT));
+}
+
+//---------------------------------------------------------------------------
 // meansOfTransport
 //---------------------------------------------------------------------------
 quint8 QMeansOfTransportation::meansOfTransport (void)
 {
   return (quint8)this->currentItemData().toInt();
-}
-
-//---------------------------------------------------------------------------
-// otherMeansOfTransport
-//---------------------------------------------------------------------------
-QString QMeansOfTransportation::otherMeansOfTransport (void)
-{
-  if ((this->meansOfTransport() == GPSRFile::MEANSTRANSPORT_OTHER) &&
-    App::instance() &&
-    App::instance()->settings())
-  {
-    return App::instance()->settings()->getLastOtherMeansOfTransport().constData();
-  }
-
-  return QString();
 }
 
 
@@ -123,25 +122,24 @@ void QMeansOfTransportation::onSelected (int iIndex)
   {
     // here, user wants to specify its own means of transportation
 
-    AppSettings& settings = *App::instance()->settings();
-    QString      strInput;
-    bool         bOk = false;
+    QString strInput;
+    bool    bOk = false;
 
     strInput = QInputDialog::getText(
       static_cast<QWidget*>(this->parent()),
       tr("Name ?"),
       tr("Please enter your means of transportation or leave blank :"),
       QLineEdit::Normal,
-      settings.getLastOtherMeansOfTransport().constData(),
+      m_strOtherMOT,
       &bOk);
 
     if (bOk)
     {
-      settings.setLastOtherMeansOfTransport(qPrintable(strInput));
+      m_strOtherMOT = GPSRFile::validateOtherMeansOfTransport(strInput);
 
       this->setItemText(
         iIndex,
-        QString(tr("Other : \"%1\"")).arg(settings.getLastOtherMeansOfTransport().constData()));
+        QMeansOfTransportation::buildOtherLabel(m_strOtherMOT));
     }
     else if (iLastIndex >= 0)
     {
@@ -150,4 +148,21 @@ void QMeansOfTransportation::onSelected (int iIndex)
   }
 
   iLastIndex = iIndex;
+}
+
+
+
+//---------------------------------------------------------------------------
+// buildOtherLabel
+//---------------------------------------------------------------------------
+QString QMeansOfTransportation::buildOtherLabel (const QString& strOtherMeansOfTransport)
+{
+  QString strLabel(GPSRFile::meansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER));
+
+  if (strOtherMeansOfTransport.isEmpty())
+    strLabel += " : ?";
+  else
+    strLabel += QString(" : \"%1\"").arg(strOtherMeansOfTransport);
+
+  return strLabel;
 }

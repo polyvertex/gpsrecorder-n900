@@ -59,6 +59,26 @@ CHUNKNAMES[] =
 
 static const int CHUNKNAMES_COUNT = sizeof(CHUNKNAMES) / sizeof(CHUNKNAMES[0]);
 
+static const struct
+{
+  quint8      id;
+  const char* label;
+}
+TRANSPORTNAMES[] =
+{
+  { GPSRFile::MEANSTRANSPORT__INVALID__, QT_TR_NOOP("N/A") },
+  { GPSRFile::MEANSTRANSPORT_FOOT,       QT_TR_NOOP("Foot") },
+  { GPSRFile::MEANSTRANSPORT_ROLLER,     QT_TR_NOOP("Roller") },
+  { GPSRFile::MEANSTRANSPORT_BIKE,       QT_TR_NOOP("Bike") },
+  { GPSRFile::MEANSTRANSPORT_MOTORBIKE,  QT_TR_NOOP("Motorbike") },
+  { GPSRFile::MEANSTRANSPORT_CAR,        QT_TR_NOOP("Car") },
+  { GPSRFile::MEANSTRANSPORT_BOAT,       QT_TR_NOOP("Boat") },
+  { GPSRFile::MEANSTRANSPORT_PLANE,      QT_TR_NOOP("Plane") },
+  { GPSRFile::MEANSTRANSPORT_OTHER,      QT_TR_NOOP("Other") },
+};
+
+static const int TRANSPORTNAMES_COUNT = sizeof(TRANSPORTNAMES) / sizeof(TRANSPORTNAMES[0]);
+
 
 
 //---------------------------------------------------------------------------
@@ -897,6 +917,54 @@ const char* GPSRFile::chunkIdToLabel (quint16 uiChunkId)
   }
 
   return c_pszUnknown;
+}
+
+//---------------------------------------------------------------------------
+// meansOfTransportToLabel
+//---------------------------------------------------------------------------
+const char* GPSRFile::meansOfTransportToLabel (quint8 ucMeansOfTransport)
+{
+  static const char* c_pszUnknown = "?";
+
+  for (int i = 0; i < TRANSPORTNAMES_COUNT; ++i)
+  {
+    if (TRANSPORTNAMES[i].id == ucMeansOfTransport)
+      return TRANSPORTNAMES[i].label;
+  }
+
+  return c_pszUnknown;
+}
+
+//---------------------------------------------------------------------------
+// meansOfTransportList
+//---------------------------------------------------------------------------
+QVector<quint8> GPSRFile::meansOfTransportList (void)
+{
+  QVector<quint8> vecMOT;
+
+  for (int i = 0; i < TRANSPORTNAMES_COUNT; ++i)
+    vecMOT.append(TRANSPORTNAMES[i].id);
+
+  return vecMOT;
+}
+
+//---------------------------------------------------------------------------
+// isValidMeansOfTransport
+//---------------------------------------------------------------------------
+bool GPSRFile::isValidMeansOfTransport (quint8 ucMeansOfTransport)
+{
+  return GPSRFile::meansOfTransportList().indexOf(ucMeansOfTransport) >= 0;
+}
+
+//---------------------------------------------------------------------------
+// validateOtherMeansOfTransport
+//---------------------------------------------------------------------------
+QString GPSRFile::validateOtherMeansOfTransport (const QString& strOtherMeansOfTransport)
+{
+  QString str(strOtherMeansOfTransport);
+  str.replace(QRegExp("[^A-Za-z0-9_ ]"), " ");
+  str = str.simplified();
+  return str;
 }
 
 //---------------------------------------------------------------------------

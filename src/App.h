@@ -87,13 +87,14 @@ public :
   WndCell*  wndCell  (void) { return m_pWndCell; }
   WndAbout* wndAbout (void) { return m_pWndAbout; }
 
-  QPixmap* pixCellModeNone (void) { return m_pPixCellModeNone; }
-  QPixmap* pixCellMode2G   (void) { return m_pPixCellMode2G; }
-  QPixmap* pixCellMode3G   (void) { return m_pPixCellMode3G; }
-  QPixmap* pixStart        (void) { return m_pPixStart; }
-  QPixmap* pixPause        (void) { return m_pPixPause; }
-  QPixmap* pixStop         (void) { return m_pPixStop; }
-  QPixmap* pixSnap         (void) { return m_pPixSnap; }
+  QPixmap* pixCellModeNone     (void) { return m_pPixCellModeNone; }
+  QPixmap* pixCellMode2G       (void) { return m_pPixCellMode2G; }
+  QPixmap* pixCellMode3G       (void) { return m_pPixCellMode3G; }
+  QPixmap* pixStart            (void) { return m_pPixStart; }
+  QPixmap* pixPause            (void) { return m_pPixPause; }
+  QPixmap* pixStop             (void) { return m_pPixStop; }
+  QPixmap* pixSnap             (void) { return m_pPixSnap; }
+  QPixmap* pixMeansOfTransport (void) { return m_pPixMeansOfTransport; }
 
 
 signals :
@@ -143,7 +144,7 @@ private :
   QPixmap* m_pPixStop;
   QPixmap* m_pPixPause;
   QPixmap* m_pPixSnap;
-
+  QPixmap* m_pPixMeansOfTransport;
 
   WndMain*  m_pWndMain;
   WndSat*   m_pWndSat;

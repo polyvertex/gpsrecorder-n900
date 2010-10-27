@@ -77,6 +77,8 @@ public :
     CHUNK_NEWTRACK         = 45, // (v3+) a new track is following
     CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transportation (see the MEANSTRANSPORT_* values)
 
+    // CAUTION : Do not forget to modify the TRANSPORTNAMES structure in
+    // source file according to your changes here !
     MEANSTRANSPORT__INVALID__ = 0,
     MEANSTRANSPORT_FOOT       = 0x01,
     MEANSTRANSPORT_ROLLER     = 0x02,
@@ -129,9 +131,13 @@ public :
   GPSRFile (void);
   ~GPSRFile (void);
 
-  static const char* chunkIdToLabel    (quint16 uiChunkId);
-  static bool        cleanupIncomplete (const char* pszFile);
-  static bool        dump              (const char* pszFile, QString& strDump, bool bIncludeLocationFix);
+  static const char*     chunkIdToLabel                (quint16 uiChunkId);
+  static const char*     meansOfTransportToLabel       (quint8 ucMeansOfTransport);
+  static QVector<quint8> meansOfTransportList          (void);
+  static bool            isValidMeansOfTransport       (quint8 ucMeansOfTransport);
+  static QString         validateOtherMeansOfTransport (const QString& strOtherMeansOfTransport);
+  static bool            cleanupIncomplete             (const char* pszFile);
+  static bool            dump                          (const char* pszFile, QString& strDump, bool bIncludeLocationFix);
 
   bool openNew    (const char* pszFile, const char* pszTrackName, bool bForceReplace);
   bool openAppend (const char* pszFile, const char* pszTrackName);

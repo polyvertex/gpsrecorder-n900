@@ -60,26 +60,27 @@ App::App (int& nArgc, char** ppszArgv)
   m_uiLastFixWrite    = 0;
 
   // load pixmaps
-  m_pPixCellModeNone    = new QPixmap(":/icons/cellmode-none-170.png");
-  m_pPixCellMode2G      = new QPixmap(":/icons/cellmode-2g-170.png");
-  m_pPixCellMode3G      = new QPixmap(":/icons/cellmode-3g-170.png");
-  m_pPixStoppedGrey     = new QPixmap(":/icons/stopped-grey-48.png");
-  m_pPixStoppedGreen    = new QPixmap(":/icons/stopped-green-48.png");
-  m_pPixStoppedOrange   = new QPixmap(":/icons/stopped-orange-48.png");
-  m_pPixStoppedRed      = new QPixmap(":/icons/stopped-red-48.png");
-  m_pPixPausedGrey      = new QPixmap(":/icons/paused-grey-48-nomargin.png");
-  m_pPixPausedGreen     = new QPixmap(":/icons/paused-green-48-nomargin.png");
-  m_pPixPausedOrange    = new QPixmap(":/icons/paused-orange-48-nomargin.png");
-  m_pPixPausedRed       = new QPixmap(":/icons/paused-red-48-nomargin.png");
-  m_pPixRecordingGrey   = new QPixmap(":/icons/recording-grey-48-nomargin.png");
-  m_pPixRecordingGreen  = new QPixmap(":/icons/recording-green-48-nomargin.png");
-  m_pPixRecordingOrange = new QPixmap(":/icons/recording-orange-48-nomargin.png");
-  m_pPixRecordingRed    = new QPixmap(":/icons/recording-red-48-nomargin.png");
-  m_pPixStart           = new QPixmap(":/icons/start-48.png");
-  m_pPixStop            = new QPixmap(":/icons/stop-48.png");
-  m_pPixPause           = new QPixmap(":/icons/pause-48.png");
-  m_pPixSnap            = new QPixmap(":/icons/snap-48.png");
-  m_pPixState           = m_pPixStoppedGrey;
+  m_pPixCellModeNone     = new QPixmap(":/icons/cellmode-none-170.png");
+  m_pPixCellMode2G       = new QPixmap(":/icons/cellmode-2g-170.png");
+  m_pPixCellMode3G       = new QPixmap(":/icons/cellmode-3g-170.png");
+  m_pPixStoppedGrey      = new QPixmap(":/icons/stopped-grey-48.png");
+  m_pPixStoppedGreen     = new QPixmap(":/icons/stopped-green-48.png");
+  m_pPixStoppedOrange    = new QPixmap(":/icons/stopped-orange-48.png");
+  m_pPixStoppedRed       = new QPixmap(":/icons/stopped-red-48.png");
+  m_pPixPausedGrey       = new QPixmap(":/icons/paused-grey-48-nomargin.png");
+  m_pPixPausedGreen      = new QPixmap(":/icons/paused-green-48-nomargin.png");
+  m_pPixPausedOrange     = new QPixmap(":/icons/paused-orange-48-nomargin.png");
+  m_pPixPausedRed        = new QPixmap(":/icons/paused-red-48-nomargin.png");
+  m_pPixRecordingGrey    = new QPixmap(":/icons/recording-grey-48-nomargin.png");
+  m_pPixRecordingGreen   = new QPixmap(":/icons/recording-green-48-nomargin.png");
+  m_pPixRecordingOrange  = new QPixmap(":/icons/recording-orange-48-nomargin.png");
+  m_pPixRecordingRed     = new QPixmap(":/icons/recording-red-48-nomargin.png");
+  m_pPixStart            = new QPixmap(":/icons/start-48.png");
+  m_pPixStop             = new QPixmap(":/icons/stop-48.png");
+  m_pPixPause            = new QPixmap(":/icons/pause-48.png");
+  m_pPixSnap             = new QPixmap(":/icons/snap-48.png");
+  m_pPixMeansOfTransport = new QPixmap(":/icons/mot-48.png");
+  m_pPixState            = m_pPixStoppedGrey;
 
   // connect to AppSettings signals
   this->connect(
@@ -162,6 +163,7 @@ App::~App (void)
   delete m_pPixStop;
   delete m_pPixPause;
   delete m_pPixSnap;
+  delete m_pPixMeansOfTransport;
 }
 
 
@@ -329,6 +331,8 @@ bool App::setState (App::State eNewState)
           wndStart.meansOfTransport(),
           qPrintable(strOtherName));
       }
+
+      // TODO : show current means of transportation on the main window
 
       m_pPixState = m_pPixRecordingGrey;
 

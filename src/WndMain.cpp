@@ -159,6 +159,10 @@ void WndMain::createWidgets (void)
   m_pBtnSnap->setEnabled(false);
   this->connect(m_pBtnSnap, SIGNAL(clicked()), SLOT(onClickedSnap()));
 
+  m_pBtnMOT = new QPushButton(QIcon(*App::instance()->pixMeansOfTransport()), QString());
+  m_pBtnMOT->setEnabled(false);
+  this->connect(m_pBtnMOT, SIGNAL(clicked()), SLOT(onClickedMeansOfTransport()));
+
   m_pBtnCell = new QPushButton(tr("CELL"));
   m_pBtnCell->setEnabled(false);
   this->connect(m_pBtnCell, SIGNAL(clicked()), SLOT(onClickedCell()));
@@ -216,6 +220,7 @@ void WndMain::showFix (void)
     pButtons->addWidget(m_pLblStatusIcon);
     pButtons->addWidget(m_pBtnPauseResume);
     pButtons->addWidget(m_pBtnSnap);
+    pButtons->addWidget(m_pBtnMOT);
     pButtons->addWidget(pBtnSat);
     pButtons->addWidget(pBtnSpeed);
     pButtons->addWidget(m_pBtnCell);
@@ -272,6 +277,7 @@ void WndMain::onClickedStartStop (void)
     m_pMenuStartStop->setText(tr("Start"));
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
     m_pBtnSnap->setEnabled(false);
+    m_pBtnMOT->setEnabled(false);
     m_pMenuConvert->setEnabled(true);
   }
   else if (pApp->getState() == App::STATE_STOPPED)
@@ -286,6 +292,7 @@ void WndMain::onClickedStartStop (void)
     m_pMenuStartStop->setText(tr("Stop"));
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
     m_pBtnSnap->setEnabled(true);
+    m_pBtnMOT->setEnabled(true);
     m_pMenuConvert->setEnabled(false);
   }
   else
@@ -312,6 +319,7 @@ void WndMain::onClickedPauseResume (void)
 
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixStart()));
     m_pBtnSnap->setEnabled(false);
+    m_pBtnMOT->setEnabled(false);
   }
   else if (pApp->getState() == App::STATE_PAUSED)
   {
@@ -320,6 +328,7 @@ void WndMain::onClickedPauseResume (void)
 
     m_pBtnPauseResume->setIcon(QIcon(*pApp->pixPause()));
     m_pBtnSnap->setEnabled(true);
+    m_pBtnMOT->setEnabled(true);
   }
 }
 
@@ -401,6 +410,43 @@ void WndMain::onClickedConvert (void)
 
   if (!App::instance()->location()->isStarted())
     this->clearFixFields();
+}
+
+//---------------------------------------------------------------------------
+// onClickedMeansOfTransport
+//---------------------------------------------------------------------------
+void WndMain::onClickedMeansOfTransport (void)
+{
+  AppSettings& settings = *App::instance()->settings();
+  WndMeansOfTransportation wndMOT(this);
+  bool bOk;
+  QString strOtherLabel;
+
+  Q_ASSERT(App::instance()->getState() == App::STATE_STARTED);
+  if (App::instance()->getState() != App::STATE_STARTED)
+    return;
+
+  bOk = wndMOT.doExec(
+    settings.getLastMeansOfTransport(),
+    settings.getLastOtherMeansOfTransport().constData());
+
+  if (!bOk)
+  {
+    QMaemo5InformationBox::information(
+      this,
+      tr("Action canceled !"));
+    return;
+  }
+
+  if (wndMOT.meansOfTransport() == GPSRFile::MEANSTRANSPORT_OTHER)
+    strOtherLabel = wndMOT.otherMeansOfTransportName();
+
+  App::instance()->outFile()->writeMeansOfTransport(
+    time(0),
+    wndMOT.meansOfTransport(),
+    qPrintable(strOtherLabel));
+
+  // TODO : show current means of transportation on the main window
 }
 
 //---------------------------------------------------------------------------
