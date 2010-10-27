@@ -44,7 +44,7 @@ WndMeansOfTransport::WndMeansOfTransport (QWidget* pParent/*=0*/)
 
   m_bCanceled = true;
 
-  this->setWindowTitle(tr("Means of transport"));
+  this->setWindowTitle(tr("Select your means of transport"));
   this->setModal(true);
 }
 
@@ -74,19 +74,14 @@ bool WndMeansOfTransport::doExec (quint8 ucDefaultMeansOfTransport, const QStrin
 void WndMeansOfTransport::setupControls (void)
 {
   QGridLayout* pGrid;
-  QLabel*      pLabel;
   QPushButton* pBtnDone;
-
-  pLabel = new QLabel(tr("Please select your means of transport :"));
-  pLabel->setWordWrap(true);
 
   pBtnDone = new QPushButton(tr("Done"));
   this->connect(pBtnDone, SIGNAL(clicked()), SLOT(onClickedDone()));
 
   pGrid = new QGridLayout;
-  pGrid->addWidget(pLabel,      0, 0, 1, 6);
-  pGrid->addWidget(&m_comboBox, 1, 0, 1, 5);
-  pGrid->addWidget(pBtnDone,    1, 5);
+  pGrid->addWidget(&m_comboBox, 0, 0, 1, 5);
+  pGrid->addWidget(pBtnDone,    0, 5);
 
   this->setLayout(pGrid);
 }

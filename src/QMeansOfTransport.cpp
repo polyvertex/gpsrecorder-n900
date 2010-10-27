@@ -50,6 +50,9 @@ QMeansOfTransport::QMeansOfTransport (QWidget* pParent/*=0*/)
   {
     quint8 ucMOT = itMOT.next();
 
+    if (ucMOT == GPSRFile::MEANSTRANSPORT_FLYINGSAUCER)
+      continue;
+
     if (ucMOT == GPSRFile::MEANSTRANSPORT_OTHER)
     {
       m_iOtherMotIndex = iIndex;
