@@ -275,7 +275,30 @@ bool GPSRFile::openAppend (const char* pszFile, const char* pszTrackName)
   }
   rewind(m_pFile);
 
+  // overwrite format version in the existing file header
+  {
+    size_t uiOffset = 4;
+    quint8 ucFormat = FORMAT_VERSION;
+
+    if (fseek(m_pFile, uiOffset, SEEK_SET) < 0)
+    {
+      qWarning("Failed to fseek in %s at offset %u ! Error %d : %s", pszFile, uiOffset, errno, strerror(errno));
+      fclose(m_pFile);
+      m_pFile = NULL;
+      return false;
+    }
+
+    if (fwrite(&ucFormat, 1, 1, m_pFile) != 1)
+    {
+      qWarning("Failed to overwrite format version to %d in %s at offset %u ! Error %d : %s", ucFormat, pszFile, uiOffset, errno, strerror(errno));
+      fclose(m_pFile);
+      m_pFile = NULL;
+      return false;
+    }
+  }
+
   // truncate file
+  rewind(m_pFile);
   if (ftruncate(fileno(m_pFile), uiValidSize) != 0)
   {
     qWarning("Failed to truncate %s at offset %u ! Error %d : %s", pszFile, uiValidSize, errno, strerror(errno));
