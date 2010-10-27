@@ -180,7 +180,7 @@ class ExporterSink;
 #include "QLabeledLineEdit.h"
 #include "QMaemoComboBox.h"
 #include "QMaemoGroupBox.h"
-#include "QMeansOfTransportation.h"
+#include "QMeansOfTransport.h"
 
 #include "Util.h"
 #include "LocationFix.h"
@@ -204,7 +204,7 @@ class ExporterSink;
 #include "WndSpeed.h"
 #include "WndStart.h"
 #include "WndMain.h"
-#include "WndMeansOfTransportation.h"
+#include "WndMeansOfTransport.h"
 
 #include "AppSettings.h"
 #include "App.h"

@@ -119,7 +119,7 @@ void WndStart::setupControls (void)
   m_pTxtTrackName = new QLabeledLineEdit(tr("TrackName"), "");
   m_pTxtTrackName->setValidator(new QTrackNameValidator);
 
-  m_pCboMeansOfTransport = new QMeansOfTransportation(this);
+  m_pCboMeansOfTransport = new QMeansOfTransport(this);
   m_pCboMeansOfTransport->selectCurrentMeansOfTransport(settings.getLastMeansOfTransport());
   m_pCboMeansOfTransport->setOtherMeansOfTransport(settings.getLastOtherMeansOfTransport().constData());
 

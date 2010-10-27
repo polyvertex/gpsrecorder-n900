@@ -54,7 +54,7 @@ CHUNKNAMES[] =
   { GPSRFile::CHUNK_PAUSED,           "Paused" },
   { GPSRFile::CHUNK_RESUMED,          "Resumed" },
   { GPSRFile::CHUNK_NEWTRACK,         "NewTrack" },
-  { GPSRFile::CHUNK_MEANSTRANSPORT,   "MeansOfTransportation" },
+  { GPSRFile::CHUNK_MEANSTRANSPORT,   "MeansOfTransport" },
 };
 
 static const int CHUNKNAMES_COUNT = sizeof(CHUNKNAMES) / sizeof(CHUNKNAMES[0]);
@@ -483,7 +483,7 @@ void GPSRFile::writeMeansOfTransport (time_t uiTime, quint8 ucMeansOfTransport, 
   pChunk->uiTime  = uiTime ? uiTime : time(0);
 
   // data format :
-  // 0 : means of transportation byte
+  // 0 : means of transport byte
   // 1-var : asciiz, optional label
   pChunk->aData[0] = ucMeansOfTransport;
   if (pszOptionalLabel)

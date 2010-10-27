@@ -72,7 +72,7 @@ HEADERS += \
   src/QLabeledLineEdit.h \
   src/QMaemoComboBox.h \
   src/QMaemoGroupBox.h \
-  src/QMeansOfTransportation.h \
+  src/QMeansOfTransport.h \
   src/Util.h \
   src/WndAbout.h \
   src/WndBase.h \
@@ -80,7 +80,7 @@ HEADERS += \
   src/WndConfig.h \
   src/WndConvert.h \
   src/WndMain.h \
-  src/WndMeansOfTransportation.h \
+  src/WndMeansOfTransport.h \
   src/WndSat.h \
   src/WndSpeed.h \
   src/WndStart.h
@@ -105,7 +105,7 @@ SOURCES += \
   src/QLabeledLineEdit.cpp \
   src/QMaemoComboBox.cpp \
   src/QMaemoGroupBox.cpp \
-  src/QMeansOfTransportation.cpp \
+  src/QMeansOfTransport.cpp \
   src/Util.cpp \
   src/WndAbout.cpp \
   src/WndBase.cpp \
@@ -113,7 +113,7 @@ SOURCES += \
   src/WndConfig.cpp \
   src/WndConvert.cpp \
   src/WndMain.cpp \
-  src/WndMeansOfTransportation.cpp \
+  src/WndMeansOfTransport.cpp \
   src/WndSat.cpp \
   src/WndSpeed.cpp \
   src/WndStart.cpp

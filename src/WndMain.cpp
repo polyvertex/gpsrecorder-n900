@@ -418,7 +418,7 @@ void WndMain::onClickedConvert (void)
 void WndMain::onClickedMeansOfTransport (void)
 {
   AppSettings& settings = *App::instance()->settings();
-  WndMeansOfTransportation wndMOT(this);
+  WndMeansOfTransport wndMOT(this);
   bool bOk;
   QString strOtherLabel;
 
@@ -446,7 +446,7 @@ void WndMain::onClickedMeansOfTransport (void)
     wndMOT.meansOfTransport(),
     qPrintable(strOtherLabel));
 
-  // TODO : show current means of transportation on the main window
+  // TODO : show current means of transport on the main window
 }
 
 //---------------------------------------------------------------------------

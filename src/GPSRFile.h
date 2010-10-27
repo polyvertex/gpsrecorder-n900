@@ -75,7 +75,7 @@ public :
     CHUNK_PAUSED           = 40, // (v2+) track paused
     CHUNK_RESUMED          = 41, // (v2+) track resumed
     CHUNK_NEWTRACK         = 45, // (v3+) a new track is following
-    CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transportation (see the MEANSTRANSPORT_* values)
+    CHUNK_MEANSTRANSPORT   = 50, // (v3+) means of transport (see the MEANSTRANSPORT_* values)
 
     // CAUTION : Do not forget to modify the TRANSPORTNAMES structure in
     // source file according to your changes here !
@@ -87,7 +87,7 @@ public :
     MEANSTRANSPORT_CAR        = 0x05,
     MEANSTRANSPORT_BOAT       = 0x06,
     MEANSTRANSPORT_PLANE      = 0x07,
-    MEANSTRANSPORT_OTHER      = 0xFA, // an "other" means of transportation can be described into the trailing asciiz field
+    MEANSTRANSPORT_OTHER      = 0xFA, // an "other" means of transport can be described into the trailing asciiz field
   };
 
   enum Error

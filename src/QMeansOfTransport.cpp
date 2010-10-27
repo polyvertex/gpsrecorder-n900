@@ -33,10 +33,10 @@
 
 
 //---------------------------------------------------------------------------
-// QMeansOfTransportation
+// QMeansOfTransport
 //---------------------------------------------------------------------------
-QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
-: QMaemoComboBox(tr("Means of transportation"), pParent)
+QMeansOfTransport::QMeansOfTransport (QWidget* pParent/*=0*/)
+: QMaemoComboBox(tr("Means of transport"), pParent)
 {
   QVector<quint8>         vecMOT(GPSRFile::meansOfTransportList());
   QVectorIterator<quint8> itMOT(vecMOT);
@@ -54,7 +54,7 @@ QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
     {
       m_iOtherMotIndex = iIndex;
       this->addItem(
-        QMeansOfTransportation::buildOtherLabel(m_strOtherMOT),
+        QMeansOfTransport::buildOtherLabel(m_strOtherMOT),
         (int)ucMOT);
     }
     else
@@ -75,7 +75,7 @@ QMeansOfTransportation::QMeansOfTransportation (QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 // selectCurrentMeansOfTransport
 //---------------------------------------------------------------------------
-bool QMeansOfTransportation::selectCurrentMeansOfTransport (quint8 ucMeansOfTransport)
+bool QMeansOfTransport::selectCurrentMeansOfTransport (quint8 ucMeansOfTransport)
 {
   for (int i = 0; i < this->count(); ++i)
   {
@@ -92,19 +92,19 @@ bool QMeansOfTransportation::selectCurrentMeansOfTransport (quint8 ucMeansOfTran
 //---------------------------------------------------------------------------
 // setOtherMeansOfTransport
 //---------------------------------------------------------------------------
-void QMeansOfTransportation::setOtherMeansOfTransport (const QString& strOtherMOT)
+void QMeansOfTransport::setOtherMeansOfTransport (const QString& strOtherMOT)
 {
   m_strOtherMOT = strOtherMOT;
 
   this->setItemText(
     m_iOtherMotIndex,
-    QMeansOfTransportation::buildOtherLabel(m_strOtherMOT));
+    QMeansOfTransport::buildOtherLabel(m_strOtherMOT));
 }
 
 //---------------------------------------------------------------------------
 // meansOfTransport
 //---------------------------------------------------------------------------
-quint8 QMeansOfTransportation::meansOfTransport (void)
+quint8 QMeansOfTransport::meansOfTransport (void)
 {
   return (quint8)this->currentItemData().toInt();
 }
@@ -114,13 +114,13 @@ quint8 QMeansOfTransportation::meansOfTransport (void)
 //---------------------------------------------------------------------------
 // onSelected
 //---------------------------------------------------------------------------
-void QMeansOfTransportation::onSelected (int iIndex)
+void QMeansOfTransport::onSelected (int iIndex)
 {
   static int iLastIndex = -1;
 
   if (this->itemData(iIndex).toInt() == (int)GPSRFile::MEANSTRANSPORT_OTHER)
   {
-    // here, user wants to specify its own means of transportation
+    // here, user wants to specify its own means of transport
 
     QString strInput;
     bool    bOk = false;
@@ -128,7 +128,7 @@ void QMeansOfTransportation::onSelected (int iIndex)
     strInput = QInputDialog::getText(
       static_cast<QWidget*>(this->parent()),
       tr("Name ?"),
-      tr("Please enter your means of transportation or leave blank :"),
+      tr("Please enter your means of transport or leave blank :"),
       QLineEdit::Normal,
       m_strOtherMOT,
       &bOk);
@@ -139,7 +139,7 @@ void QMeansOfTransportation::onSelected (int iIndex)
 
       this->setItemText(
         iIndex,
-        QMeansOfTransportation::buildOtherLabel(m_strOtherMOT));
+        QMeansOfTransport::buildOtherLabel(m_strOtherMOT));
     }
     else if (iLastIndex >= 0)
     {
@@ -155,7 +155,7 @@ void QMeansOfTransportation::onSelected (int iIndex)
 //---------------------------------------------------------------------------
 // buildOtherLabel
 //---------------------------------------------------------------------------
-QString QMeansOfTransportation::buildOtherLabel (const QString& strOtherMeansOfTransport)
+QString QMeansOfTransport::buildOtherLabel (const QString& strOtherMeansOfTransport)
 {
   QString strLabel(GPSRFile::meansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER));
 

@@ -318,7 +318,7 @@ bool App::setState (App::State eNewState)
         }
       }
 
-      // write means of transportation if user selected it
+      // write means of transport if user selected it
       if (wndStart.meansOfTransport() != 0)
       {
         QString strOtherName =
@@ -332,7 +332,7 @@ bool App::setState (App::State eNewState)
           qPrintable(strOtherName));
       }
 
-      // TODO : show current means of transportation on the main window
+      // TODO : show current means of transport on the main window
 
       m_pPixState = m_pPixRecordingGrey;
 

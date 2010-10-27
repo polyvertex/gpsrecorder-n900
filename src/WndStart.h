@@ -85,9 +85,9 @@ private :
   QString m_strOtherMeansOfTransport;
 
   // dialog widgets
-  QLabeledLineEdit*       m_pTxtTrackName;
-  QMeansOfTransportation* m_pCboMeansOfTransport;
-  QLabeledLineEdit*       m_pTxtFilePath;
+  QLabeledLineEdit*  m_pTxtTrackName;
+  QMeansOfTransport* m_pCboMeansOfTransport;
+  QLabeledLineEdit*  m_pTxtFilePath;
 };
 
 

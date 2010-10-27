@@ -23,46 +23,49 @@
 //
 //
 // Author     : Jean-Charles Lefebvre
-// Created On : 2010-10-26 17:13:01
+// Created On : 2010-10-26 15:09:52
 //
 // $Id$
 //
 //***************************************************************************
 
-#ifndef __QMEANSOFTRANSPORTATION_H__
-#define __QMEANSOFTRANSPORTATION_H__
+#ifndef __WNDMEANSOFTRANSPORT_H__
+#define __WNDMEANSOFTRANSPORT_H__
 
 #include "stable.h"
 
 
 //---------------------------------------------------------------------------
-// QMeansOfTransportation
+// WndMeansOfTransport
 //---------------------------------------------------------------------------
-class QMeansOfTransportation : public QMaemoComboBox
+class WndMeansOfTransport : public QDialog
 {
   Q_OBJECT
 
 public :
-  QMeansOfTransportation (QWidget* pParent=0);
+  WndMeansOfTransport (QWidget* pParent=0);
 
-  bool selectCurrentMeansOfTransport (quint8 ucMeansOfTransport);
-  void setOtherMeansOfTransport      (const QString& strOtherMOT);
+  // run dialog
+  // use this method instead of QDialog::exec() !
+  bool doExec (quint8 ucDefaultMeansOfTransport, const QString& strOtherMotLabel);
 
-  quint8  meansOfTransport      (void);
-  QString otherMeansOfTransport (void) const { return m_strOtherMOT; }
-
-
-  static QString buildOtherLabel (const QString& strOtherMeansOfTransport);
-
-
-private slots :
-  void onSelected (int iIndex);
+  // result
+  quint8  meansOfTransport          (void) { return m_comboBox.meansOfTransport(); }
+  QString otherMeansOfTransportName (void) { return m_comboBox.otherMeansOfTransport(); }
 
 
 private :
-  QString m_strOtherMOT;
-  int     m_iOtherMotIndex;
+  void setupControls (void);
+
+
+private slots :
+  void onClickedDone (void);
+
+
+private :
+  bool              m_bCanceled;
+  QMeansOfTransport m_comboBox;
 };
 
 
-#endif // #ifndef __QMEANSOFTRANSPORTATION_H__
+#endif // #ifndef __WNDMEANSOFTRANSPORT_H__

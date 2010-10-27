@@ -33,9 +33,9 @@
 
 
 //---------------------------------------------------------------------------
-// WndMeansOfTransportation
+// WndMeansOfTransport
 //---------------------------------------------------------------------------
-WndMeansOfTransportation::WndMeansOfTransportation (QWidget* pParent/*=0*/)
+WndMeansOfTransport::WndMeansOfTransport (QWidget* pParent/*=0*/)
 : QDialog(pParent)
 , m_comboBox(this)
 {
@@ -44,7 +44,7 @@ WndMeansOfTransportation::WndMeansOfTransportation (QWidget* pParent/*=0*/)
 
   m_bCanceled = true;
 
-  this->setWindowTitle(tr("Means of transportation"));
+  this->setWindowTitle(tr("Means of transport"));
   this->setModal(true);
 }
 
@@ -53,7 +53,7 @@ WndMeansOfTransportation::WndMeansOfTransportation (QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 // doExec
 //---------------------------------------------------------------------------
-bool WndMeansOfTransportation::doExec (quint8 ucDefaultMeansOfTransport, const QString& strOtherMotLabel)
+bool WndMeansOfTransport::doExec (quint8 ucDefaultMeansOfTransport, const QString& strOtherMotLabel)
 {
   m_comboBox.selectCurrentMeansOfTransport(ucDefaultMeansOfTransport);
   m_comboBox.setOtherMeansOfTransport(strOtherMotLabel);
@@ -71,13 +71,13 @@ bool WndMeansOfTransportation::doExec (quint8 ucDefaultMeansOfTransport, const Q
 //---------------------------------------------------------------------------
 // setupControls
 //---------------------------------------------------------------------------
-void WndMeansOfTransportation::setupControls (void)
+void WndMeansOfTransport::setupControls (void)
 {
   QGridLayout* pGrid;
   QLabel*      pLabel;
   QPushButton* pBtnDone;
 
-  pLabel = new QLabel(tr("Please select your means of transportation :"));
+  pLabel = new QLabel(tr("Please select your means of transport :"));
   pLabel->setWordWrap(true);
 
   pBtnDone = new QPushButton(tr("Done"));
@@ -96,7 +96,7 @@ void WndMeansOfTransportation::setupControls (void)
 //---------------------------------------------------------------------------
 // onClickedDone
 //---------------------------------------------------------------------------
-void WndMeansOfTransportation::onClickedDone (void)
+void WndMeansOfTransport::onClickedDone (void)
 {
   AppSettings& settings = *App::instance()->settings();
 

@@ -47,8 +47,8 @@ static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
 static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
 static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
 
-static const char* SETTINGNAME_LASTMEANSOFTRANSPORT      = "LastMeansOfTransportation";
-static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransportation";
+static const char* SETTINGNAME_LASTMEANSOFTRANSPORT      = "LastMeansOfTransport";
+static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransport";
 
 static const char* SETTINGNAME_CONVERT_TXT          = "ConvertTxt";
 static const char* SETTINGNAME_CONVERT_CSV          = "ConvertCsv";
