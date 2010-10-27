@@ -79,15 +79,53 @@ public :
 
     // CAUTION : Do not forget to modify the TRANSPORTNAMES structure in
     // source file according to your changes here !
-    MEANSTRANSPORT__INVALID__ = 0,
-    MEANSTRANSPORT_FOOT       = 0x01,
-    MEANSTRANSPORT_ROLLER     = 0x02,
-    MEANSTRANSPORT_BIKE       = 0x03,
-    MEANSTRANSPORT_MOTORBIKE  = 0x04,
-    MEANSTRANSPORT_CAR        = 0x05,
-    MEANSTRANSPORT_BOAT       = 0x06,
-    MEANSTRANSPORT_PLANE      = 0x07,
-    MEANSTRANSPORT_OTHER      = 0xFA, // an "other" means of transport can be described into the trailing asciiz field
+    MEANSTRANSPORT_UNKNOWN      = 0, // this value should not be written in file
+    //
+    MEANSTRANSPORT_FOOT         = 1,
+    MEANSTRANSPORT_ROLLER       = 5,
+    MEANSTRANSPORT_SKATEBOARD   = 10,
+    MEANSTRANSPORT_BIKE         = 15,
+    //
+    MEANSTRANSPORT_SKI          = 35,
+    MEANSTRANSPORT_SNOWBOARD    = 40,
+    //
+    MEANSTRANSPORT_CAR          = 60,
+    MEANSTRANSPORT_MOTORBIKE    = 65,
+    MEANSTRANSPORT_SCOOTER      = 66,
+    MEANSTRANSPORT_TRUCK        = 70,
+    MEANSTRANSPORT_TAXI         = 75,
+    MEANSTRANSPORT_BUS          = 80,
+    MEANSTRANSPORT_TUKTUK       = 85,
+    MEANSTRANSPORT_TRAIN        = 90,
+    //
+    MEANSTRANSPORT_HORSE        = 120,
+    MEANSTRANSPORT_PONY         = 121,
+    MEANSTRANSPORT_DONKEY       = 125,
+    MEANSTRANSPORT_CAMEL        = 130,
+    MEANSTRANSPORT_CALASH       = 140,
+    MEANSTRANSPORT_SULKY        = 141,
+    //
+    MEANSTRANSPORT_BOAT         = 150,
+    MEANSTRANSPORT_JETSKI       = 152,
+    MEANSTRANSPORT_SAILINGBOAT  = 154,
+    MEANSTRANSPORT_BARGE        = 160,
+    MEANSTRANSPORT_SHIP         = 162,
+    MEANSTRANSPORT_FERRY        = 164,
+    MEANSTRANSPORT_CARGO        = 166,
+    //
+    MEANSTRANSPORT_PLANE        = 200,
+    MEANSTRANSPORT_SEAPLANE     = 201,
+    MEANSTRANSPORT_GLIDER       = 202,
+    MEANSTRANSPORT_ULTRALIGHT   = 203,
+    MEANSTRANSPORT_HELICOPTER   = 205,
+    MEANSTRANSPORT_GYROCOPTER   = 206,
+    MEANSTRANSPORT_AIRSHIP      = 210,
+    MEANSTRANSPORT_FREEFALL     = 220,
+    MEANSTRANSPORT_PARAGLIDER   = 222,
+    MEANSTRANSPORT_DELTAPLANE   = 224,
+    //
+    MEANSTRANSPORT_OTHER        = 250,
+    MEANSTRANSPORT_FLYINGSAUCER = 251, // easter eggs are cool :)
   };
 
   enum Error

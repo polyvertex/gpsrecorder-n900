@@ -125,7 +125,7 @@ public :
   static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
   static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
   static bool             defaultPreventBlankScreen (void) { return false; }
-  static quint8           defaultMeansOfTransport   (void) { return GPSRFile::MEANSTRANSPORT__INVALID__; }
+  static quint8           defaultMeansOfTransport   (void) { return GPSRFile::MEANSTRANSPORT_UNKNOWN; }
 
   static bool defaultConvertTxt (void) { return false; }
   static bool defaultConvertCsv (void) { return true; }
