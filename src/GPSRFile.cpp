@@ -1133,7 +1133,8 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
 
   // dump header
   {
-    Header* pHeader;
+    Header*   pHeader;
+    QFileInfo fi(pszFile);
 
     swap.reserve(sizeof(*pHeader) + 1);
     pHeader = (Header*)swap.data();
@@ -1149,7 +1150,7 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
       "\tFile           %1\n"
       "\tFormat         %2\n"
       "\tTime           %3 UTC (%4)\n" )
-      .arg(pszFile)
+      .arg(fi.fileName())
       .arg((int)pHeader->ucFormat)
       .arg(Util::timeString(true, pHeader->uiTime).constData())
       .arg(pHeader->uiTime);
@@ -1214,6 +1215,8 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
   while (itChunk.hasNext())
   {
     const ChunkReadInfo& cri = itChunk.next();
+    Chunk* pChunk = 0;
+    int iFirstColWidth = 7;
 
     // skip location fix if we don't want it
     if ((cri.uiId == CHUNK_LOCATIONFIX) ||
@@ -1231,19 +1234,54 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
       uiSkippedFix = 0;
     }
 
-    // chunk header
+    // read chunk body
+    if (pFile->seek((qint64)cri.uiOffset))
+    {
+      swap.reserve(cri.uiSize + 1);
+      pChunk = (Chunk*)swap.data();
+
+      iRes = pFile->read((char*)pChunk, cri.uiSize);
+      if (iRes != (qint64)cri.uiSize)
+        pChunk = 0;
+    }
+
+    // output chunk header
     strDump += QString(
       "CHUNK %1 (id %2) :\n"
-      "\tOffset %3\n"
-      "\tSize   %4\n"
-      "\tTime   %5 UTC (%6)\n"
-      "\n")
+      "\t%3 %4\n"
+      "\t%5 %6\n"
+      "\t%7 %8 UTC (%9)\n")
       .arg(GPSRFile::chunkIdToLabel(cri.uiId))
       .arg((uint)cri.uiId)
+      .arg("Offset", -iFirstColWidth)
       .arg(cri.uiOffset)
+      .arg("Size", -iFirstColWidth)
       .arg(cri.uiSize)
+      .arg("Time", -iFirstColWidth)
       .arg(Util::timeString(true, cri.uiTime).constData())
       .arg(cri.uiTime);
+
+    // output chunk body
+    if (cri.uiId == CHUNK_MESSAGE ||
+      cri.uiId == CHUNK_NAMEDSNAP ||
+      cri.uiId == CHUNK_PAUSED ||
+      cri.uiId == CHUNK_NEWTRACK)
+    {
+      strDump +=
+        QString("\t%1 %2\n")
+        .arg("Label", -iFirstColWidth)
+        .arg((char*)&(pChunk->aData));
+    }
+    else if (cri.uiId == CHUNK_MEANSTRANSPORT)
+    {
+      strDump +=
+        QString("\t%1 %2 (id %3)\n")
+        .arg("Label", -iFirstColWidth)
+        .arg(GPSRFile::fullMeansOfTransportToLabel(pChunk->aData[0], (char*)&(pChunk->aData[1])))
+        .arg((int)pChunk->aData[0]);
+    }
+
+    strDump += "\n";
   }
 
   strDump += "EOF\n";
