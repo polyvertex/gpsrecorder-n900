@@ -1179,13 +1179,13 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
   strDump += QString(
     "Chunks statistics :\n"
     "\t%1 %2\n" )
-    .arg("TotalChunks", -27)
+    .arg("TotalChunks", -21)
     .arg(vecChunks.size());
   for (int i = 0; i < CHUNKNAMES_COUNT; ++i)
   {
     strDump +=
       QString("\t%1 %2\n")
-      .arg(QString("Chunk") + CHUNKNAMES[i].label, -27)
+      .arg(QString("Chunk") + CHUNKNAMES[i].label, -21)
       .arg(GPSRFile::chunksCount(vecChunks, CHUNKNAMES[i].id));
   }
   strDump += "\n";
