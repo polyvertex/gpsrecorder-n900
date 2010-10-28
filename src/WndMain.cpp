@@ -169,6 +169,9 @@ void WndMain::createWidgets (void)
   m_pLblLastWrittenFixTime = new QLabel();
   m_pLblLastWrittenFixTime->setDisabled(true);
 
+  m_pLblHorizEp = new QLabel();
+  m_pLblHorizEp->setDisabled(true);
+
   m_pLblMeansOfTransport = new QLabel();
   m_pLblMeansOfTransport->setDisabled(true);
 
@@ -231,7 +234,8 @@ void WndMain::showFix (void)
   pForm3->addRow(tr("Last waypoint :"), m_pLblLastWrittenFixTime);
 
   pForm4->setSpacing(8);
-  pForm4->addRow(tr("Means of transport :"), m_pLblMeansOfTransport);
+  pForm4->addRow(tr("HorizEP :"), m_pLblHorizEp);
+  pForm4->addRow(tr("Transport :"), m_pLblMeansOfTransport);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("SAT"));
@@ -281,6 +285,7 @@ void WndMain::clearFixFields (void)
   m_pLblFixesWritten->clear();
   m_pLblLastWrittenFixTime->clear();
 
+  m_pLblHorizEp->clear();
   //m_pLblMeansOfTransport->clear();
 }
 
@@ -572,6 +577,7 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
   m_pLblFixAlt->setText(QString::number(fix.hasFields(FIXFIELD_ALT) ? fix.getAlt(settings.getUnitSystem()) : 0.0) + " " + QString(fix.getAltSuffix(settings.getUnitSystem())));
   m_pLblFixTrack->setText(QString::number((isnan(fix.getTrackDeg()) ? 0.0 : fix.getTrackDeg()), 'f', 1) + QChar(L'\x00b0'));
   m_pLblFixSpeed->setText(QString::number((fix.hasFields(FIXFIELD_SPEED) ? fix.getSpeed(settings.getHorizSpeedUnit()) : 0.0), 'f', 2) + " " + QString(fix.getSpeedSuffix(settings.getHorizSpeedUnit())));
+  m_pLblHorizEp->setText(QString::number((isnan(fix.getHorizEp(settings.getUnitSystem())) ? 0.0 : fix.getHorizEp(settings.getUnitSystem())), 'f', 2) + " " + QString(fix.getHorizEpSuffix(settings.getUnitSystem())));
 
   // miscellaneous
   m_pLblTimeFixed->setText(App::instance()->lastTimeSetup() == 0 ? tr("NO") : tr("YES"));

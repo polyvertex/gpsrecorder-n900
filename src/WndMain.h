@@ -101,6 +101,7 @@ private :
   QLabel* m_pLblFixesWritten;
   QLabel* m_pLblLastWrittenFixTime;
 
+  QLabel* m_pLblHorizEp;
   QLabel* m_pLblMeansOfTransport;
 
   QPushButton* m_pBtnPauseResume;
