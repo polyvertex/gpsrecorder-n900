@@ -82,7 +82,7 @@ void WndMain::setMeansOfTransport (quint8 ucMeansOfTransport, const QString& str
   {
     AppSettings& settings = *App::instance()->settings();
 
-    m_pLblMeansOfTransport->setText(QMeansOfTransport::buildLabel(
+    m_pLblMeansOfTransport->setText(GPSRFile::fullMeansOfTransportToLabel(
       settings.getLastMeansOfTransport(),
       settings.getLastOtherMeansOfTransport().constData() ));
   }
@@ -473,9 +473,9 @@ void WndMain::onClickedMeansOfTransport (void)
     wndMOT.meansOfTransport(),
     qPrintable(strOtherLabel));
 
-  m_pLblMeansOfTransport->setText(QMeansOfTransport::buildLabel(
+  this->setMeansOfTransport(
     settings.getLastMeansOfTransport(),
-    settings.getLastOtherMeansOfTransport().constData() ));
+    settings.getLastOtherMeansOfTransport().constData() );
 }
 
 //---------------------------------------------------------------------------

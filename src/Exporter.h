@@ -46,10 +46,10 @@ public :
   enum GizmoType
   {
     GIZMO_TRACK,
+    GIZMO_MEANSTRANSPORT,
     GIZMO_SNAP,
     GIZMO_PAUSE,
     GIZMO_RESUME,
-    GIZMO_MEANSTRANSPORT,
   };
 
   struct GizmoPoint

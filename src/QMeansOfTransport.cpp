@@ -52,18 +52,12 @@ QMeansOfTransport::QMeansOfTransport (QWidget* pParent/*=0*/)
 
     if (ucMOT == GPSRFile::MEANSTRANSPORT_FLYINGSAUCER)
       continue;
-
-    if (ucMOT == GPSRFile::MEANSTRANSPORT_OTHER)
-    {
+    else if (ucMOT == GPSRFile::MEANSTRANSPORT_OTHER)
       m_iOtherMotIndex = iIndex;
-      this->addItem(
-        QMeansOfTransport::buildOtherLabel(m_strOtherMOT),
-        (int)ucMOT);
-    }
-    else
-    {
-      this->addItem(GPSRFile::meansOfTransportToLabel(ucMOT), (int)ucMOT);
-    }
+
+    this->addItem(
+      GPSRFile::fullMeansOfTransportToLabel(ucMOT, m_strOtherMOT),
+      (int)ucMOT);
 
     ++iIndex;
   }
@@ -101,7 +95,7 @@ void QMeansOfTransport::setOtherMeansOfTransport (const QString& strOtherMOT)
 
   this->setItemText(
     m_iOtherMotIndex,
-    QMeansOfTransport::buildOtherLabel(m_strOtherMOT));
+    GPSRFile::fullMeansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER, m_strOtherMOT));
 }
 
 //---------------------------------------------------------------------------
@@ -142,7 +136,7 @@ void QMeansOfTransport::onSelected (int iIndex)
 
       this->setItemText(
         iIndex,
-        QMeansOfTransport::buildOtherLabel(m_strOtherMOT));
+        GPSRFile::fullMeansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER, m_strOtherMOT));
     }
     else if (iLastIndex >= 0)
     {
@@ -151,32 +145,4 @@ void QMeansOfTransport::onSelected (int iIndex)
   }
 
   iLastIndex = iIndex;
-}
-
-
-
-//---------------------------------------------------------------------------
-// buildLabel
-//---------------------------------------------------------------------------
-QString QMeansOfTransport::buildLabel (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport)
-{
-  if (ucMeansOfTransport == GPSRFile::MEANSTRANSPORT_OTHER)
-    return QMeansOfTransport::buildOtherLabel(strOtherMeansOfTransport);
-  else
-    return GPSRFile::meansOfTransportToLabel(ucMeansOfTransport);
-}
-
-//---------------------------------------------------------------------------
-// buildOtherLabel
-//---------------------------------------------------------------------------
-QString QMeansOfTransport::buildOtherLabel (const QString& strOtherMeansOfTransport)
-{
-  QString strLabel(GPSRFile::meansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER));
-
-  if (strOtherMeansOfTransport.isEmpty())
-    strLabel += " : ?";
-  else
-    strLabel += QString(" : \"%1\"").arg(strOtherMeansOfTransport);
-
-  return strLabel;
 }

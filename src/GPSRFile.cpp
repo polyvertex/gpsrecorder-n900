@@ -981,6 +981,24 @@ const char* GPSRFile::chunkIdToLabel (quint16 uiChunkId)
 }
 
 //---------------------------------------------------------------------------
+// fullMeansOfTransportToLabel
+//---------------------------------------------------------------------------
+QString GPSRFile::fullMeansOfTransportToLabel (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport)
+{
+  QString strLabel(GPSRFile::meansOfTransportToLabel(ucMeansOfTransport));
+
+  if (ucMeansOfTransport == GPSRFile::MEANSTRANSPORT_OTHER)
+  {
+    if (strOtherMeansOfTransport.isEmpty())
+      strLabel += " : ?";
+    else
+      strLabel += QString(" : \"%1\"").arg(strOtherMeansOfTransport);
+  }
+
+  return strLabel;
+}
+
+//---------------------------------------------------------------------------
 // meansOfTransportToLabel
 //---------------------------------------------------------------------------
 const char* GPSRFile::meansOfTransportToLabel (quint8 ucMeansOfTransport)

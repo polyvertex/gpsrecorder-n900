@@ -96,6 +96,15 @@ void ExporterSinkGpx::writeEOF (void)
     {
       strName = QString("Track %1").arg(gizmoPt.uiTypeIndex + 1);
     }
+    else if (gizmoPt.eType == Exporter::GIZMO_MEANSTRANSPORT)
+    {
+      strName  = "Means of transport : ";
+      strName += GPSRFile::fullMeansOfTransportToLabel(gizmoPt.data.ucMeansOfTransport, gizmoPt.strName.constData());
+    }
+    else if (gizmoPt.eType == Exporter::GIZMO_SNAP)
+    {
+      strName = QString("Snap %1").arg(gizmoPt.uiTypeIndex + 1);
+    }
     else if (gizmoPt.eType == Exporter::GIZMO_PAUSE)
     {
       if (!m_bExportPause)
@@ -107,10 +116,6 @@ void ExporterSinkGpx::writeEOF (void)
       if (!m_bExportPause)
         continue;
       strName = "Resume";
-    }
-    else if (gizmoPt.eType != Exporter::GIZMO_MEANSTRANSPORT)
-    {
-      strName = QString("Snap %1").arg(gizmoPt.uiTypeIndex + 1);
     }
 
     if (!gizmoPt.strName.isEmpty())

@@ -171,6 +171,7 @@ public :
 
   static const char*     chunkIdToLabel                (quint16 uiChunkId);
   static const char*     meansOfTransportToLabel       (quint8 ucMeansOfTransport);
+  static QString         fullMeansOfTransportToLabel   (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport);
   static QVector<quint8> meansOfTransportList          (void);
   static bool            isValidMeansOfTransport       (quint8 ucMeansOfTransport);
   static QString         validateOtherMeansOfTransport (const QString& strOtherMeansOfTransport);
