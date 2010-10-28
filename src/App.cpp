@@ -330,9 +330,11 @@ bool App::setState (App::State eNewState)
           time(0),
           wndStart.meansOfTransport(),
           qPrintable(strOtherName));
-      }
 
-      // TODO : show current means of transport on the main window
+        m_pWndMain->setMeansOfTransport(
+          wndStart.meansOfTransport(),
+          strOtherName);
+      }
 
       m_pPixState = m_pPixRecordingGrey;
 

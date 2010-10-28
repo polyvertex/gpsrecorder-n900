@@ -52,6 +52,7 @@ public :
   QString otherMeansOfTransport (void) const { return m_strOtherMOT; }
 
 
+  static QString buildLabel      (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport);
   static QString buildOtherLabel (const QString& strOtherMeansOfTransport);
 
 

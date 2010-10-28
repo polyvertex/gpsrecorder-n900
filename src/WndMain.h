@@ -46,6 +46,8 @@ public :
   WndMain (QMainWindow* pParent=0);
   virtual ~WndMain (void);
 
+  void setMeansOfTransport (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport);
+
 
 protected :
   void closeEvent (QCloseEvent* pEvent);
@@ -98,6 +100,8 @@ private :
   QLabel* m_pLblTimeFixed;
   QLabel* m_pLblFixesWritten;
   QLabel* m_pLblLastWrittenFixTime;
+
+  QLabel* m_pLblMeansOfTransport;
 
   QPushButton* m_pBtnPauseResume;
   QPushButton* m_pBtnSnap;

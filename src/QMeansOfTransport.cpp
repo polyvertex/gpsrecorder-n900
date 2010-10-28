@@ -156,6 +156,17 @@ void QMeansOfTransport::onSelected (int iIndex)
 
 
 //---------------------------------------------------------------------------
+// buildLabel
+//---------------------------------------------------------------------------
+QString QMeansOfTransport::buildLabel (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport)
+{
+  if (ucMeansOfTransport == GPSRFile::MEANSTRANSPORT_OTHER)
+    return QMeansOfTransport::buildOtherLabel(strOtherMeansOfTransport);
+  else
+    return GPSRFile::meansOfTransportToLabel(ucMeansOfTransport);
+}
+
+//---------------------------------------------------------------------------
 // buildOtherLabel
 //---------------------------------------------------------------------------
 QString QMeansOfTransport::buildOtherLabel (const QString& strOtherMeansOfTransport)

@@ -74,6 +74,23 @@ WndMain::~WndMain (void)
 
 
 //---------------------------------------------------------------------------
+// setMeansOfTransport
+//---------------------------------------------------------------------------
+void WndMain::setMeansOfTransport (quint8 ucMeansOfTransport, const QString& strOtherMeansOfTransport)
+{
+  if (m_pLblMeansOfTransport)
+  {
+    AppSettings& settings = *App::instance()->settings();
+
+    m_pLblMeansOfTransport->setText(QMeansOfTransport::buildLabel(
+      settings.getLastMeansOfTransport(),
+      settings.getLastOtherMeansOfTransport().constData() ));
+  }
+}
+
+
+
+//---------------------------------------------------------------------------
 // closeEvent
 //---------------------------------------------------------------------------
 void WndMain::closeEvent (QCloseEvent* pEvent)
@@ -152,6 +169,9 @@ void WndMain::createWidgets (void)
   m_pLblLastWrittenFixTime = new QLabel();
   m_pLblLastWrittenFixTime->setDisabled(true);
 
+  m_pLblMeansOfTransport = new QLabel();
+  m_pLblMeansOfTransport->setDisabled(true);
+
   m_pBtnPauseResume = new QPushButton(QIcon(*App::instance()->pixStart()), QString());
   this->connect(m_pBtnPauseResume, SIGNAL(clicked()), SLOT(onClickedPauseResume()));
 
@@ -187,6 +207,7 @@ void WndMain::showFix (void)
   QFormLayout* pForm1   = new QFormLayout();
   QFormLayout* pForm2   = new QFormLayout();
   QFormLayout* pForm3   = new QFormLayout();
+  QFormLayout* pForm4   = new QFormLayout();
   QWidget*     pBlank   = new QWidget();
   QHBoxLayout* pButtons = new QHBoxLayout();
 
@@ -208,6 +229,9 @@ void WndMain::showFix (void)
   pForm3->addRow(tr("Time setup :"), m_pLblTimeFixed);
   pForm3->addRow(tr("Waypoints :"), m_pLblFixesWritten);
   pForm3->addRow(tr("Last waypoint :"), m_pLblLastWrittenFixTime);
+
+  pForm4->setSpacing(8);
+  pForm4->addRow(tr("Means of transport :"), m_pLblMeansOfTransport);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("SAT"));
@@ -231,6 +255,7 @@ void WndMain::showFix (void)
   pGrid->addLayout(pForm2,   0, 1);
   pGrid->addWidget(pBlank,   1, 0);
   pGrid->addLayout(pForm3,   2, 0);
+  pGrid->addLayout(pForm4,   2, 1);
   pGrid->addLayout(pButtons, 3, 0, 1, 2, Qt::AlignBottom);
 
   pWidget->setLayout(pGrid);
@@ -255,6 +280,8 @@ void WndMain::clearFixFields (void)
   m_pLblTimeFixed->clear();
   m_pLblFixesWritten->clear();
   m_pLblLastWrittenFixTime->clear();
+
+  //m_pLblMeansOfTransport->clear();
 }
 
 
@@ -446,7 +473,9 @@ void WndMain::onClickedMeansOfTransport (void)
     wndMOT.meansOfTransport(),
     qPrintable(strOtherLabel));
 
-  // TODO : show current means of transport on the main window
+  m_pLblMeansOfTransport->setText(QMeansOfTransport::buildLabel(
+    settings.getLastMeansOfTransport(),
+    settings.getLastOtherMeansOfTransport().constData() ));
 }
 
 //---------------------------------------------------------------------------
