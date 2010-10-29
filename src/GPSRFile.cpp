@@ -490,7 +490,7 @@ void GPSRFile::writeSnap (time_t uiTime)
 //---------------------------------------------------------------------------
 void GPSRFile::writeNamedSnap (time_t uiTime, const char* pszName)
 {
-  this->writeChunkAsciiz(CHUNK_MESSAGE, uiTime, pszName);
+  this->writeChunkAsciiz(CHUNK_NAMEDSNAP, uiTime, pszName);
 }
 
 //---------------------------------------------------------------------------
