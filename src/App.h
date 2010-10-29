@@ -158,6 +158,8 @@ private :
   GPSRFile m_GPSRFile;
   uint     m_uiFixesWritten;
   time_t   m_uiLastFixWrite;
+
+  QBattery m_Batt;
 };
 
 

@@ -47,6 +47,7 @@ QString App::ms_strOutputDir;
 //---------------------------------------------------------------------------
 App::App (int& nArgc, char** ppszArgv)
 : QApplication(nArgc, ppszArgv)
+, m_Batt(this)
 {
   // force POSIX locale for *printf() calls, this is required by the
   // Exporter classes.  we do this here because the QApplication()
