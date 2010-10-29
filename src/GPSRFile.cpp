@@ -1067,16 +1067,21 @@ bool GPSRFile::cleanupIncomplete (const char* pszFile)
 
   if (uiValidSize > 0)
   {
+    QFileInfo fi(pszFile);
+
     // here, file is incomplete and just need to be truncated so only valid
     // data remains in file.
 
-    if (!QFile::resize(pszFile, (qint64)uiValidSize))
+    if ((qint64)uiValidSize < fi.size())
     {
-      qWarning("Failed to truncate incomplete file %s !", pszFile);
-      return false;
-    }
+      if (!QFile::resize(pszFile, (qint64)uiValidSize))
+      {
+        qWarning("Failed to truncate incomplete file %s !", pszFile);
+        return false;
+      }
 
-    qDebug("Truncated incomplete file %s !", pszFile);
+      qDebug("Truncated incomplete file %s !", pszFile);
+    }
   }
   else
   {
