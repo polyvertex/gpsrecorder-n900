@@ -613,14 +613,20 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
 //---------------------------------------------------------------------------
 void WndMain::onBatteryStatusChanged (int iCurrent, int iLastFull, int iDesign, bool bCharging)
 {
-  double  rPercent = double(iCurrent) * 100.0 / double(iDesign);
   QString strStatus;
 
-  strStatus  = QString::number(rPercent, 'f', 1);
-  strStatus += "%";
+  //qDebug("Battery charge : curr:%i lastfull:%i design:%i ischarg:%i",
+  //  iCurrent, iLastFull, iDesign, bCharging?1:0);
+
   if (bCharging)
-    strStatus += " (charging)";
+  {
+    strStatus = tr("Charging");
+  }
+  else
+  {
+    double rPercent = double(iCurrent) * 100.0 / double(iDesign);
+    strStatus = QString::number(rPercent, 'f', 1) + "%";
+  }
 
   m_pLblBattery->setText(strStatus);
-  this->update();
 }
