@@ -17,7 +17,7 @@ gpsrecorder (0.1.162) unstable; urgency=low
 
 gpsrecorder (0.1.152) unstable; urgency=low
 
-  * Corrected : The 'deleted empty track file' bug #6301 (application still require a good enough GPS time before recording a track).
+  * Fixed : The 'deleted empty track file' bug #6301 (application still require a good enough GPS time before recording a track).
   * Added : 'Time setup' field to indicate when system time has been setup and tracks can be recorded.
   * Added : 'Waypoints' field to show the numbers of written fixes into the current output file.
   * Added : 'Last waypoints' field to show the last time a fix has been written.
@@ -43,13 +43,13 @@ gpsrecorder (0.1.144) unstable; urgency=low
 
 gpsrecorder (0.1.136) unstable; urgency=low
 
-  * Corrected : Revision number from the 'About' window disappeared.
+  * Fixed : Revision number from the 'About' window disappeared.
 
  -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Mon, 09 Aug 2010 22:56:21 +0200
 
 gpsrecorder (0.1.135) unstable; urgency=low
 
-  * Corrected : We could not 'Convert' two consecutive times without browsing from file/dir the second time.
+  * Fixed : We could not 'Convert' two consecutive times without browsing from file/dir the second time.
   * Added : 'Snap' button to the main window (request #6075).
   * Added : 'Ask for point name to snap' option.
   * Added : Yellow informations banners here and there and replaced some information boxes.
@@ -61,7 +61,7 @@ gpsrecorder (0.1.135) unstable; urgency=low
 
 gpsrecorder (0.1.112) unstable; urgency=low
 
-  * Corrected bug #5883 (non POSIX locale was applied to exported files).
+  * Fixed bug #5883 (non POSIX locale was applied to exported files).
   * Added information boxes here and there to inform user when something goes wrong.
   * Polished the Convert dialog a little ('browse' icons).
 
