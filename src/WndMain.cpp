@@ -62,6 +62,11 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
     App::instance()->location(),
     SIGNAL(sigLocationFix(Location*, const LocationFixContainer*, bool)),
     SLOT(onLocationFix(Location*, const LocationFixContainer*, bool)) );
+
+  this->connect(
+    App::instance()->battery(),
+    SIGNAL(sigPropertiesChanged(uint, const QVector<QBattery::PropId>&)),
+    SLOT(onBatteryPropertiesChanged(uint, const QVector<QBattery::PropId>&)) );
 }
 
 //---------------------------------------------------------------------------
@@ -175,6 +180,9 @@ void WndMain::createWidgets (void)
   m_pLblMeansOfTransport = new QLabel();
   m_pLblMeansOfTransport->setDisabled(true);
 
+  m_pLblBattery = new QLabel();
+  m_pLblBattery->setDisabled(true);
+
   m_pBtnPauseResume = new QPushButton(QIcon(*App::instance()->pixStart()), QString());
   this->connect(m_pBtnPauseResume, SIGNAL(clicked()), SLOT(onClickedPauseResume()));
 
@@ -198,6 +206,11 @@ void WndMain::showHome (void)
 {
   // TODO : wallpaper + app name + app version + "record" button
   this->showFix();
+
+  // refresh battery level
+  QPair<bool,QString> res = App::instance()->battery()->propAsStr(0, QBattery::PROP_CHARGE_CHARGESTR);
+  if (res.first)
+    m_pLblBattery->setText(res.second);
 }
 
 //---------------------------------------------------------------------------
@@ -236,6 +249,7 @@ void WndMain::showFix (void)
   pForm4->setSpacing(8);
   pForm4->addRow(tr("HorizEP :"), m_pLblHorizEp);
   pForm4->addRow(tr("Transport :"), m_pLblMeansOfTransport);
+  pForm4->addRow(tr("Battery :"), m_pLblBattery);
 
   {
     QPushButton* pBtnSat   = new QPushButton(tr("SAT"));
@@ -287,6 +301,7 @@ void WndMain::clearFixFields (void)
 
   m_pLblHorizEp->clear();
   //m_pLblMeansOfTransport->clear();
+  //m_pLblBattery->clear();
 }
 
 
@@ -593,4 +608,17 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
 
 
   this->setUpdatesEnabled(true);
+}
+
+//---------------------------------------------------------------------------
+// onBatteryPropertiesChanged
+//---------------------------------------------------------------------------
+void WndMain::onBatteryPropertiesChanged (uint uiDevIndex, const QVector<QBattery::PropId>& vecChangedProps)
+{
+  if (uiDevIndex == 0 && vecChangedProps.contains(QBattery::PROP_CHARGE_CHARGESTR))
+  {
+    QPair<bool,QString> res = App::instance()->battery()->propAsStr(uiDevIndex, QBattery::PROP_CHARGE_CHARGESTR);
+    if (res.first)
+      m_pLblBattery->setText(res.second);
+  }
 }

@@ -71,6 +71,7 @@ public :
   Location*    location      (void) { return m_pLocation; }
   GPSRFile*    outFile       (void) { return &m_GPSRFile; }
   void         resetFixTime  (void) { m_uiLastFixWrite = 0; }
+  QBattery*    battery       (void) { return &m_Batt; }
 
   bool        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }

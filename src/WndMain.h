@@ -59,7 +59,7 @@ private :
   void showHome (void);
   void showFix  (void);
 
-  void clearFixFields (void);
+  void clearFixFields       (void);
 
 
 private slots :
@@ -74,9 +74,9 @@ private slots :
   void onClickedCell             (void);
   void onClickedAbout            (void);
 
-  void onAppStatePixChanged (QPixmap* pNewStatePixmap);
-
-  void onLocationFix (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
+  void onAppStatePixChanged       (QPixmap* pNewStatePixmap);
+  void onLocationFix              (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
+  void onBatteryPropertiesChanged (uint uiDevIndex, const QVector<QBattery::PropId>& vecChangedProps);
 
 
 private :
@@ -103,6 +103,7 @@ private :
 
   QLabel* m_pLblHorizEp;
   QLabel* m_pLblMeansOfTransport;
+  QLabel* m_pLblBattery;
 
   QPushButton* m_pBtnPauseResume;
   QPushButton* m_pBtnSnap;
