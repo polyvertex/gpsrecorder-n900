@@ -66,12 +66,12 @@ public :
 
   static App* instance (void) { return static_cast<App*>(QCoreApplication::instance()); }
 
-  AppSettings* settings      (void) { return &m_Settings; }
-  bool         writeSettings (void);
-  Location*    location      (void) { return m_pLocation; }
-  GPSRFile*    outFile       (void) { return &m_GPSRFile; }
-  void         resetFixTime  (void) { m_uiLastFixWrite = 0; }
-  QBattery*    battery       (void) { return &m_Batt; }
+  AppSettings*   settings      (void) { return &m_Settings; }
+  bool           writeSettings (void);
+  Location*      location      (void) { return m_pLocation; }
+  GPSRFile*      outFile       (void) { return &m_GPSRFile; }
+  void           resetFixTime  (void) { m_uiLastFixWrite = 0; }
+  QMaemoBattery* battery       (void) { return &m_Batt; }
 
   bool        setState    (State eNewState);
   State       getState    (void) const { return m_eState; }
@@ -160,7 +160,7 @@ private :
   uint     m_uiFixesWritten;
   time_t   m_uiLastFixWrite;
 
-  QBattery m_Batt;
+  QMaemoBattery m_Batt;
 };
 
 

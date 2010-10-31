@@ -69,8 +69,8 @@ HEADERS += \
   src/LocationFix.h \
   src/LocationGPSRFile.h \
   src/LocationMaemo.h \
-  src/QBattery.h \
   src/QLabeledLineEdit.h \
+  src/QMaemoBattery.h \
   src/QMaemoComboBox.h \
   src/QMaemoGroupBox.h \
   src/QMeansOfTransport.h \
@@ -103,8 +103,8 @@ SOURCES += \
   src/LocationFix.cpp \
   src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
-  src/QBattery.cpp \
   src/QLabeledLineEdit.cpp \
+  src/QMaemoBattery.cpp \
   src/QMaemoComboBox.cpp \
   src/QMaemoGroupBox.cpp \
   src/QMeansOfTransport.cpp \

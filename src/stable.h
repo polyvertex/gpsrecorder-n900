@@ -177,7 +177,7 @@ class ExporterSink;
 //---------------------------------------------------------------------------
 #ifdef __cplusplus
 
-#include "QBattery.h"
+#include "QMaemoBattery.h"
 #include "QLabeledLineEdit.h"
 #include "QMaemoComboBox.h"
 #include "QMaemoGroupBox.h"

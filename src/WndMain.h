@@ -74,9 +74,9 @@ private slots :
   void onClickedCell             (void);
   void onClickedAbout            (void);
 
-  void onAppStatePixChanged       (QPixmap* pNewStatePixmap);
-  void onLocationFix              (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
-  void onBatteryPropertiesChanged (uint uiDevIndex, const QVector<QBattery::PropId>& vecChangedProps);
+  void onAppStatePixChanged   (QPixmap* pNewStatePixmap);
+  void onLocationFix          (Location* pLocation, const LocationFixContainer* pFixCont, bool bAccurate);
+  void onBatteryStatusChanged (int iCurrent, int iLastFull, int iDesign, bool bCharging);
 
 
 private :

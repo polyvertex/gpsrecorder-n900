@@ -65,8 +65,11 @@ WndMain::WndMain (QMainWindow* pParent/*=0*/)
 
   this->connect(
     App::instance()->battery(),
-    SIGNAL(sigPropertiesChanged(uint, const QVector<QBattery::PropId>&)),
-    SLOT(onBatteryPropertiesChanged(uint, const QVector<QBattery::PropId>&)) );
+    SIGNAL(sigBatteryStatusChanged(int, int, int, bool)),
+    SLOT(onBatteryStatusChanged(int, int, int, bool)) );
+
+  // force refresh battery status
+  App::instance()->battery()->pollBattery();
 }
 
 //---------------------------------------------------------------------------
@@ -206,11 +209,6 @@ void WndMain::showHome (void)
 {
   // TODO : wallpaper + app name + app version + "record" button
   this->showFix();
-
-  // refresh battery level
-  QPair<bool,QString> res = App::instance()->battery()->propAsStr(0, QBattery::PROP_CHARGE_CHARGESTR);
-  if (res.first)
-    m_pLblBattery->setText(res.second);
 }
 
 //---------------------------------------------------------------------------
@@ -611,14 +609,18 @@ void WndMain::onLocationFix (Location* pLocation, const LocationFixContainer* pF
 }
 
 //---------------------------------------------------------------------------
-// onBatteryPropertiesChanged
+// onBatteryStatusChanged
 //---------------------------------------------------------------------------
-void WndMain::onBatteryPropertiesChanged (uint uiDevIndex, const QVector<QBattery::PropId>& vecChangedProps)
+void WndMain::onBatteryStatusChanged (int iCurrent, int iLastFull, int iDesign, bool bCharging)
 {
-  if (uiDevIndex == 0 && vecChangedProps.contains(QBattery::PROP_CHARGE_CHARGESTR))
-  {
-    QPair<bool,QString> res = App::instance()->battery()->propAsStr(uiDevIndex, QBattery::PROP_CHARGE_CHARGESTR);
-    if (res.first)
-      m_pLblBattery->setText(res.second);
-  }
+  double  rPercent = double(iCurrent) * 100.0 / double(iDesign);
+  QString strStatus;
+
+  strStatus  = QString::number(rPercent, 'f', 1);
+  strStatus += "%";
+  if (bCharging)
+    strStatus += " (charging)";
+
+  m_pLblBattery->setText(strStatus);
+  this->update();
 }
