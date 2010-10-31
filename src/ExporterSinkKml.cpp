@@ -196,10 +196,12 @@ void ExporterSinkKml::writeEOF (void)
   {
     const Exporter::GizmoPoint& gizmoPt = m_vecGizmoPoints[i];
     QString strName;
+    QString strStyle;
 
     if (gizmoPt.eType == Exporter::GIZMO_TRACK)
     {
-      strName = QString("Track %1").arg(gizmoPt.uiTypeIndex + 1);
+      strName  = QString("Track %1").arg(gizmoPt.uiTypeIndex + 1);
+      strStyle = " <styleUrl>#track-new</styleUrl>" KML_NL;
     }
     else if (gizmoPt.eType == Exporter::GIZMO_MEANSTRANSPORT)
     {
@@ -237,6 +239,7 @@ void ExporterSinkKml::writeEOF (void)
       "]]>" KML_NL
       " </description>" KML_NL
       " <visibility>1</visibility>" KML_NL
+      "%s"
 #ifdef KML_TIMESPAN
       " <TimeStamp>" KML_NL
       "  <when>%s</when>" KML_NL
@@ -250,6 +253,7 @@ void ExporterSinkKml::writeEOF (void)
       "</Placemark>" KML_NL,
       qPrintable(strName),
       Util::timeString(false, gizmoPt.uiTime, m_iTimeZoneOffset).constData(),
+      qPrintable(strStyle),
 #ifdef KML_TIMESPAN
       Util::timeString(false, gizmoPt.uiTime, m_iTimeZoneOffset).constData(),
 #endif
@@ -344,6 +348,13 @@ void ExporterSinkKml::onSOF (const char* pszFilePath, time_t uiTime, qint32 iTim
     "  <IconStyle>" KML_NL
     "   <Icon>" KML_NL
     "    <href>http://maps.google.com/mapfiles/kml/paddle/B.png</href>" KML_NL
+    "   </Icon>" KML_NL
+    "  </IconStyle>" KML_NL
+    " </Style>" KML_NL
+    " <Style id=\"track-new\">" KML_NL
+    "  <IconStyle>" KML_NL
+    "   <Icon>" KML_NL
+    "    <href>http://maps.google.com/mapfiles/kml/paddle/grn-diamond.png</href>" KML_NL
     "   </Icon>" KML_NL
     "  </IconStyle>" KML_NL
     " </Style>" KML_NL
