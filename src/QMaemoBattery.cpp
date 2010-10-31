@@ -180,7 +180,7 @@ void QMaemoBattery::onDBusPropertyModified (int iCount, QList<QMaemoBatteryDBusP
   while (itModProp.hasNext())
   {
     const QMaemoBatteryDBusProperty& dbusProp = itModProp.next();
-    if (!dbusProp.bAdded && !dbusProp.bRemoved)
+    if (!dbusProp.bRemoved)
       propNames.append(dbusProp.strName);
   }
 
