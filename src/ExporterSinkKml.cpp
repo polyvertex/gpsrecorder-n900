@@ -135,7 +135,7 @@ void ExporterSinkKml::writeEOF (void)
     const LocationFix& fix = *m_FixContBegin.getFix();
     fprintf(m_pFile,
       "<Placemark>" KML_NL
-      " <name>Track Begin</name>" KML_NL
+      " <name>Begin</name>" KML_NL
       " <description>" KML_NL
       "  <![CDATA[Time : %s<br />" KML_NL
       "]]>" KML_NL
@@ -170,7 +170,7 @@ void ExporterSinkKml::writeEOF (void)
 
     fprintf(m_pFile,
       "<Placemark>" KML_NL
-      " <name>Track End</name>" KML_NL
+      " <name>End</name>" KML_NL
       " <description>" KML_NL
       "  <![CDATA[Time : %s<br />" KML_NL
       "%s]]>" KML_NL
