@@ -59,6 +59,7 @@ private :
   QMaemoComboBox* m_pCboLogStep;
   QCheckBox*      m_pChkGpsAssisted;
   QCheckBox*      m_pChkGpsAlwaysConnected;
+  QCheckBox*      m_pChkAlwaysCreateNewFile;
   QCheckBox*      m_pChkAskPointName;
   QCheckBox*      m_pChkAskPauseName;
   QMaemoComboBox* m_pCboUnitSystem;

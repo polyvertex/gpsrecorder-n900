@@ -81,12 +81,21 @@ WndStart::WndStart (QWidget* pParent/*=0*/)
 //---------------------------------------------------------------------------
 bool WndStart::doExec (void)
 {
-  QMessageBox::StandardButton eBtn = QMessageBox::question(
-    static_cast<QWidget*>(this->parent()),
-    tr("Create a new file ?"),
-    tr("Do you want to create a new file for your track ?\nIf you answer No, your track will be appended to an existing GPSR file of your choice."),
-    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
-    QMessageBox::Cancel);
+  QMessageBox::StandardButton eBtn;
+
+  if (App::instance()->settings()->getAlwaysCreateNewFile())
+  {
+    eBtn = QMessageBox::Yes;
+  }
+  else
+  {
+    eBtn = QMessageBox::question(
+      static_cast<QWidget*>(this->parent()),
+      tr("Create a new file ?"),
+      tr("Do you want to create a new file for your track ?\nIf you answer No, your track will be appended to an existing GPSR file of your choice."),
+      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+      QMessageBox::Cancel);
+  }
 
   if (eBtn == QMessageBox::Cancel)
   {

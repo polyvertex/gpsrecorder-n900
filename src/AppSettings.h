@@ -64,6 +64,9 @@ public :
   void setGpsAlwaysConnected (bool bEnable);
   bool getGpsAlwaysConnected (void);
 
+  void setAlwaysCreateNewFile (bool bEnable);
+  bool getAlwaysCreateNewFile (void);
+
   void setAskPointName (bool bEnable);
   bool getAskPointName (void);
 
@@ -116,16 +119,17 @@ public :
   bool getKmlAircraftMode (void);
 
 
-  static uint             defaultLogStep            (void) { return 5; }
-  static QPair<uint,uint> logStepBounds             (void) { return QPair<uint,uint>(1, 10800); }
-  static bool             defaultGpsAssisted        (void) { return true; }
-  static bool             defaultGpsAlwaysConnected (void) { return true; }
-  static bool             defaultAskPointName       (void) { return true; }
-  static bool             defaultAskPauseName       (void) { return true; }
-  static uint             defaultUnitSystem         (void) { return UNITSYSTEM_METRIC; }
-  static uint             defaultHorizSpeedUnit     (void) { return HORIZSPEEDUNIT_KMH; }
-  static bool             defaultPreventBlankScreen (void) { return false; }
-  static quint8           defaultMeansOfTransport   (void) { return GPSRFile::MEANSTRANSPORT_UNKNOWN; }
+  static uint             defaultLogStep             (void) { return 5; }
+  static QPair<uint,uint> logStepBounds              (void) { return QPair<uint,uint>(1, 10800); }
+  static bool             defaultGpsAssisted         (void) { return true; }
+  static bool             defaultGpsAlwaysConnected  (void) { return true; }
+  static bool             defaultAlwaysCreateNewFile (void) { return false; }
+  static bool             defaultAskPointName        (void) { return true; }
+  static bool             defaultAskPauseName        (void) { return true; }
+  static uint             defaultUnitSystem          (void) { return UNITSYSTEM_METRIC; }
+  static uint             defaultHorizSpeedUnit      (void) { return HORIZSPEEDUNIT_KMH; }
+  static bool             defaultPreventBlankScreen  (void) { return false; }
+  static quint8           defaultMeansOfTransport    (void) { return GPSRFile::MEANSTRANSPORT_UNKNOWN; }
 
   static bool defaultConvertTxt (void) { return false; }
   static bool defaultConvertCsv (void) { return true; }

@@ -129,6 +129,9 @@ void WndConfig::setupControls (void)
     m_pChkGpsAlwaysConnected = new QCheckBox(tr("GPS always connected"));
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
+    m_pChkAlwaysCreateNewFile = new QCheckBox(tr("Always create new file"));
+    m_pChkAlwaysCreateNewFile->setCheckState(settings.getAlwaysCreateNewFile() ? Qt::Checked : Qt::Unchecked);
+
     m_pChkAskPointName = new QCheckBox(tr("Ask for point name before snap"));
     m_pChkAskPointName->setCheckState(settings.getAskPointName() ? Qt::Checked : Qt::Unchecked);
 
@@ -155,6 +158,7 @@ void WndConfig::setupControls (void)
     pVBox->addWidget(m_pCboLogStep);
     pVBox->addWidget(m_pChkGpsAssisted);
     pVBox->addWidget(m_pChkGpsAlwaysConnected);
+    pVBox->addWidget(m_pChkAlwaysCreateNewFile);
     pVBox->addWidget(m_pChkAskPointName);
     pVBox->addWidget(m_pChkAskPauseName);
     pVBox->addWidget(m_pCboUnitSystem);
@@ -200,6 +204,7 @@ void WndConfig::onClickedDone (void)
   settings.setLogStep(m_pCboLogStep->currentItemData().toUInt());
   settings.setGpsAssisted(m_pChkGpsAssisted->checkState() != Qt::Unchecked);
   settings.setGpsAlwaysConnected(m_pChkGpsAlwaysConnected->checkState() != Qt::Unchecked);
+  settings.setAlwaysCreateNewFile(m_pChkAlwaysCreateNewFile->checkState() != Qt::Unchecked);
   settings.setAskPointName(m_pChkAskPointName->checkState() != Qt::Unchecked);
   settings.setAskPauseName(m_pChkAskPauseName->checkState() != Qt::Unchecked);
   settings.setUnitSystem(m_pCboUnitSystem->currentItemData().toUInt());

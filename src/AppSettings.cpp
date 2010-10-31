@@ -37,15 +37,16 @@
 //---------------------------------------------------------------------------
 static const char* SETTINGNAME_OUTPUTDIR = "OutputDir";
 
-static const char* SETTINGNAME_LOGSTEP            = "LogStep";
-static const char* SETTINGNAME_GPSASSISTED        = "GpsAssisted";
-static const char* SETTINGNAME_GPSALWAYSCONNECTED = "GpsAlwaysConnected";
-static const char* SETTINGNAME_ASKTRACKNAME       = "AskTrackName"; // obsolete
-static const char* SETTINGNAME_ASKPOINTNAME       = "AskPointName";
-static const char* SETTINGNAME_ASKPAUSENAME       = "AskPauseName";
-static const char* SETTINGNAME_UNITSYSTEM         = "UnitSystem";
-static const char* SETTINGNAME_HORIZSPEEDUNIT     = "HorizSpeedUnit";
-static const char* SETTINGNAME_PREVENTBLANKSCREEN = "PreventBlankScreen";
+static const char* SETTINGNAME_LOGSTEP             = "LogStep";
+static const char* SETTINGNAME_GPSASSISTED         = "GpsAssisted";
+static const char* SETTINGNAME_GPSALWAYSCONNECTED  = "GpsAlwaysConnected";
+static const char* SETTINGNAME_ALWAYSCREATENEWFILE = "AlwaysCreateNewFile";
+static const char* SETTINGNAME_ASKTRACKNAME        = "AskTrackName"; // obsolete
+static const char* SETTINGNAME_ASKPOINTNAME        = "AskPointName";
+static const char* SETTINGNAME_ASKPAUSENAME        = "AskPauseName";
+static const char* SETTINGNAME_UNITSYSTEM          = "UnitSystem";
+static const char* SETTINGNAME_HORIZSPEEDUNIT      = "HorizSpeedUnit";
+static const char* SETTINGNAME_PREVENTBLANKSCREEN  = "PreventBlankScreen";
 
 static const char* SETTINGNAME_LASTMEANSOFTRANSPORT      = "LastMeansOfTransport";
 static const char* SETTINGNAME_LASTOTHERMEANSOFTRANSPORT = "LastOtherMeansOfTransport";
@@ -243,6 +244,23 @@ bool AppSettings::getGpsAlwaysConnected (void)
     return var.toBool();
 
   return AppSettings::defaultGpsAlwaysConnected();
+}
+
+//---------------------------------------------------------------------------
+// AlwaysCreateNewFile
+//---------------------------------------------------------------------------
+void AppSettings::setAlwaysCreateNewFile (bool bEnable)
+{
+  m_Settings.setValue(SETTINGNAME_ALWAYSCREATENEWFILE, QVariant(bEnable));
+}
+
+bool AppSettings::getAlwaysCreateNewFile (void)
+{
+  QVariant var = m_Settings.value(SETTINGNAME_ALWAYSCREATENEWFILE);
+  if (var.canConvert(QVariant::Bool))
+    return var.toBool();
+
+  return AppSettings::defaultAlwaysCreateNewFile();
 }
 
 //---------------------------------------------------------------------------
