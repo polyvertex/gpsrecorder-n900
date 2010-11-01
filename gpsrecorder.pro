@@ -67,7 +67,6 @@ HEADERS += \
   src/GPSRFile.h \
   src/Location.h \
   src/LocationFix.h \
-  src/LocationGPSRFile.h \
   src/LocationMaemo.h \
   src/QLabeledLineEdit.h \
   src/QMaemoBattery.h \
@@ -101,7 +100,6 @@ SOURCES += \
   src/GPSRFile.cpp \
   src/Location.cpp \
   src/LocationFix.cpp \
-  src/LocationGPSRFile.cpp \
   src/LocationMaemo.cpp \
   src/QLabeledLineEdit.cpp \
   src/QMaemoBattery.cpp \

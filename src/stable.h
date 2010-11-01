@@ -188,7 +188,7 @@ class ExporterSink;
 #include "Location.h"
 #include "LocationMaemo.h"
 #include "GPSRFile.h"
-#include "LocationGPSRFile.h"
+//#include "LocationGPSRFile.h"
 #include "Exporter.h"
 #include "ExporterSink.h"
 #include "ExporterSinkCsv.h"

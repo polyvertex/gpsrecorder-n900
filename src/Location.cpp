@@ -67,9 +67,9 @@ Location* Location::createDevice (void)
 }
 
 //---------------------------------------------------------------------------
-// createDevice
+// createReplay
 //---------------------------------------------------------------------------
-Location* Location::createReplay (const char* pszInputFile)
+/*Location* Location::createReplay (const char* pszInputFile)
 {
   LocationGPSRFile* pLocation = new LocationGPSRFile();
   Q_CHECK_PTR(pLocation);
@@ -77,7 +77,7 @@ Location* Location::createReplay (const char* pszInputFile)
   pLocation->setInputFileName(pszInputFile);
 
   return pLocation;
-}
+}*/
 
 //---------------------------------------------------------------------------
 // allowedFixSteps
