@@ -66,6 +66,7 @@ public :
     union
     {
       quint8 ucMeansOfTransport;
+      qint32 iTimeZoneOffset;
     }
     data;
 
@@ -106,15 +107,15 @@ private :
 private slots :
   void onReadError                 (GPSRFile* pGPSRFile, GPSRFile::Error eError);
   void onReadSOF                   (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVersion, qint32 iTimeZoneOffset);
-  void onReadChunkMessage          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen);
+  void onReadChunkMessage          (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage);
   void onReadChunkLocationFix      (GPSRFile* pGPSRFile, time_t uiTime, const LocationFix& fix);
   void onReadChunkLocationFixLost  (GPSRFile* pGPSRFile, time_t uiTime);
   void onReadChunkSnap             (GPSRFile* pGPSRFile, time_t uiTime);
-  void onReadChunkNamedSnap        (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen);
-  void onReadChunkPaused           (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName, uint uiPauseNameLen);
+  void onReadChunkNamedSnap        (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName);
+  void onReadChunkPaused           (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName);
   void onReadChunkResumed          (GPSRFile* pGPSRFile, time_t uiTime);
-  void onReadChunkNewTrack         (GPSRFile* pGPSRFile, time_t uiTime, const char* pszTrackName, uint uiTrackNameLen);
-  void onReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel, uint uiOptLabelLen);
+  void onReadChunkNewTrack         (GPSRFile* pGPSRFile, time_t uiTime, qint32 iTimeZoneOffset, const char* pszTrackName);
+  void onReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel);
   void onReadChunkUnknown          (GPSRFile* pGPSRFile, GPSRFile::Chunk* pChunk);
   void onReadEOF                   (GPSRFile* pGPSRFile);
 

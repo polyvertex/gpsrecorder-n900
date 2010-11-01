@@ -235,6 +235,20 @@ int Util::timeZoneOffset (void)
   return -time_get_utc_offset(0); // nokia's libtime
 }
 
+//---------------------------------------------------------------------------
+// timeZoneOffsetHuman
+//---------------------------------------------------------------------------
+QByteArray Util::timeZoneOffsetHuman (int iTimeZoneOffset)
+{
+  int iAbsOffset = (iTimeZoneOffset < 0) ? -iTimeZoneOffset : iTimeZoneOffset;
+
+  return QString("%1%2:%3")
+    .arg((iTimeZoneOffset < 0) ? '-' : '+')
+    .arg(uint(iAbsOffset / 3600), 2, 10, QLatin1Char('0'))
+    .arg(uint(iAbsOffset % 3600 / 60), 2, 10, QLatin1Char('0'))
+    .toLocal8Bit();
+}
+
 
 
 //---------------------------------------------------------------------------

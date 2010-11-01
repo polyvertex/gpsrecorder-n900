@@ -50,8 +50,8 @@ Exporter::Exporter (void)
     SLOT(onReadSOF(GPSRFile*, time_t, quint8, qint32)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkMessage(GPSRFile*, time_t, const char*, uint)),
-    SLOT(onReadChunkMessage(GPSRFile*, time_t, const char*, uint)) );
+    SIGNAL(sigReadChunkMessage(GPSRFile*, time_t, const char*)),
+    SLOT(onReadChunkMessage(GPSRFile*, time_t, const char*)) );
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadChunkLocationFix(GPSRFile*, time_t, const LocationFix&)),
@@ -66,24 +66,24 @@ Exporter::Exporter (void)
     SLOT(onReadChunkSnap(GPSRFile*, time_t)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkNamedSnap(GPSRFile*, time_t, const char*, uint)),
-    SLOT(onReadChunkNamedSnap(GPSRFile*, time_t, const char*, uint)) );
+    SIGNAL(sigReadChunkNamedSnap(GPSRFile*, time_t, const char*)),
+    SLOT(onReadChunkNamedSnap(GPSRFile*, time_t, const char*)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkPaused(GPSRFile*, time_t, const char*, uint)),
-    SLOT(onReadChunkPaused(GPSRFile*, time_t, const char*, uint)) );
+    SIGNAL(sigReadChunkPaused(GPSRFile*, time_t, const char*)),
+    SLOT(onReadChunkPaused(GPSRFile*, time_t, const char*)) );
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadChunkResumed(GPSRFile*, time_t)),
     SLOT(onReadChunkResumed(GPSRFile*, time_t)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkNewTrack(GPSRFile*, time_t, const char*, uint)),
-    SLOT(onReadChunkNewTrack(GPSRFile*, time_t, const char*, uint)) );
+    SIGNAL(sigReadChunkNewTrack(GPSRFile*, time_t, const char*)),
+    SLOT(onReadChunkNewTrack(GPSRFile*, time_t, const char*)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*, uint)),
-    SLOT(onReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*, uint)) );
+    SIGNAL(sigReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*)),
+    SLOT(onReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*)) );
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadChunkUnknown(GPSRFile*, GPSRFile::Chunk*)),
@@ -215,12 +215,11 @@ void Exporter::onReadSOF (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucFormatVer
 //---------------------------------------------------------------------------
 // onReadChunkMessage
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkMessage (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage, uint uiMessageLen)
+void Exporter::onReadChunkMessage (GPSRFile* pGPSRFile, time_t uiTime, const char* pszMessage)
 {
   Q_UNUSED(pGPSRFile);
   Q_UNUSED(uiTime);
   Q_UNUSED(pszMessage);
-  Q_UNUSED(uiMessageLen);
 
   // nothing to do for now...
 }
@@ -258,16 +257,15 @@ void Exporter::onReadChunkLocationFixLost (GPSRFile* pGPSRFile, time_t uiTime)
 //---------------------------------------------------------------------------
 void Exporter::onReadChunkSnap (GPSRFile* pGPSRFile, time_t uiTime)
 {
-  this->onReadChunkNamedSnap(pGPSRFile, uiTime, "", 0);
+  this->onReadChunkNamedSnap(pGPSRFile, uiTime, "");
 }
 
 //---------------------------------------------------------------------------
 // onReadChunkNamedSnap
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName, uint uiPointNameLen)
+void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPointName)
 {
   Q_UNUSED(pGPSRFile);
-  Q_UNUSED(uiPointNameLen);
 
   m_vecGizmoPoints.append(GizmoPoint(GIZMO_SNAP, uiTime, this->gizmoIndex(GIZMO_SNAP)));
   if (pszPointName)
@@ -277,10 +275,9 @@ void Exporter::onReadChunkNamedSnap (GPSRFile* pGPSRFile, time_t uiTime, const c
 //---------------------------------------------------------------------------
 // onReadChunkPaused
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkPaused (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName, uint uiPauseNameLen)
+void Exporter::onReadChunkPaused (GPSRFile* pGPSRFile, time_t uiTime, const char* pszPauseName)
 {
   Q_UNUSED(pGPSRFile);
-  Q_UNUSED(uiPauseNameLen);
 
   m_vecGizmoPoints.append(GizmoPoint(GIZMO_PAUSE, uiTime, this->gizmoIndex(GIZMO_PAUSE)));
   if (pszPauseName)
@@ -300,23 +297,24 @@ void Exporter::onReadChunkResumed (GPSRFile* pGPSRFile, time_t uiTime)
 //---------------------------------------------------------------------------
 // onReadChunkNewTrack
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkNewTrack (GPSRFile* pGPSRFile, time_t uiTime, const char* pszTrackName, uint uiTrackNameLen)
+void Exporter::onReadChunkNewTrack (GPSRFile* pGPSRFile, time_t uiTime, qint32 iTimeZoneOffset, const char* pszTrackName)
 {
   Q_UNUSED(pGPSRFile);
-  Q_UNUSED(uiTrackNameLen);
+  Q_UNUSED(iTimeZoneOffset);
 
   m_vecGizmoPoints.append(GizmoPoint(GIZMO_TRACK, uiTime, this->gizmoIndex(GIZMO_TRACK)));
   if (pszTrackName)
     m_vecGizmoPoints.last().strName = pszTrackName;
+
+  m_vecGizmoPoints.last().data.iTimeZoneOffset = iTimeZoneOffset;
 }
 
 //---------------------------------------------------------------------------
 // onReadChunkMeansOfTransport
 //---------------------------------------------------------------------------
-void Exporter::onReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel, uint uiOptLabelLen)
+void Exporter::onReadChunkMeansOfTransport (GPSRFile* pGPSRFile, time_t uiTime, quint8 ucMeansOfTransport, const char* pszOptLabel)
 {
   Q_UNUSED(pGPSRFile);
-  Q_UNUSED(uiOptLabelLen);
 
   m_vecGizmoPoints.append(GizmoPoint(GIZMO_MEANSTRANSPORT, uiTime, this->gizmoIndex(GIZMO_MEANSTRANSPORT)));
   if (pszOptLabel)

@@ -514,7 +514,44 @@ void GPSRFile::writeResumed (time_t uiTime)
 //---------------------------------------------------------------------------
 void GPSRFile::writeNewTrack (time_t uiTime, const char* pszName)
 {
-  this->writeChunkAsciiz(CHUNK_NEWTRACK, uiTime, pszName);
+  Chunk* pChunk;
+  uint   uiChunkSize;
+  qint32 iTimeZoneOffset;
+
+  Q_ASSERT(this->isOpen());
+  Q_ASSERT(this->isWriting());
+  if (!this->isOpen() || !this->isWriting())
+    return;
+
+  uiChunkSize  = sizeof(Chunk);
+  uiChunkSize += sizeof(qint32); // time zone offset
+  uiChunkSize += pszName ? strlen(pszName) : 0;
+  uiChunkSize += 1; // +1 for the trailing '\0'
+
+  m_Swap.reserve(uiChunkSize +1);
+  pChunk = (Chunk*)m_Swap.data();
+
+  pChunk->ucMagic = '@';
+  pChunk->uiId    = CHUNK_NEWTRACK;
+  pChunk->uiSize  = uiChunkSize;
+  pChunk->uiTime  = uiTime ? uiTime : time(0);
+
+  // data format :
+  // 0 : time zone offset
+  // 1-var : asciiz, optional label
+  {
+    quint8* pui = (quint8*)&pChunk->aData[0];
+
+    *((qint32*)pui) = Util::timeZoneOffset();
+    pui += sizeof(qint32);
+
+    if (pszName)
+      memcpy((char*)pui, pszName, strlen(pszName) + 1);
+    else
+      pui[0] = 0;
+  }
+
+  this->writeData((char*)pChunk, uiChunkSize);
 }
 
 //---------------------------------------------------------------------------
@@ -741,7 +778,7 @@ bool GPSRFile::readChunk (int nChunkIndex)
     switch (pChunk->uiId)
     {
       case CHUNK_MESSAGE :
-        emit sigReadChunkMessage(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        emit sigReadChunkMessage(this, pChunk->uiTime, (char*)&pChunk->aData);
         break;
       case CHUNK_LOCATIONFIX :
         emit sigReadChunkLocationFix(this, pChunk->uiTime, (LocationFix&)*(pChunk->aData));
@@ -753,19 +790,19 @@ bool GPSRFile::readChunk (int nChunkIndex)
         emit sigReadChunkSnap(this, pChunk->uiTime);
         break;
       case CHUNK_NAMEDSNAP :
-        emit sigReadChunkNamedSnap(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        emit sigReadChunkNamedSnap(this, pChunk->uiTime, (char*)&pChunk->aData);
         break;
       case CHUNK_PAUSED :
-        emit sigReadChunkPaused(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        emit sigReadChunkPaused(this, pChunk->uiTime, (char*)&pChunk->aData);
         break;
       case CHUNK_RESUMED :
         emit sigReadChunkResumed(this, pChunk->uiTime);
         break;
       case CHUNK_NEWTRACK :
-        emit sigReadChunkNewTrack(this, pChunk->uiTime, (char*)&(pChunk->aData), pChunk->uiSize - sizeof(*pChunk) - 1);
+        emit sigReadChunkNewTrack(this, pChunk->uiTime, qint32(*((qint32*)&pChunk->aData[0])), (char*)&pChunk->aData[4]);
         break;
       case CHUNK_MEANSTRANSPORT :
-        emit sigReadChunkMeansOfTransport(this, pChunk->uiTime, pChunk->aData[0], (char*)&(pChunk->aData[1]), pChunk->uiSize - sizeof(*pChunk) - 2);
+        emit sigReadChunkMeansOfTransport(this, pChunk->uiTime, pChunk->aData[0], (char*)&pChunk->aData[1]);
         break;
       default :
         qWarning("Unknown chunk #%u @ offset %d in file %s !", (uint)pChunk->uiId, nChunkOffset, m_strFilePath.constData());
@@ -1162,16 +1199,9 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
 
     if (pHeader->ucFormat >= 1)
     {
-      int iAbsOffset =
-        (pHeader->iTimeZoneOffset < 0) ?
-        -pHeader->iTimeZoneOffset :
-        pHeader->iTimeZoneOffset;
-
       strDump +=
-        QString("\tTimeZoneOffset %1%2:%3 (%4)\n")
-        .arg((pHeader->iTimeZoneOffset < 0) ? '-' : '+')
-        .arg(uint(iAbsOffset / 3600), 2, 10, QLatin1Char('0'))
-        .arg(uint(iAbsOffset % 3600 / 60), 2, 10, QLatin1Char('0'))
+        QString("\tTimeZoneOffset %1 (%2)\n")
+        .arg(Util::timeZoneOffsetHuman(pHeader->iTimeZoneOffset).constData())
         .arg(pHeader->iTimeZoneOffset);
     }
 
@@ -1221,7 +1251,7 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
   {
     const ChunkReadInfo& cri = itChunk.next();
     Chunk* pChunk = 0;
-    int iFirstColWidth = 7;
+    int iFirstColWidth = 8;
 
     // skip location fix if we don't want it
     if ((cri.uiId == CHUNK_LOCATIONFIX) ||
@@ -1269,13 +1299,26 @@ bool GPSRFile::dump (const char* pszFile, QString& strDump, bool bIncludeLocatio
     // output chunk body
     if (cri.uiId == CHUNK_MESSAGE ||
       cri.uiId == CHUNK_NAMEDSNAP ||
-      cri.uiId == CHUNK_PAUSED ||
-      cri.uiId == CHUNK_NEWTRACK)
+      cri.uiId == CHUNK_PAUSED)
     {
       strDump +=
         QString("\t%1 %2\n")
         .arg("Label", -iFirstColWidth)
         .arg((char*)&(pChunk->aData));
+    }
+    else if (cri.uiId == CHUNK_NEWTRACK)
+    {
+      int   iOffset = qint32((qint32*)&pChunk->aData[0]);
+      char* pszName = (char*)&pChunk->aData[sizeof(qint32)];
+
+      strDump += QString(
+        "\t%1 %2 (%3)\n"
+        "\t%4 %5\n")
+        .arg("TimeZone", -iFirstColWidth)
+        .arg(Util::timeZoneOffsetHuman(iOffset).constData())
+        .arg(iOffset)
+        .arg("Label", -iFirstColWidth)
+        .arg(pszName);
     }
     else if (cri.uiId == CHUNK_MEANSTRANSPORT)
     {

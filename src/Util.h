@@ -55,6 +55,7 @@ public :
   static time_t     timeApplyOffset       (int iSecondsOffset, time_t uiTime=0, int* piAppliedOffset=0);
   static bool       timeSetup             (uint uiNewTime, int* pnTimeDiff=0);
   static int        timeZoneOffset        (void); // current time zone
+  static QByteArray timeZoneOffsetHuman   (int iTimeZoneOffset);
 
   // maemo specific
   static QByteArray maemoFindHomeDir   (void);
