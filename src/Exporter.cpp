@@ -78,8 +78,8 @@ Exporter::Exporter (void)
     SLOT(onReadChunkResumed(GPSRFile*, time_t)) );
   this->connect(
     &m_GPSRFile,
-    SIGNAL(sigReadChunkNewTrack(GPSRFile*, time_t, const char*)),
-    SLOT(onReadChunkNewTrack(GPSRFile*, time_t, const char*)) );
+    SIGNAL(sigReadChunkNewTrack(GPSRFile*, time_t, qint32, const char*)),
+    SLOT(onReadChunkNewTrack(GPSRFile*, time_t, qint32, const char*)) );
   this->connect(
     &m_GPSRFile,
     SIGNAL(sigReadChunkMeansOfTransport(GPSRFile*, time_t, quint8, const char*)),
