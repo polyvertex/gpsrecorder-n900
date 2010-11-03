@@ -1,3 +1,17 @@
+gpsrecorder (1.2.222) unstable; urgency=low
+
+  * Fixed : Named snapped points were written with a wrong chunk ID in GPSR file and did not appear in KML/GPX exports.
+  * Fixed : CSV separator was read incorrectly from configuration file.
+  * Modified : Some cosmetics on main window.
+  * Added : A track can be appended to an existing GPSR file.
+  * Added : Means of transportation can optionally be written in GPSR file.
+  * Added : 'HorizEP' field on main window to show the current horizontal position uncertainty value.
+  * Added : 'Battery' field on main window (charge level is notified by DBus system, no polling is performed).
+  * Added : GPSR files can be converted to TXT files for debug purpose.
+  * Removed : Removed 'Snap' menu since there is a 'Snap' button on the main window.
+
+ -- Jean-Charles Lefebvre <gpsrecorder@jcl.name>  Wed, 03 Nov 2010 19:07:50 +0100
+
 gpsrecorder (1.1.168) unstable; urgency=low
 
   * Application is now considered to be mature.
