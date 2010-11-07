@@ -538,7 +538,7 @@ void GPSRFile::writeNewTrack (time_t uiTime, const char* pszName)
 
   // data format :
   // 0 : time zone offset
-  // 1-var : asciiz, optional label
+  // 4-var : asciiz, optional label
   {
     quint8* pui = (quint8*)&pChunk->aData[0];
 
