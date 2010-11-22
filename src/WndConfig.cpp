@@ -129,7 +129,7 @@ void WndConfig::setupControls (void)
     m_pChkGpsAlwaysConnected = new QCheckBox(tr("GPS always connected"));
     m_pChkGpsAlwaysConnected->setCheckState(settings.getGpsAlwaysConnected() ? Qt::Checked : Qt::Unchecked);
 
-    m_pChkAlwaysCreateNewFile = new QCheckBox(tr("Always create new file"));
+    m_pChkAlwaysCreateNewFile = new QCheckBox(tr("Always create new file (old behavior)"));
     m_pChkAlwaysCreateNewFile->setCheckState(settings.getAlwaysCreateNewFile() ? Qt::Checked : Qt::Unchecked);
 
     m_pChkAskPointName = new QCheckBox(tr("Ask for point name before snap"));
