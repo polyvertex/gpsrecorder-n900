@@ -82,6 +82,8 @@ TRANSPORTNAMES[] =
   { GPSRFile::MEANSTRANSPORT_TRUCK,        QT_TR_NOOP("Truck") },
   { GPSRFile::MEANSTRANSPORT_TAXI,         QT_TR_NOOP("Taxi") },
   { GPSRFile::MEANSTRANSPORT_BUS,          QT_TR_NOOP("Bus") },
+  { GPSRFile::MEANSTRANSPORT_METRO,        QT_TR_NOOP("Metro") },
+  { GPSRFile::MEANSTRANSPORT_TRAMWAY,      QT_TR_NOOP("Tramway") },
   { GPSRFile::MEANSTRANSPORT_TUKTUK,       QT_TR_NOOP("Tuk Tuk") },
   { GPSRFile::MEANSTRANSPORT_TRAIN,        QT_TR_NOOP("Train") },
 

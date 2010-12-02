@@ -95,6 +95,8 @@ public :
     MEANSTRANSPORT_TRUCK        = 70,
     MEANSTRANSPORT_TAXI         = 75,
     MEANSTRANSPORT_BUS          = 80,
+    MEANSTRANSPORT_METRO        = 81,
+    MEANSTRANSPORT_TRAMWAY      = 82,
     MEANSTRANSPORT_TUKTUK       = 85,
     MEANSTRANSPORT_TRAIN        = 90,
     //
