@@ -81,6 +81,14 @@ void QMaemoComboBox::setTextAlignment (Qt::Alignment eAlign)
 //---------------------------------------------------------------------------
 void QMaemoComboBox::addItem (const QString& strText, const QVariant& userData/*=QVariant()*/)
 {
+  this->insertItem(m_pModel->rowCount(), strText, userData);
+}
+
+//---------------------------------------------------------------------------
+// insertItem
+//---------------------------------------------------------------------------
+void QMaemoComboBox::insertItem (int iRow, const QString& strText, const QVariant& userData/*=QVariant()*/)
+{
   QStandardItem* pItem = new QStandardItem;
 
   pItem->setText(strText);
@@ -88,7 +96,10 @@ void QMaemoComboBox::addItem (const QString& strText, const QVariant& userData/*
   pItem->setEditable(false);
   pItem->setData(userData);
 
-  m_pModel->appendRow(pItem);
+  if (iRow >= 0 && iRow < m_pModel->rowCount())
+    m_pModel->insertRow(iRow, pItem);
+  else
+    m_pModel->appendRow(pItem);
 }
 
 //---------------------------------------------------------------------------
@@ -113,6 +124,14 @@ int QMaemoComboBox::count (void) const
 void QMaemoComboBox::setCurrentIndex (int iNewIndex)
 {
   return m_pSelector->setCurrentIndex(iNewIndex);
+}
+
+//---------------------------------------------------------------------------
+// sortItems
+//---------------------------------------------------------------------------
+void QMaemoComboBox::sortItems (Qt::SortOrder eOrder/*=Qt::AscendingOrder*/)
+{
+  return m_pModel->sort(0, eOrder);
 }
 
 //---------------------------------------------------------------------------

@@ -40,27 +40,37 @@ QMeansOfTransport::QMeansOfTransport (QWidget* pParent/*=0*/)
 {
   QVector<quint8>         vecMOT(GPSRFile::meansOfTransportList());
   QVectorIterator<quint8> itMOT(vecMOT);
-  int iIndex;
 
   if (App::instance() && App::instance()->settings())
     m_strOtherMOT = App::instance()->settings()->getLastOtherMeansOfTransport();
 
-  iIndex = 0;
+
   while (itMOT.hasNext())
   {
     quint8 ucMOT = itMOT.next();
 
-    if (ucMOT == GPSRFile::MEANSTRANSPORT_FLYINGSAUCER)
+    if (ucMOT == GPSRFile::MEANSTRANSPORT_UNKNOWN ||
+      ucMOT == GPSRFile::MEANSTRANSPORT_OTHER ||
+      ucMOT == GPSRFile::MEANSTRANSPORT_FLYINGSAUCER)
       continue;
-    else if (ucMOT == GPSRFile::MEANSTRANSPORT_OTHER)
-      m_iOtherMotIndex = iIndex;
 
     this->addItem(
       GPSRFile::fullMeansOfTransportToLabel(ucMOT, m_strOtherMOT),
       (int)ucMOT);
-
-    ++iIndex;
   }
+
+  this->sortItems();
+
+  this->insertItem(
+    0,
+    GPSRFile::fullMeansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_UNKNOWN, m_strOtherMOT),
+    (int)GPSRFile::MEANSTRANSPORT_UNKNOWN);
+
+  this->addItem(
+    GPSRFile::fullMeansOfTransportToLabel(GPSRFile::MEANSTRANSPORT_OTHER, m_strOtherMOT),
+    (int)GPSRFile::MEANSTRANSPORT_OTHER);
+  m_iOtherMotIndex = this->count() - 1;
+
 
   this->connect(this, SIGNAL(sigSelected(int)), SLOT(onSelected(int)));
   this->setValueLayout(QMaemo5ValueButton::ValueUnderText);

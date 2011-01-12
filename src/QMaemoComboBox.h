@@ -49,7 +49,9 @@ public :
   void setTextAlignment (Qt::Alignment eAlign);
 
   void addItem         (const QString& strText, const QVariant& userData=QVariant());
+  void insertItem      (int iRow, const QString& strText, const QVariant& userData=QVariant());
   void setCurrentIndex (int iNewIndex);
+  void sortItems       (Qt::SortOrder eOrder=Qt::AscendingOrder);
 
   int count        (void) const;
   int currentIndex (void) const;
