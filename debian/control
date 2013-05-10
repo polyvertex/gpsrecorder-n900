@@ -1,10 +1,10 @@
 Source: gpsrecorder
 Section: user/navigation
 Priority: extra
-Maintainer: Jean-Charles Lefebvre <gpsrecorder@jcl.name>
+Maintainer: Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>
 Build-Depends: debhelper (>= 5), libdbus-glib-1-dev, libgconf2-dev, libglib2.0-dev, liblocation-dev, libqt4-dev, libtime-dev, zlib1g-dev
 Standards-Version: 3.7.3
-Homepage: http://gpsrecorder.jcl.name/
+Homepage: http://garage.maemo.org/projects/gpsrecorder/
 XSBC-Bugtracker: http://garage.maemo.org/tracker/?atid=5769&group_id=1620
 
 Package: gpsrecorder

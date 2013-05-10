@@ -3,7 +3,7 @@
 // GPS Recorder
 // A GPS data logger for the Maemo platform.
 //
-// Copyright (C) 2010 Jean-Charles Lefebvre <gpsrecorder [AT] jcl [DOT] name>
+// Copyright (C) 2010 Jean-Charles Lefebvre <polyvertex+gpsrecorder [AT] gmail [DOT] com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -148,12 +148,12 @@ int main (int nArgc, char** ppszArgv)
   int nRes;
 
   QCoreApplication::setOrganizationName("jcl");
-  //QCoreApplication::setOrganizationDomain("jcl.name");
+  //QCoreApplication::setOrganizationDomain("example.com");
   QCoreApplication::setApplicationName("gpsrecorder");
   QCoreApplication::setApplicationVersion(APP_VERSION_STR);
   App::setApplicationLabel("GPS Recorder");
-  App::setApplicationUrl("http://gpsrecorder.jcl.name/");
-  App::setApplicationEMail("gpsrecorder" /*NO*/ "@" /*SPAM*/ "jcl.name");
+  App::setApplicationUrl("http://garage.maemo.org/projects/gpsrecorder/");
+  App::setApplicationEMail("polyvertex+gpsrecorder" /*NO*/ "@" /*SPAM*/ "gmail.com");
 
   printf("%s version %s compiled on " __DATE__ " at " __TIME__ ".\n",
     qPrintable(QCoreApplication::applicationName()),
