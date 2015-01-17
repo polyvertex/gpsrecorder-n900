@@ -161,13 +161,13 @@ INSTALLS     += icon64
 
 
 # create REVISION file for source code releasing
-create-revfile.commands  = scripts/version.sh create-revfile
-create-revfile.depends   = FORCE
-QMAKE_EXTRA_TARGETS     += create-revfile
+#create-revfile.commands  = scripts/version.sh create-revfile
+#create-revfile.depends   = FORCE
+#QMAKE_EXTRA_TARGETS     += create-revfile
 
 # targets for debian source and binary package creation
 debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d -i -I.svn
-debian-src.depends   = create-revfile
+#debian-src.depends   = create-revfile
 debian-bin.commands  = dpkg-buildpackage -b -r -uc -d
 debian-all.depends   = debian-src debian-bin
 QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin

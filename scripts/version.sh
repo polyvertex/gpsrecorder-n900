@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #****************************************************************************
 #
 # GPS Recorder
@@ -24,90 +24,25 @@
 #
 #****************************************************************************
 
+TOP_DIR="$(dirname "${BASH_SOURCE[0]}")/.."
+VERSION_FILE="$TOP_DIR/VERSION"
+HEADER_FILE="$TOP_DIR/src/version.h"
 
-TOPDIR="$(dirname $0)/.."
-ACTION="$1"
+die() { echo "** ERROR: $@"; exit 1; }
 
-VERSION_FILE="$TOPDIR/VERSION"
-REVISION_FILE="$TOPDIR/REVISION"
-HEADER_FILE="$TOPDIR/src/version.h"
-
-VERSION=""
-REVISION=""
-
-
-fatal()
-{
-  echo "*** $*"
-  exit 1
-}
-
-read_version()
-{
-  [ -f "$VERSION_FILE" ] || fatal "VERSION file does not exist or is not readable !"
-  ( grep '^[0-9]\.[0-9]$' "$VERSION_FILE" > /dev/null ) || fatal "Format of VERSION file is incorrect !"
-  VERSION=$(cat "$VERSION_FILE")
-}
-
-read_revision()
-{
-  if [ -d "$TOPDIR/.svn" ]; then
-    REVISION=$(svnversion -n "$TOPDIR")
-  elif [ -f "$REVISION_FILE" ]; then
-    ( grep '^[0-9]\{1,5\}$' "$REVISION_FILE" > /dev/null ) || fatal "Format of REVISION file is incorrect !"
-    REVISION=$(cat "$REVISION_FILE")
-  else
-    echo "*** Could not read REVISION number !"
-    exit 1
-  fi
-}
-
-write_header()
-{
-  echo "static const char APP_VERSION_STR[] = \"${VERSION}.${REVISION}\";" > "$HEADER_FILE"
-}
-
-clean_header()
-{
-  rm -f "$HEADER_FILE"
-}
-
-write_revision()
-{
-  [ -f "$REVISION_FILE" ] && fatal "REVISION file already exists !"
-  ( echo -n "$REVISION" | grep '^[0-9]\{1,5\}$' > /dev/null ) || fatal "Format of REVISION number is incorrect ! Maybe you should commit then update ?"
-  echo -n "$REVISION" > "$REVISION_FILE"
-}
-
-clean_revision()
-{
-  # erase REVISION file only if source code is not released
-  [ -d "$TOPDIR/.svn" ] && rm -f "$REVISION_FILE"
-}
-
-
-case "$ACTION" in
+case "$1" in
   create-header)
-    read_version
-    read_revision
-    write_header
+    read -r VERSION <"$VERSION_FILE" \
+      || die "VERSION file does not exist or is not readable"
+    [[ "$VERSION" =~ ^[0-9\.]+$ ]] \
+      || die "VERSION file format is incorrect"
+    echo "static const char APP_VERSION_STR[] = \"${VERSION}\";" >"$HEADER_FILE"
     ;;
-  clean-header)
-    clean_header
-    ;;
-  create-revfile)
-    read_revision
-    write_revision
-    ;;
-  clean-revfile)
-    clean_revision
-    ;;
-  clean)
-    clean_header
-    clean_revision
+  clean-header|clean)
+    rm -f "$HEADER_FILE"
     ;;
   *)
-    echo "Usage : $0 {create-header|clean-header|create-revfile|clean-revfile|clean}"
+    echo "Usage: $0 {create-header|clean-header|clean}"
     exit 1
     ;;
 esac
