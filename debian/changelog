@@ -2,14 +2,14 @@ gpsrecorder (1.2.230) unstable; urgency=low
 
   * Modified: Project's e-mail and website addresses.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Fri, 10 May 2013 09:26:58 +0000
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Fri, 10 May 2013 09:26:58 +0000
 
 gpsrecorder (1.2.229) unstable; urgency=low
 
   * Modified: Items in the 'Means of transport' combo box are now sorted.
   * Added: 'Balloon', 'Tramway' and 'Zeppelin' means of transportation :)
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Wed, 12 Jan 2011 10:21:44 +0100
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Wed, 12 Jan 2011 10:21:44 +0100
 
 gpsrecorder (1.2.222) unstable; urgency=low
 
@@ -23,14 +23,14 @@ gpsrecorder (1.2.222) unstable; urgency=low
   * Added: GPSR files can be converted to TXT files for debug purpose.
   * Removed: Removed 'Snap' menu since there is a 'Snap' button on the main window.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Wed, 03 Nov 2010 19:07:50 +0100
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Wed, 03 Nov 2010 19:07:50 +0100
 
 gpsrecorder (1.1.168) unstable; urgency=low
 
   * Application is now considered to be mature.
   * Source code has been released under the terms of the 'zlib' license.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Sat, 16 Oct 2010 15:52:38 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Sat, 16 Oct 2010 15:52:38 +0200
 
 gpsrecorder (0.1.162) unstable; urgency=low
 
@@ -40,7 +40,7 @@ gpsrecorder (0.1.162) unstable; urgency=low
   * Modified: GPX and KML exporters to support Pause/Resume feature (optional).
   * Modified: Internal list of allowed GPS fix step values so the GUI does not wait too long for fresh data (5s max instead of 120s).
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Mon, 13 Sep 2010 21:02:13 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Mon, 13 Sep 2010 21:02:13 +0200
 
 gpsrecorder (0.1.152) unstable; urgency=low
 
@@ -49,14 +49,14 @@ gpsrecorder (0.1.152) unstable; urgency=low
   * Added: 'Waypoints' field to show the numbers of written fixes into the current output file.
   * Added: 'Last waypoints' field to show the last time a fix has been written.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Thu, 02 Sep 2010 20:07:05 -0700
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Thu, 02 Sep 2010 20:07:05 -0700
 
 gpsrecorder (0.1.147) unstable; urgency=low
 
   * Added: 'Prevent screen blanking' option.
   * Added: ChangeLog content into the About window.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Thu, 19 Aug 2010 19:51:20 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Thu, 19 Aug 2010 19:51:20 +0200
 
 gpsrecorder (0.1.144) unstable; urgency=low
 
@@ -66,13 +66,13 @@ gpsrecorder (0.1.144) unstable; urgency=low
   * Modified: 'Point name' dialog now has shorter description so it is not chopped anymore.
   * Modified: Replaced 'browse' icons to be a little bit more intuitive.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Tue, 17 Aug 2010 23:40:59 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Tue, 17 Aug 2010 23:40:59 +0200
 
 gpsrecorder (0.1.136) unstable; urgency=low
 
   * Fixed: Revision number from the 'About' window disappeared.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Mon, 09 Aug 2010 22:56:21 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Mon, 09 Aug 2010 22:56:21 +0200
 
 gpsrecorder (0.1.135) unstable; urgency=low
 
@@ -84,7 +84,7 @@ gpsrecorder (0.1.135) unstable; urgency=low
   * Modified: When a position is snapped, write position as soon as possible instead of waiting for next log step.
   * Modified: Upgraded from Qt 4.5 to 4.6: corrected and polished layout of windows and dialogs accordingly.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Mon, 09 Aug 2010 22:04:04 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Mon, 09 Aug 2010 22:04:04 +0200
 
 gpsrecorder (0.1.112) unstable; urgency=low
 
@@ -92,17 +92,17 @@ gpsrecorder (0.1.112) unstable; urgency=low
   * Added information boxes here and there to inform user when something goes wrong.
   * Polished the Convert dialog a little ('browse' icons).
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Mon, 07 Jun 2010 18:49:12 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Mon, 07 Jun 2010 18:49:12 +0200
 
 gpsrecorder (0.1.105) unstable; urgency=low
 
   * User can cancel a 'Start' or a 'Snap' action through Input dialogs.
   * Package is optified.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Wed, 26 May 2010 18:24:35 +0200
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Wed, 26 May 2010 18:24:35 +0200
 
 gpsrecorder (0.1.102) unstable; urgency=low
 
   * First public release.
 
- -- Jean-Charles Lefebvre <polyvertex+gpsrecorder@gmail.com>  Sun, 14 Mar 2010 21:37:08 +0100
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Sun, 14 Mar 2010 21:37:08 +0100

@@ -3,7 +3,7 @@
 # GPS Recorder
 # A GPS data logger for the Maemo platform.
 #
-# Copyright (C) 2010 Jean-Charles Lefebvre <polyvertex+gpsrecorder [AT] gmail [DOT] com>
+# Copyright (C) 2010 Jean-Charles Lefebvre <polyvertex@gmail.com>
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the authors be held liable for any damages
@@ -20,9 +20,6 @@
 # 2. Altered source versions must be plainly marked as such, and must not
 #    be misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
-#
-#
-# $Id$
 #
 #****************************************************************************
 
