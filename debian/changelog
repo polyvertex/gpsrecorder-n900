@@ -1,3 +1,10 @@
+gpsrecorder (1.3) unstable; urgency=low
+
+  * Post-mortem source code modifications (SVN to GIT)
+  * Author's e-mail updated
+
+ -- Jean-Charles Lefebvre <polyvertex@gmail.com>  Sun, 18 Jan 2015 13:28:15 +0000
+
 gpsrecorder (1.2.230) unstable; urgency=low
 
   * Modified: Project's e-mail and website addresses.
