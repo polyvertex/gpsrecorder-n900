@@ -166,7 +166,7 @@ INSTALLS     += icon64
 #QMAKE_EXTRA_TARGETS     += create-revfile
 
 # targets for debian source and binary package creation
-debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d -i -I.svn
+debian-src.commands  = dpkg-buildpackage -S -r -us -uc -d -i -I.svn -I.git
 #debian-src.depends   = create-revfile
 debian-bin.commands  = dpkg-buildpackage -b -r -uc -d
 debian-all.depends   = debian-src debian-bin
