@@ -1,0 +1,55 @@
+
+HOW TO BUILD GPS RECORDER FOR MAEMO
+
+
+PREREQUISITES
+
+* git
+  http://git-scm.com/
+* MADDE
+  http://sourceforge.net/projects/madde/
+* maemo-opt (doesn't have to be in your PATH)
+  https://github.com/polyvertex/maemo-opt
+* Debian's tools to build .deb packages, namely dpkg-buildpackage.
+
+
+COMPILATION
+
+Fetch source code and build makefiles
+  git clone https://github.com/polyvertex/gpsrecorder-n900.git
+  cd gpsrecorder-n900
+  mad qmake
+
+Compile
+  mad make debian-bin
+
+Now a .deb package named gpsrecorder_*_armel.deb and its .changes file must have
+been created in the parent directory. We should "optify" it:
+  cd ..
+  maemo-opt-deb gpsrecorder_1.3_armel.deb
+
+You might encounter some warnings about user-defined fields, it's fine.
+The .deb package is now ready to be installed on your device.
+You can optionally check if your package has been optified:
+  dpkg --contents gpsrecorder_1.3_armel.deb
+
+And voila! Happy GPS recording :)
+
+
+CREATE A DEBIANIZED SOURCE PACKAGE FOR THE MAEMO GARAGE (OBSOLETE)
+
+A source package can be created as well:
+  git clone https://github.com/polyvertex/gpsrecorder-n900.git gpsrecorder_1.3
+  cd gpsrecorder_1.3
+  mad dpkg-buildpackage -S -sa -r -us -uc -d -i -I.svn -I.git
+
+Three files must have been created:
+  gpsrecorder_1.3.tar.gz
+  gpsrecorder_1.3.dsc
+  gpsrecorder_1.3_source.changes
+
+The package is now ready to be sent to the Maemo Garage
+  https://garage.maemo.org/extras-assistant/index.php
+
+Add new release number to the tracker
+  https://garage.maemo.org/tracker/admin/index.php?add_opt=1&boxid=30649&group_id=1620&atid=5769
