@@ -1,6 +1,6 @@
 GPS Recorder for Maemo
 
-A GPS data logger for the Maemo platform.
+A GPS data logger for the Maemo platform (Nokia N900).
 
 It is written in C++, over the Qt framework and gets GPS data from Maemo's
 liblocation.
@@ -15,4 +15,13 @@ Main features:
   enough.
 
 Website:
-http://garage.maemo.org/projects/gpsrecorder/
+http://garage.maemo.org/projects/gpsrecorder
+
+Bug tracker and feature request:
+https://garage.maemo.org/tracker/?group_id=1620
+
+Binary packages:
+https://garage.maemo.org/frs/?group_id=1620
+
+Source code repository:
+https://github.com/polyvertex/gpsrecorder-n900
